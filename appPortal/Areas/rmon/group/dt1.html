@@ -1,0 +1,51 @@
+﻿<!--<div class="row">
+    <ol class="breadcrumb">
+        <li class="active">部門</li>
+    </ol>
+    <div class="col-lg-3 col-md-3" ng-repeat="d in departments">
+        <div ng-class="d.panelColor">
+
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-tags fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{d.counts}}</div>
+                        <div>{{d.name}}-{{d.code}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <span class="pull-left"><a ng-click="navEquipment(d)">顯示</a></span>
+            </div>
+        </div>
+    </div>
+
+</div>-->
+
+<!--<ul class="breadcrumb">
+    <li>
+        <i class="fa fa-home"></i>
+        <a ng-href="{{$root.dt0[0].url}}"><span>{{$root.dt0[0].appName}}</span></a>
+        <i class="fa fa-angle-right"></i>
+    </li>
+    <li class="active">{{group.currentGroup.groupName}}</li>
+</ul>-->
+<ul class="breadcrumb">
+    <i class="fa fa-home"></i>
+    <li ng-repeat="b in breadcrumbs">
+        <a ng-click="setBreadcrumbs(b)"><span>{{b.label}}</span></a>
+    </li>
+</ul>
+<div class="row-fluid">
+    <div class="col-lg-2 col-md-2" ng-repeat="d in departments">
+        <a ng-class="d.color" ng-click="navMainTool(d)">
+            <i ng-class="d.icon"></i>
+            <p>{{d.name}}</p>
+            <span class="badge">{{d.code}}</span>
+        </a>
+        <div>&nbsp;</div>
+    </div><!--/row-->
+</div>

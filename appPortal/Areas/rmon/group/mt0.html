@@ -1,0 +1,112 @@
+﻿<ul class="breadcrumb">
+    <i class="fa fa-home"></i>
+    <li ng-repeat="b in breadcrumbs">
+        <a ng-click="setBreadcrumbs(b)"><span>{{b.label}}</span></a>
+    </li>
+</ul>
+
+<div class="content-wrapper" style="min-height:480px">
+    <div class="row">
+        <div class="col-lg-2 col-md-2 col-sm-2" ng-repeat="m in mainTools">
+            <a class="{{m.color}}" >
+                <i class="fa fa-link" ng-click="navEquipment(m)"></i>
+                <p>{{m.name}}</p>
+                <span class="notification1 red">{{m.alarmCount}}</span>
+                <span class="notification2 blue" style="text-align:center">{{m.maintainCount}}</span>
+                <span class="notification3 grey">{{m.statusCount}}</span>
+            </a>
+            <div>&nbsp;</div>
+        </div>
+    </div>
+</div>
+
+<!-- 即時監控 -->
+<div class="main-footer">
+    <div class="box">
+        <div class="box-header">
+            <span class="break"></span>Alram Message
+            <div class="box-icon">
+                <a ng-click="showHistory()" style="cursor:pointer;"><i class="fa fa-line-chart"></i>歷史資料</a>
+            </div>
+        </div>
+        <div class="box-content">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <!--<th>群組編號</th>-->
+                        <th>Tag名稱</th>
+                        <th>告警類別</th>
+                        <th>數值</th>CurfValue
+                        <th>告警狀態</th>
+                        <th>是否離線</th>
+                        <th>是否保養</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="t in tagAlarms">
+                        <!--<td>{{t.groupId}}</td>-->
+                        <td class="center"><a ng-click="goChart(t.linkTagSeq)">{{t.tagName}}</a></td>
+                        <td class="center">{{t.tObjName}}</td>
+                        <td class="center">{{t.curfValue}}</td>
+                        <td class="center">
+                            <span class="label red">{{t.curSubStaName}}</span>
+                            <span class="label grey" ng-show="t.isCurSubSta">{{t.curLinkStaName}}</span>
+                            <span class="label blue" ng-show="t.isMaintain">{{t.maintainName}}</span>
+                        </td>
+                        <td class="center">
+                            <span class="label grey">{{t.curLinkStaName}}</span>
+                        </td>
+                        <td>
+                            <span class="label blue">{{t.maintainName}}</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<modal title="告警資料" visible="showModal">
+    <div class="modal-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+
+                    <th>序號</th>
+                    <th>訊息時間</th>
+                    <th>復歸時間</th>
+                    <th>訊息名稱</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="e in events">
+                    <td>{{ e.linkTagSeq }}</td>
+                    <td>{{ e.recTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                    <td>{{ e.restTime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                    <td>{{ e.name }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="setEvents()">確認資料</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">離開</button>
+    </div>
+</modal>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

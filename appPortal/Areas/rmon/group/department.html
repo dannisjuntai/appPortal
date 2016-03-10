@@ -1,0 +1,79 @@
+﻿<div class="row">
+    <ol class="breadcrumb">
+        <li class="active">部門</li>
+    </ol>
+    <div class="col-lg-3 col-md-3" ng-repeat="d in departments">
+        <div ng-class="d.panelColor">
+
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-tags fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{d.counts}}</div>
+                        <div>{{d.name}}-{{d.code}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="m in d.mainTools">
+                        <i class="fa fa-circle-o text-light-blue"></i>
+                        <a ng-click="navEquipment(m)" style="cursor: pointer;">{{m.name}}</a>
+                        <span class="badge"><a ng-click="toggleModal(m)" style="color:white;cursor: pointer;">{{m.count}}</a></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">告警資料</h4>
+            </div>
+            <div class="modal-body">
+                <p>One fine body&hellip;</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="setEvents()">確認資料</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">離開</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<modal title="告警資料" visible="showModal">
+    <div class="modal-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    
+                    <th>序號</th>
+                    <th>訊息時間</th>
+                    <th>復歸時間</th>
+                    <th>訊息名稱</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="e in events">
+                    <td>{{ e.linkTagSeq }}</td>
+                    <td>{{ e.recTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                    <td>{{ e.restTime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                    <td>{{ e.name }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="setEvents()">確認資料</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">離開</button>
+    </div>
+</modal>

@@ -1,0 +1,97 @@
+﻿<div class="row">
+
+
+    <div class="col-md-4">
+        <div data-angular-treeview="true"
+             data-tree-id="group"
+             data-tree-model="treedata"
+             data-node-id="id"
+             data-node-label="label"
+             data-node-children="children">
+        </div>
+    </div>
+
+    <div class="col-md-7" ng-model="currentView">
+
+        <!-- default Template-->
+        <div ng-show="currentView == 'default'">
+
+            <div class="box box-info">
+                <div class="box-header" with-border>
+                    <h3 class="box-title">下階群組</h3>
+                </div>
+                <form name="editForm">
+                    <!-- 新增下階群組 -->
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label>群組名稱</label>
+                            <input class="form-control" ng-model="vm.currentGroup.groupName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>群組編碼</label>
+                            <input class="form-control" ng-model="vm.currentGroup.groupCode" required>
+                        </div>
+                        <div class="form-group">
+                            <label>群組類型</label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-globe"></span></span>
+                                <select class="form-control" ng-model="vm.currentGroup.groupTypeKey" ng-options="item.value as item.key for item in groupTypes" required></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <button class="btn btn-default" ng-click="InsertGroup()">新增</button>
+                        <button class="btn btn-warning" ng-click="DeleteGroup()">刪除</button>
+                        <button class="btn btn-primary" ng-click="UpdateGroup()">修改</button>
+                        <button class="btn btn-info" ng-show="showLinkMap" ng-click="Set()">圖控設定</button>
+                    </div>
+                </form>
+
+            </div>
+
+
+        </div>
+
+        <!-- insert Template -->
+        <div ng-show="currentView == 'Insert'">
+
+            <div class="box box-info">
+                <div class=" box-header">
+                    <h3 class="box-title">選擇群組</h3>
+                </div>
+                <form name="newForm">
+                    <!-- 上階群組 -->
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label>上階群組名稱</label>
+                            <input class="form-control" ng-model="newVm.parentGroup.parentName" readonly="readonly">
+                        </div>
+                        <div class="form-group">
+                            <label>群組名稱</label>
+                            <input class="form-control" ng-model="newVm.currentGroup.groupName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>群組編碼</label>
+                            <input class="form-control" ng-model="newVm.currentGroup.groupCode" required>
+                        </div>
+                        <div class="form-group">
+                            <label>群組類型</label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-globe"></span></span>
+                                <select class="form-control" ng-model="newVm.currentGroup.groupTypeKey" ng-options="item.value as item.key for item in groupTypes" required></select>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="box-footer">
+                        <button class="btn btn-primary" ng-click="Save()">存檔</button>
+                        <button class="btn btn-primary" ng-click="Cancel()">取消</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>

@@ -1,0 +1,164 @@
+﻿
+<div class="row">
+    <div class=col-lg-8>
+
+        <div class="row">
+            <div class="box box-info">
+                <div class="box-header">
+                    <!--<h3 class="panel-title">資料元件</h3>-->
+                    <div>
+                        <button class="btn btn-primary" type="button" ng-click="updateLink()">
+                            存檔
+                        </button>
+                    </div>
+                </div>
+
+                <div class="box-body" style="overflow:auto;">
+                    <canvas id="drawCanvas" width="1300" height="800"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class=col-lg-4>
+        <div class="box box-info">
+            <div class="box-header" with-border>
+                <h3 class="box-title">底圖上傳</h3>
+            </div><!-- /.box-header -->
+            <form name="baseform">
+                <div class="box-body">
+                    <!--<div class="form-group">
+
+                        <input type="file" ng-model="file" name="file" base-sixty-four-input required maxsize="500" accept="image/*">
+                        <input class="btn btn-primary" type="button" ng-click="uploadFiles()" value="上傳">
+                    </div>-->
+
+                    <div class="control-group">
+                        <label class="control-label" for="appendedInputButton" >上傳</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input type="file" ng-model="file" name="file" base-sixty-four-input required maxsize="500" accept="image/*">
+                                <button class="btn" type="button" ng-click="uploadFiles()">上傳</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+
+        <!-- general form elements -->
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">新增點位</h3>
+            </div><!-- /.box-header -->
+            <form>
+                <div class="box-body">
+                    <div class="form-group">
+                        <label>設備名稱</label>
+                        <select ng-model="link.linkSubSeq" ng-options="item.linkSubSeq as item.linkDevName for item in linkDevices"
+                                ng-change="changLink(link)" style="width:200px"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>偵測項目</label>
+                        <select ng-model="link.linkTagSeq" ng-options="sub.linkTagSeq as sub.tagName for sub in linkTags" style="width:200px"></select>
+                    </div>
+                    <!--<div class="form-group">
+                        <label>是否顯示</label>
+                        <input type="checkbox" ng-model="link.prompt" />
+                    </div>-->
+
+                    <button class="btn" ng-click="insertLocation(link)">新增點位</button>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">點位資訊</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body no-padding">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="col-sm-1"></th>
+                            <th class="col-sm-3">設備編號</th>
+                            <th>偵測項目</th>
+                            <!--<th>顯示</th>-->
+                            <th class="col-sm-2">動作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="l in links" ng-click="Selected(l, $index)" ng-class="{'selected':$index == selectedRow}">
+                            <td class="col-sm-1">{{$index}}</td>
+                            <td class="col-sm-3">{{ l.linkDevName }}</td>
+                            <td>{{ l.tagName }}</td>
+
+                            <!--<td>{{ l.prompt }}</td>-->
+                            <td class="col-sm-2">
+                                <a ng-click="removeLink(l)" style="cursor:pointer"><i class="fa fa-trash"></i></a>
+                                <a ng-click="toggleModal(l)" style="cursor:pointer"><i class="fa fa-cog"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<modal title="點位資料修改" visible="showModal">
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <fieldset>
+                <div class="control-group col-sm-5">
+                    <label class="control-label" for="typeahead">高值</label>
+                    <div class="controls">
+                        <input type="text" class="form-control input-smd"
+                               data-provide="typeahead"
+                               ng-model="linkTag.lowAlarm">
+                    </div>
+                </div>
+
+
+                <div class="control-group  col-sm-5">
+                    <label class="control-label" for="typeahead">低值</label>
+                    <div class="controls">
+                        <input type="text" class="form-control input-sm"
+                               data-provide="typeahead"
+                               ng-model="linkTag.upAlarm">
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <div class="control-group  col-sm-5">
+                    <label class="control-label" for="typeahead">簡稱</label>
+                    <div class="controls">
+                        <input type="text" class="form-control input-sm"
+                               data-provide="typeahead"
+                               ng-model="linkTag.shortName">
+                    </div>
+                </div>
+                <div class="control-group col-sm-5">
+                    <label class="control-label" for="typeahead">單位</label>
+                    <div class="controls">
+                        <input type="text" class="form-control input-sm"
+                               data-provide="typeahead"
+                               ng-model="linkTag.unitName">
+                    </div>
+                </div>
+
+            </fieldset>
+            </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="setLinkTag(linkTag)">修改</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">離開</button>
+    </div>
+</modal>
+
+

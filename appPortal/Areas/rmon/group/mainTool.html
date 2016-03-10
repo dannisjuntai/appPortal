@@ -1,0 +1,60 @@
+﻿<div class="row">
+    <!-- 顯示 MailTool-->
+    <!--<div class="col-md-9">
+        <div class="col-md-4 list-group" ng-repeat="o in linkGroups">
+
+            <div class=" box box-success box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{o.parentName}} - {{o.name }}</h3>
+                    <div class="box-tools">
+                        <button class="btn btn-box-tool" ng-click="navDataMap()"><i class="fa fa-bell-o"></i></button>
+                    </div>
+                </div>
+                <div class="box-body no-padding">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li>
+                            <a href="#" ng-repeat="tag in o.tags">
+                                <i class="fa fa-circle-o text-light-blue"></i>
+                                {{tag.name}}
+                                <span ng-class="tag.color">{{tag.value}}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>-->
+    <div class="col-md-12">
+        <div class="col-md-3 list-group" ng-repeat="e in equmentToFilter() | filter:filterMainTool">
+            <div class="well well-lg">
+                <h2>{{e.parent}}</h2>
+                <div ng-repeat="o in linkGroups | filter:{parent: e.parent}">
+                    <div class="box box-success box-solid">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">{{o.name }}</h3>
+                            <div class="box-tools">
+                                <button class="btn btn-box-tool" ng-click="navDataMap(o)"><i class="fa fa-search"></i></button>
+                            </div>
+                            
+                        </div>
+                        <div class="box-body no-padding">
+                            <ul class="nav nav-pills nav-stacked">
+                                <li>
+                                    <a ng-repeat="tag in o.tags">
+                                        <i class="fa fa-circle-o text-light-blue"></i>
+                                        {{tag.name}}
+                                        <span ng-class="tag.color">{{tag.value}}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+</div>

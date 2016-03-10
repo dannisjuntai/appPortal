@@ -1,0 +1,307 @@
+/*!
+ * Start Bootstrap - Simple Sidebar HTML Template (http://startbootstrap.com)
+ * Code licensed under the Apache License v2.0.
+ * For details, see http://www.apache.org/licenses/LICENSE-2.0.
+ */
+
+/* Animations */
+.slide-animation-container {
+    position:relative;
+}
+slide-animation.ng-enter, .slide-animation.ng-leave {
+    -moz-transition: 0.5s linear all;
+    -o-transition: 0.5s linear all;
+    -webkit-transition: 0.5s linear all;
+    transition: 0.5s linear all;
+    position: relative;
+    /*top: 0;
+    left: 0;
+    right: 0;*/
+    height: 1000px;
+}
+
+.slide-animation.ng-enter {
+  z-index:100;
+  left:100px;
+  opacity:0;
+}
+
+.slide-animation.ng-enter.ng-enter-active {
+  left:0;
+  opacity:1;
+}
+
+.slide-animation.ng-leave {
+  z-index:101;
+  opacity:1;
+  left:0;
+}
+
+.slide-animation.ng-leave.ng-leave-active {
+  left:-100px;
+  opacity:0;
+}
+/* wcOverlay directive CSS styles */
+/*.overlayContainer { display: none;}
+
+.overlayBackground {
+     top:0px; 
+     left:0px; 
+     padding-left:100px;
+     position:absolute; 
+     z-index:1000;
+     height:100%;
+     width:100%;
+     background-color:#808080;
+     opacity:1;
+
+}
+.overlayContent {
+     position:absolute; 
+     border: 1px solid #000; 
+     background-color:#fff; 
+     font-weight: bold;
+     height: 100px;
+     width: 300px;
+     z-index:1000;
+     text-align:center;
+
+}*/
+
+/* wrapper */
+#wrapper {
+    padding-left: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+    #wrapper.toggled {
+        padding-left: 250px;
+    }
+
+        #wrapper.toggled #sidebar-wrapper {
+            width: 250px;
+        }
+
+#sidebar-wrapper {
+    z-index: 1000;
+    position: fixed;
+    left: 250px;
+    width: 0;
+    height: 100%;
+    margin-left: -250px;
+    overflow-y: auto;
+    background: #30426a;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#page-content-wrapper {
+    width: 100%;
+    position: absolute;
+    padding: 15px;
+}
+
+#wrapper.toggled #page-content-wrapper {
+    position: absolute;
+    margin-right: -250px;
+}
+
+/* Sidebar Styles */
+/* sidebar nav */
+.sidebar-nav {
+    position: absolute;
+    top: 0;
+    width: 250px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+    .sidebar-nav li {
+        text-indent: 20px;
+        line-height: 40px;
+        list-style: none;
+    }
+
+        .sidebar-nav li a {
+            display: block;
+            text-decoration: none;
+            color: #999999;
+        }
+
+            .sidebar-nav li a:hover {
+                text-decoration: none;
+                color: #fff;
+                background: rgba(255,255,255,0.2);
+                border-left: 3px solid #e99d1a;
+            }
+
+            .sidebar-nav li a:active,
+            .sidebar-nav li a:focus {
+                text-decoration: none;
+                outline: 0;
+            }
+    /* sidebar brand*/
+    .sidebar-nav > .sidebar-brand {
+        height: 65px;
+        font-size: 18px;
+        line-height: 60px;
+    }
+
+        .sidebar-nav > .sidebar-brand a {
+            color: #999999;
+        }
+
+            .sidebar-nav > .sidebar-brand a:hover {
+                color: #fff;
+                background: none;
+            }
+/* sidebar list*/
+.sidebar-list {
+    list-style: none;
+    padding: 0px;
+}
+
+    .sidebar-list a {
+        padding-left: 10px;
+        text-indent: 25px;
+        font-size: 15px;
+        color: #b2bfdc;
+        line-height: 40px;
+    }
+
+        .sidebar-list a:hover {
+            color: #fff;
+            /*border-left: 3px solid #e99d1a;*/
+            text-indent: 22px;
+        }
+
+#mainView {
+    /*border: 1px solid black;*/
+    /*clear: both;*/
+    padding: 10px;
+}
+
+
+@media(min-width:768px) {
+    #wrapper {
+        padding-left: 250px;
+    }
+
+        #wrapper.toggled {
+            padding-left: 0;
+        }
+
+    #sidebar-wrapper {
+        width: 250px;
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+        width: 0px;
+    }
+
+    #page-content-wrapper {
+        padding: 20px;
+        position: relative;
+    }
+
+    #wrapper.toggled #page-content-wrapper {
+        position: relative;
+        margin-right: 0;
+    }
+}
+
+
+.inputdemoBasicUsage md-datepicker {
+  margin-top: 18px; }
+.inputdemoBasicUsage .md-datepicker-button {
+  height: 36px;
+  width: 36px;
+  line-height: 36px; }
+.inputdemoBasicUsage .md-datepicker-input-container {
+  margin-left: 20px; }
+
+.show_style{
+    display:block;
+}
+
+.drawSvg {
+  cursor: pointer;
+}
+
+fieldset{
+    background: #FCFCFC;
+    padding: 16px;
+    border: 1px solid #D5D5D5;
+}
+.addfields{
+    margin: 10px 0;
+}
+
+#choicesDisplay {
+    padding: 10px;
+    background: rgb(227, 250, 227);
+    border: 1px solid rgb(171, 239, 171);
+    color: rgb(9, 56, 9);
+}
+.remove{
+    background: #C76868;
+    color: #FFF;
+    font-weight: bold;
+    font-size: 21px;
+    border: 0;
+    cursor: pointer;
+    display: inline-block;
+    padding: 4px 9px;
+    vertical-align: top;
+    line-height: 100%;   
+}
+input[type="text"],
+select{
+    padding:5px;
+}
+.selected {
+    background-color:black;
+    color:white;
+    font-weight:bold;
+}
+
+/* 顯示圖控類別*/
+.menu-row {
+ -moz-column-width: 18em;
+ -webkit-column-width: 18em;
+ -moz-column-gap: 1em;
+ -webkit-column-gap: 1em; 
+
+}
+
+.menu-category {
+ display: inline-block;
+ margin:  0.25rem;
+ padding:  1rem;
+ width:  100%; 
+}
+
+.badge-danger {
+  background-color: #d43f3a;
+}
+
+.badge-warning {
+  background-color: #d58512;
+}
+
+.badge-success {
+  background-color: #398439;
+}
+
+.badge-info {
+  background-color: #269abc;
+}
+
+.badge-inverse {
+  background-color: #333333;
+}

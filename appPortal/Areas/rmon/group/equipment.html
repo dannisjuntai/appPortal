@@ -1,0 +1,32 @@
+﻿
+<div class="row">
+  
+    <ol class="breadcrumb">
+        <li><a href="#department">部門</a></li>
+        <li class="active">MainTool</li>
+    </ol>
+</div>
+
+<div class="col-md-9" ng-model="isET">
+    <div class="col-md-4 list-group" ng-repeat="e in equipments">
+        <div class="box box-success box-solid">
+            <div class="box-header with-border">
+                <h3 class="box-title">{{e.name}}</h3>
+                <div class="box-tools">
+                    <button class="btn btn-box-tool" ng-click="navDevice(e)"><i class="fa fa-bell-o"></i></button>
+                </div>
+            </div>
+            <div class="box-body no-padding">
+                <ul class="nav nav-pills nav-stacked">
+                    <li>
+                        <a href="#" ng-repeat="tag in e.tags">
+                            <i class="fa fa-circle-o text-light-blue"></i>
+                            {{tag.name}}
+                            <span ng-class="tag.color">{{tag.dValue}}</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

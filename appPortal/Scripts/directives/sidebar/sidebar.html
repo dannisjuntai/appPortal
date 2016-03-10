@@ -1,0 +1,19 @@
+<div class="navbar-default sidebar" role="navigation" ng-controller="">
+    <div class="sidebar-nav navbar-collapse">
+        <ul class="nav in" id="side-menu">
+            <li ng-class="{active: collapseVar==$index}" ng-repeat="m in menus">
+                <a href="" ng-click="check($index)">{{m.parentApp.appName}} </a>
+                <ul class="nav nav-second-level" ng-show="collapseVar==$index">
+                    <li ng-repeat="p in m.items">
+                        <a href="{{p.templateUrl}}" id="{{p.appNo}}">{{p.appName}}</a>
+                    </li>
+                </ul>
+            </li>
+
+        </ul>
+    </div>
+    <!-- /.sidebar-collapse -->
+</div> 
+
+
+

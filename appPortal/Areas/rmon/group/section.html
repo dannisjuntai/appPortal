@@ -1,0 +1,35 @@
+﻿<div class="row">
+    <ol class="breadcrumb">
+        <li class="active">部門</li>
+    </ol>
+    <div class="col-lg-3 col-md-3" ng-repeat="d in departments">
+        <div ng-class="d.panelColor">
+
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-tags fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{d.counts}}</div>
+                        <div>{{d.name}}-{{d.code}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <span class="pull-left"><a>View Details</a></span>
+
+                <!--<ul class="list-group">
+                    
+                    <li class="list-group-item" ng-repeat="m in d.mainTools">
+                        <i class="fa fa-circle-o text-light-blue"></i>
+                        <a ng-click="navEquipment(m)" style="cursor: pointer;">{{m.name}}</a>
+                        <span class="badge"><a ng-click="toggleModal(m)" style="color:white;cursor: pointer;">{{m.count}}</a></span>
+                    </li>
+                </ul>-->
+            </div>
+        </div>
+    </div>
+
+</div>
