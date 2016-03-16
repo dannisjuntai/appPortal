@@ -33,7 +33,7 @@ var dt0Controller = function ($scope, $location, $routeParams, groupFactory, $ro
     //初始化
     function init() {
         // breadcrumbService.setBreadcrumb("首頁", "#/dt0/");
-        breadcrumbService.clearBreadcrumbs('home');
+        //breadcrumbService.clearBreadcrumbs('home');
         breadcrumbService.setBreadcrumb('home', {
             href: '/dt0/',
             label: '首頁'

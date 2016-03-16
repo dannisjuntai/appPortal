@@ -12,7 +12,7 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, bre
     //顯示Modal 
     $scope.toggleModal = function (o) {
         $scope.groupId = o.groupId;
-        //getEvents(o.groupId);
+        getEvents(o.groupId);
     };
     //設定維護
     $scope.setLink = function (o) {
@@ -132,8 +132,8 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, bre
     };
     //執行資料更新
     var changLinkTag = setInterval(function () {
-        //getEquipments();
-        //getTagAlarm();
+        getEquipments();
+        getTagAlarm();
     }, 1000);
 
     $scope.$on("$routeChangeStart", function (next, current) {

@@ -17,5 +17,7 @@ namespace DA.DataBase.Models
         public DateTime EndDate { get; set; }
 
         public string EndTime { get; set; }
+
+        public List<LinkTagViewModel> LinkTags { get; set; }
     }
 }

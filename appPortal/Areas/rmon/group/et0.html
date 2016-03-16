@@ -35,10 +35,12 @@
     </div>
 
 </div>
-<footer class="main-footer">
+
+
+<div class="main-footer">
     <div class="box">
         <div class="box-header">
-            <i class="halflings-icon white align-justify"></i><span class="break"></span>Alram Message
+            <span class="break"></span>Alram Message
             <div class="box-icon">
                 <a ng-click="showHistory()" style="cursor:pointer;"><i class="fa fa-line-chart"></i>歷史資料</a>
             </div>
@@ -47,35 +49,32 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>群組編號</th>
                         <th>Tag名稱</th>
                         <th>告警類別</th>
+                        <th>數值</th>
                         <th>告警狀態</th>
-                        <th>是否離線</th>
-                        <th>是否保養</th>
+                        <!--<th>是否離線</th>-->
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="t in tagAlarms">
-                        <td>{{t.groupId}}</td>
                         <td class="center"><a ng-click="goChart(t.linkTagSeq)">{{t.tagName}}</a></td>
                         <td class="center">{{t.tObjName}}</td>
+                        <td class="center">{{t.curfValue}}</td>
                         <td class="center">
                             <span class="label red">{{t.curSubStaName}}</span>
+                            <span class="label grey" ng-show="t.isCurLinkSta">{{t.curLinkStaName}}</span>
+                            <span class="label blue" ng-show="t.isMaintain">{{t.maintainName}}</span>
                         </td>
-                        <td class="center">
+                        <!--<td class="center">
                             <span class="label grey">{{t.curLinkStaName}}</span>
-                        </td>
-                        <td>
-                            <span class="label blue">{{t.maintainName}}</span>
-                        </td>
+                        </td>-->
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
-</footer>
-
+</div>
 <modal title="告警資料" visible="showModal">
     <div class="modal-body">
         <table class="table table-hover">

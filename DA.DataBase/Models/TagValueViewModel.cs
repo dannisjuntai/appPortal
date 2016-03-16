@@ -17,4 +17,9 @@ namespace DA.DataBase.Models
         /// </summary>
         public string Data { get; set; }
     }
+
+    public class TagValuesViewModel
+    {
+        public List<TagValueViewModel> List { get; set; }
+    }
 }

@@ -185,6 +185,8 @@
     <Content Include="Areas\rmon\group\et0Controller.js" />
     <Content Include="Areas\rmon\group\mainToolController.js" />
     <Content Include="Areas\rmon\group\mainTool.html" />
+    <Content Include="Areas\rmon\group\menu.html" />
+    <Content Include="Areas\rmon\group\menuController.js" />
     <Content Include="Areas\rmon\group\mt0.html" />
     <Content Include="Areas\rmon\group\mt0Controller.js" />
     <Content Include="Areas\rmon\group\section.html" />

@@ -438,9 +438,10 @@ namespace DA.DataBase.Repositories
                                 TObjName = t.c.TObjName,
                                 CurLinkSta = t.a.CurLinkSta,
                                 CurLinkStaName = t.a.CurLinkSta.GetCurLinkStaName(),
+                                IsCurLinkSta = t.a.CurLinkSta.GetCurLinkSta(),
                                 CurSubSta = t.a.CurSubSta,
                                 CurSubStaName = t.a.CurSubSta.GetCurSubStaName(),
-                                IsCurSubSta = false,
+                                IsCurSubSta = true,
                                 Maintain = t.a.Maintain,
                                 MaintainName = t.a.Maintain.GetMaintainName(),
                                 IsMaintain = t.a.Maintain.GetMaintain()
@@ -478,13 +479,40 @@ namespace DA.DataBase.Repositories
         private List<int> getGroupMapLinkSubSeq(int groupId)
         {
             List<int> linkSubs = new List<int>();
-            //取得本階
-            var g = getGroupWithLinkSub(groupId).GroupBy(p => p.LinkSubSeq);
-            
-            foreach(var o in g.ToList())
+            //取得 groupid list
+            var g = getGroups(groupId);
+            ////
+            ////取得本階
+            var lastGroup = getGroup(groupId);
+            if (lastGroup != null)
             {
-                linkSubs.Add(o.Key);
+                g.Add(lastGroup);
             }
+            List<int> groups = new List<int>();
+            foreach(var group in g)
+            {
+                groups.Add(group.GroupId);
+            }
+            using(var db = new  CMSDBContext())
+            {
+                var q = from a in db.GroupLocations
+                        where groups.Contains(a.GroupId)
+                        select a;
+                if (q.Any())
+                {
+                    var list = q.ToList().GroupBy(p=>p.LinkSubSeq);
+                    foreach (var l in list)
+                    {
+                        linkSubs.Add(l.Key);
+                    }
+                }
+            }
+            //取得本階
+            //var g = getGroupWithLinkSub(groupId).GroupBy(p => p.LinkSubSeq);
+            //foreach (var o in g.ToList())
+            //{
+            //    linkSubs.Add(o.Key);
+            //}
             return linkSubs;
         }
         /// <summary>
@@ -1352,12 +1380,13 @@ namespace DA.DataBase.Repositories
             time = param.EndTime.Split(':');
             var edt = new DateTime(param.EndDate.Year, param.EndDate.Month, param.EndDate.Day,
                 int.Parse(time[0]), int.Parse(time[1]), 0);
+
             using (var db = new CMSDBContext())
             {
                 var q = from a in db.TagHistory
                         where a.RecTime >= sdt &&
-                             a.RecTime <= edt &&
-                             a.LinkTagSeq == param.LinkTagSeq
+                              a.RecTime <= edt &&
+                              a.LinkTagSeq == param.LinkTagSeq
                         select a;
                 if (q.Any())
                 {
@@ -1367,6 +1396,58 @@ namespace DA.DataBase.Repositories
                         {
                            
                             Labels =  o.RecTime.ToJavascriptTimestamp(),
+                            Data = o.fValue.ToString()
+                        };
+                        tags.Add(tag);
+                    }
+                }
+            }
+            return tags;
+        }
+
+        public List<TagValuesViewModel> GetHistoryTags(TagParamViewModel param)
+        {
+            List<TagValuesViewModel> tags = new List<TagValuesViewModel>();
+            string[] time = param.StartTime.Split(':');
+            //開始時間
+            DateTime sdt = new DateTime(param.StartDate.Year, param.StartDate.Month, param.StartDate.Day,
+                int.Parse(time[0]), int.Parse(time[1]), 0);
+            //結束時間
+            time = param.EndTime.Split(':');
+            var edt = new DateTime(param.EndDate.Year, param.EndDate.Month, param.EndDate.Day,
+                int.Parse(time[0]), int.Parse(time[1]), 0);
+            //多選
+            List<int> selected = new List<int>();
+            foreach (var linkTag in param.LinkTags)
+            {
+                if (linkTag.Selected == true)
+                {
+                    var t = getTagHistory(sdt, edt, linkTag.LinkTagSeq);
+                    TagValuesViewModel tag = new TagValuesViewModel();
+                    tag.List = t;
+                    tags.Add(tag);
+                }
+            }
+            return tags;
+        }
+
+        private List<TagValueViewModel> getTagHistory(DateTime sdt, DateTime edt, int linkTagSeq)
+        {
+            List<TagValueViewModel> tags = new List<TagValueViewModel>();
+            using (var db = new CMSDBContext())
+            {
+                var q = from a in db.TagHistory
+                        where a.RecTime >= sdt &&
+                              a.RecTime <= edt &&
+                              a.LinkTagSeq == linkTagSeq
+                        select a;
+                if (q.Any())
+                {
+                    foreach (var o in q.ToList().Take(1000))
+                    {
+                        TagValueViewModel tag = new TagValueViewModel()
+                        {
+                            Labels = o.RecTime.ToJavascriptTimestamp(),
                             Data = o.fValue.ToString()
                         };
                         tags.Add(tag);
@@ -1595,6 +1676,7 @@ namespace DA.DataBase.Repositories
         /// <returns></returns>
         public List<MainToolViewModel> GetMainTools(int groupId)
         {
+
             List<MainToolViewModel> mts = new List<MainToolViewModel>();
             using (var db = new CMSDBContext())
             {
@@ -1628,6 +1710,7 @@ namespace DA.DataBase.Repositories
                     }
                 }
             }
+
             return mts;
         }
         /// <summary>
@@ -1705,6 +1788,9 @@ namespace DA.DataBase.Repositories
         /// <returns></returns>
         public List<EquipmentViewModel> GetEquipments(int groupId)
         {
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+
             List<EquipmentViewModel> ets = new List<EquipmentViewModel>();
             using (var db = new CMSDBContext())
             {
@@ -1738,7 +1824,8 @@ namespace DA.DataBase.Repositories
                     }
                 }
             }
-
+            sw.Stop();
+            System.Diagnostics.Debug.WriteLine(sw.ElapsedMilliseconds);
             return ets;
         }
         /// <summary>

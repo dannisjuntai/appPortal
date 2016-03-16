@@ -35,5 +35,7 @@ namespace DA.DataBase.Models
 
         public string ShortName { get; set; }
 
+        public bool Selected { get; set; }
+
     }
 }

@@ -22,6 +22,8 @@ namespace DA.DataBase.Models
         public byte CurLinkSta { get; set; }
 
         public string CurLinkStaName { get; set; }
+        public bool IsCurLinkSta { get; set; }
+
         public byte? CurSubSta { get; set; }
         public string CurSubStaName { get; set; }
         public bool IsCurSubSta { get; set; }

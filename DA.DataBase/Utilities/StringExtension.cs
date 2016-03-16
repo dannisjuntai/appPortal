@@ -70,6 +70,20 @@ namespace DA.DataBase.Utilities
             }
         }
         /// <summary>
+        /// 連線狀態
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool GetCurLinkSta(this byte value)
+        {
+            if (value == 1)
+            {
+                return false;
+            }
+            return true;
+
+        }
+        /// <summary>
         /// 取得告警資料
         /// </summary>
         /// <param name="value"></param>

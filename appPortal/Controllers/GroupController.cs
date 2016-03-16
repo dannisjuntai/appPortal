@@ -121,7 +121,8 @@ namespace appPortal.Controllers
         [HttpPost]
         public HttpResponseMessage GetHistoryTags([FromBody]TagParamViewModel param)
         {
-            var result = repository.GetTagHistories(param);
+            //var result = repository.GetTagHistories(param);
+            var result = repository.GetHistoryTags(param);
 
             if (result != null)
             {

@@ -14,7 +14,7 @@ var loginController = function ($scope, $window, $location, appStoreFatory) {
 
             if (login == true) {
                 //$window.location.replace("#/dt0");
-                redirectToUrl("/dt0");
+                redirectToUrl("/menu");
             }
         }
 

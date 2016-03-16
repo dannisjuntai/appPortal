@@ -19,7 +19,7 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, b
     $scope.now = new Date().yyyymmdd();
 
     $scope.tag = { linkTagSeq: 0, startDate: '2016-02-27', startTime: "08:00", endDate: '', endTime: "08:10" };
-    $scope.on = function () {
+    $scope.getTagHistories = function () {
         getTagHistories(1038, 1067);
     }
     $scope.tags = [];
@@ -37,9 +37,27 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, b
         }
     };
 
+    // selected fruits
+    //$scope.selection = [];
+
+    // helper method to get selected fruits
+    //$scope.selectedFruits = function selectedFruits() {
+    //    return filterFilter($scope.linkTags, { selected: true });
+    //};
+
+    // watch fruits for changes
+    $scope.$watch('linkTags|filter:{selected:true}', function (nv) {
+        $scope.selection = nv.map(function (linkTag) {
+            //linkTag.linkTagSeq
+            var linkTags = $scope.linkTags;
+            return linkTag.tagName;
+        });
+    }, true);
+
+
     init();
 
-    $scope.dataset = [{ label: "1", data: [] }, { label: "1", data: [], yaxis: 2 }];
+    $scope.dataset = [{ label: "Tag", data: [] }, { label: "Tag", data: [], yaxis: 2 }, { label: "Tag", data: [], yaxis: 3 }];
     $scope.options = {
         legend: { show: true },
         series: {
@@ -52,10 +70,10 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, b
         },
         xaxis: {
             mode: "time",
-            tickFormatter: function (val, axis) {
-                return val;
-            },
-            tickSize: [1, "minute"],
+            //tickFormatter: function (val, axis) {
+            //    return val;
+            //},
+            //tickSize: [1, "minute"],
             rotateTicks: 135
         },
         grid: {
@@ -70,45 +88,66 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, b
     function getTagHistories(groupId, locationId) {
 
         $scope.tag.linkTagSeq = $scope.link.linkTagSeq;
-
+        $scope.tag.linkTags = $scope.linkTags;
         groupFactory.getHistoryTags($scope.tag).then(processSuccess, processError);
         //groupFactory.getTagHistories(groupId, locationId, 1).then(processSuccess, processError);
         //http://www.pikemere.co.uk/blog/flot-how-to-create-line-graphs/
         function processSuccess(data) {
             $scope.tags = data
-            $scope.dataset[0].data = [];
+            //$scope.dataset[0].data = [];
+            
+            $scope.dataset.forEach(function (d) {
+                //var d = data;
+                d.data = [];
+            });
             var i = 0;
             var ticks = [];
             var content = [];
-            data.forEach(function (entry) {
-                
+            //ticks
+            data[0].list.forEach(function (entry) {
                 var h = new Date(entry.labels).getHours();
                 var m = new Date(entry.labels).getMinutes();
                 var s = new Date(entry.labels).getSeconds();
-                
-                $scope.dataset[0].data.push([entry.labels, entry.data]);
-
-                $scope.dataset[1].data.push([entry.labels-100000, entry.data/10]);
 
                 ticks.push([entry.labels, h + ":" + m + ":" + s]);
-                //content.push(i, entry.labels);
+            });
+            $scope.options.xaxis.ticks = [];
+            $scope.options.xaxis.ticks = ticks;
+            data.forEach(function (d) {
+                var l = d.list;
+                d.list.forEach(function (entry) {
+                    $scope.dataset[i].data.push([entry.labels, entry.data]);
+                });
                 i++;
             });
-            //$scope.options.xaxis.ticks = ticks;
+            var d = $scope.dataset;
+            //data[0].list.forEach(function (entry) {
+            //    var h = new Date(entry.labels).getHours();
+            //    var m = new Date(entry.labels).getMinutes();
+            //    var s = new Date(entry.labels).getSeconds();
 
-            //tickFormatter: function (v, axis) {
-            //    var date = new Date(v);
+            //    $scope.dataset[0].data.push([entry.labels, entry.data]);
+            //    ticks.push([entry.labels, h + ":" + m + ":" + s]);
+            //});
+            
+            //data[1].list.forEach(function (entry) {
+            //    $scope.dataset[1].data.push([entry.labels, entry.data]);
+            //});
 
-            //    if (date.getSeconds() % 20 == 0) {
-            //        var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
-            //        var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
-            //        var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+            //data.forEach(function (entry) {
+                
+            //    var h = new Date(entry.labels).getHours();
+            //    var m = new Date(entry.labels).getMinutes();
+            //    var s = new Date(entry.labels).getSeconds();
+                
+            //    $scope.dataset[0].data.push([entry.labels, entry.data]);
 
-            //        return hours + ":" + minutes + ":" + seconds;
-            //    } else {
-            //        return "";
-            //    }
-            //}
+            //    $scope.dataset[1].data.push([entry.labels-100000, entry.data/10]);
+
+            //    ticks.push([entry.labels, h + ":" + m + ":" + s]);
+            //    i++;
+            //});
+
         }
         $scope.item = 0;
 

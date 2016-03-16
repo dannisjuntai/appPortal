@@ -1,0 +1,28 @@
+﻿<ul class="breadcrumb">
+    <i class="fa fa-home"></i>
+    <li ng-repeat="b in breadcrumbs">
+        <a ng-click="setBreadcrumbs(b)"><span>{{b.label}}</span></a>
+    </li>
+</ul>
+
+<!--<div class="row-fluid">
+    <div class="col-lg-2 col-md-2" ng-repeat="m in menus">
+        <a ng-class="m.color" ng-click="navMenu(m)">
+            <i ng-class="m.icon"></i>
+            <p>{{m.name}}</p>
+            <span class="badge">{{m.code}}</span>
+        </a>
+    
+    </div>
+</div>-->
+
+<div class="row-fluid">
+    <div class="col-lg-2 col-md-2" ng-repeat="d in menus">
+        <a ng-class="d.color" ng-click="navMenu(d)">
+            <i ng-class="d.icon"></i>
+            <p>{{d.name}}</p>
+            <span class="badge">{{d.code}}</span>
+        </a>
+        <div>&nbsp;</div>
+    </div><!--/row-->
+</div>

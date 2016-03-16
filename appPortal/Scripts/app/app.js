@@ -23,13 +23,14 @@ function ($routeProvider, routeResolverProvider, $controllerProvider, $compilePr
 
 
     var routes = [
-        { url: '/chart', baseName: 'chart', path: 'date/' },
+        //{ url: '/chart', baseName: 'chart', path: 'date/' },
         { url: '/login', baseName: 'login', path: 'system/' },
+        { url: '/menu', baseName: 'menu', path: 'group/' },
         { url: '/dt0', baseName: 'dt0', path: 'group/' },
         { url: '/dt1/:groupId', baseName: 'dt1', path: 'group/' },
         { url: '/mt0/:groupId', baseName: 'mt0', path: 'group/' },
         { url: '/et0/:groupId', baseName: 'et0', path: 'group/' },
-        //{ url: '/chart/:linkTagSeq', baseName: 'chart', path: 'date/' },
+        { url: '/chart/:linkTagSeq', baseName: 'chart', path: 'date/' },
         
         { url: '/department', baseName: 'department', path: 'group/' },
         { url: '/mainTool', baseName: 'mainTool', path: 'group/' },
