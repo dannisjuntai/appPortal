@@ -114,6 +114,57 @@ namespace DA.DataBase.Utilities
             return false;
         }
         /// <summary>
+        /// 取得低值 flag
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool GetLowAlarmFlag(this byte? value)
+        {
+            if (value.HasValue == false)
+            {
+                return false;
+            }
+            if (value == 0)
+            {
+                return false;
+            }
+            if (value == 2)
+            {
+                return true;
+            }
+            if (value == 3)
+            {
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// 取得高值 flag
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool GetUpAlarmFlag(this byte? value)
+        {
+            if (value.HasValue == false)
+            {
+                return false;
+            }
+            if (value == 0)
+            {
+                return false;
+            }
+            if (value == 1)
+            {
+                return true;
+            }
+            if (value == 3)
+            {
+                return true;
+            }
+            return false;
+        }
+        
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="value"></param>

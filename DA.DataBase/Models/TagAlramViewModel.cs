@@ -17,6 +17,8 @@ namespace DA.DataBase.Models
         public int CurValue { get; set; }
         public decimal? CurfValue { get; set; }
 
+        public int TObjSeq { get; set; }
+
         public string TObjName { get; set; }
 
         public byte CurLinkSta { get; set; }

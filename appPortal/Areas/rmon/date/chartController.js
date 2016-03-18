@@ -111,6 +111,8 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, b
 
                 ticks.push([entry.labels, h + ":" + m + ":" + s]);
             });
+            //$scope.options.xaxis.min = ticks[0];
+            //$scope.options.xaxis.map = ticks[ticks.lastIndexOf];
             $scope.options.xaxis.ticks = [];
             $scope.options.xaxis.ticks = ticks;
             data.forEach(function (d) {

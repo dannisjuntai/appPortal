@@ -274,6 +274,8 @@ namespace DA.DataBase.Repositories
                         LinkTagSeq = o.a.LinkTagSeq,
                         LinkSubSeq = o.a.LinkSubSeq,
                         MTagSeq = o.a.MTagSeq,
+                        IsLowAlarm = o.a.AlarmFlag.GetLowAlarmFlag(),
+                        IsUpAlarm = o.a.AlarmFlag.GetUpAlarmFlag(),
                         UpAlarm = o.a.UpAlarm,
                         LowAlarm = o.a.LowAlarm,
                         ShortName = o.b.ShortName,
@@ -297,8 +299,11 @@ namespace DA.DataBase.Repositories
                 var linkTag = db.LinkTag.Find(vm.LinkTagSeq);
                 if (linkTag != null)
                 {
+                    //增加更新AlarmFlag 值
+                    linkTag.AlarmFlag = getAlarmFlag(vm.IsLowAlarm, vm.IsUpAlarm);
                     linkTag.UpAlarm = vm.UpAlarm;
                     linkTag.LowAlarm = vm.LowAlarm;
+                    linkTag.ModifyFlag = 2;
                     errorCode = db.Update<LinkTag>(linkTag, linkTag.LinkTagSeq);
                 }
                 if (vm.MTagSeq > 0)
@@ -308,6 +313,25 @@ namespace DA.DataBase.Repositories
 
             }
             return errorCode;
+        }
+        /// <summary>
+        /// 取得 AlarmFlag 值
+        /// </summary>
+        /// <returns></returns>
+        private byte getAlarmFlag(bool isLow, bool isUp)
+        {
+            byte lowValue = 0;
+            byte upValue = 0;
+
+            if (isLow == true)
+            {
+                lowValue = 2;
+            }
+            if (isUp == true)
+            {
+                upValue = 1;
+            }
+            return (byte)(lowValue +  upValue);
         }
         /// <summary>
         /// 更新簡稱及單位
@@ -326,6 +350,7 @@ namespace DA.DataBase.Repositories
                 {
                     memTag.ShortName = shortName;
                     memTag.UnitName = unitName;
+                    memTag.ModifyFlag = 2;
                     errorCode = db.Update<MemTag>(memTag, memTag.MTagSeq);
                 }
             }
@@ -376,7 +401,8 @@ namespace DA.DataBase.Repositories
                         join c in db.TagObj on b.TObjSeq equals c.TObjSeq
                         where a.LinkSubSeq == linkSubSeq &&
                               a.ModifyFlag < 3 &&
-                              b.ModifyFlag < 3
+                              b.ModifyFlag < 3 &&
+                              a.UISelFlag == 1
                         select new { a, b, c };
                 if (q.Any())
                 {
@@ -387,9 +413,10 @@ namespace DA.DataBase.Repositories
                             LinkSubSeq = o.a.LinkSubSeq,
                             LinkTagSeq = o.a.LinkTagSeq,
                             MTagSeq = o.b.MTagSeq,
-                            TagName = o.b.TagName,
+                            TagName = o.a.TagName,
                             TObjSeq = o.c.TObjSeq,
                             TObjName = o.c.TObjName
+
                         };
                         vms.Add(lt);
 
@@ -434,7 +461,8 @@ namespace DA.DataBase.Repositories
                                 GroupId = t.a.GroupId,
                                 CurValue = t.a.CurValue,
                                 CurfValue = t.a.CurfValue,
-                                TagName = t.b.TagName,
+                                TagName = t.a.TagName,
+                                TObjSeq = t.c.TObjSeq,
                                 TObjName = t.c.TObjName,
                                 CurLinkSta = t.a.CurLinkSta,
                                 CurLinkStaName = t.a.CurLinkSta.GetCurLinkStaName(),
@@ -451,6 +479,15 @@ namespace DA.DataBase.Repositories
                             {
                                 vms.Add(tag);
                                 continue;
+                            }
+                            if (tag.TObjSeq>= 1 && tag.TObjSeq <= 3)
+                            {
+                                if (tag.CurfValue > 1)
+                                {
+                                    tag.CurSubStaName = "異常";
+                                    vms.Add(tag);
+                                    continue;
+                                }
                             }
                             //Alarm
                             if (tag.CurSubSta >= 2)
@@ -1440,6 +1477,7 @@ namespace DA.DataBase.Repositories
                         where a.RecTime >= sdt &&
                               a.RecTime <= edt &&
                               a.LinkTagSeq == linkTagSeq
+                              orderby a.RecTime
                         select a;
                 if (q.Any())
                 {
@@ -1512,6 +1550,7 @@ namespace DA.DataBase.Repositories
                         if (link != null)
                         {
                             link.Maintain = maintain;
+                            link.ModifyFlag = 2;
                             errorCode = db.Update<LinkTag>(link, link.LinkTagSeq);
                             if (errorCode <= 0)
                             {

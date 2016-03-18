@@ -42,5 +42,7 @@ namespace DA.DataBase.Entities
         public decimal? LowAlarm { get; set; }
 
         public byte Maintain { get; set; }
+
+        public byte UISelFlag { get; set; }
     }
 }

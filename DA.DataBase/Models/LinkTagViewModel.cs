@@ -27,8 +27,10 @@ namespace DA.DataBase.Models
 
         public decimal CurfValue { get; set; }
 
+        public byte AlarmFlag { get; set; }
+        public bool IsUpAlarm { get; set; }
         public decimal? UpAlarm { get; set; }
-
+        public bool IsLowAlarm { get; set; }
         public decimal? LowAlarm { get; set; }
 
         public string UnitName { get; set; }

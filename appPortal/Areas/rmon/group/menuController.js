@@ -8,7 +8,7 @@ var menuController = function ($scope, $location, $routeParams, $window, groupFa
         var oo = o;
         if (o && angular.isObject(o)) {
             if (o.url == '/reprot') {
-                $window.open('http://google.com.tw', 'FABTool Report');
+                $window.open('http://10.92.198.66:8075/WebReport/ReportServer?op=fs_load&cmd=fs_signin&_=1458118273592', 'FABTool Report');
             } else {
                 redirectToUrl(o.url);
             }
@@ -38,8 +38,8 @@ var menuController = function ($scope, $location, $routeParams, $window, groupFa
         $scope.breadcrumbs = breadcrumbService.getBreadcrumbs();
 
         $scope.menus = [
-            { name: '資料監控', code: 'Monitor', url: '/dt0', icon: 'fa fa-desktop', color: 'quick-button metro blue' },
-            { name: '統計報表', code: 'Report', url: '/reprot', icon: 'fa fa-line-chart', color: 'quick-button metro yellow' },
+            { name: '設備監控', code: 'Monitor', url: '/dt0', icon: 'fa fa-desktop', color: 'quick-button metro blue' },
+            { name: '管理報表', code: 'Report', url: '/reprot', icon: 'fa fa-line-chart', color: 'quick-button metro yellow' },
             { name: '系統設定', code: 'Setting', url: '/rmonSETMap', icon: 'fa fa-wrench', color: 'quick-button metro pink' }
         ];
     }
