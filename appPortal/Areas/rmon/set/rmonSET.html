@@ -35,7 +35,7 @@
                     </div>-->
 
                     <div class="control-group">
-                        <label class="control-label" for="appendedInputButton" >上傳</label>
+                        <label class="control-label" for="appendedInputButton">上傳</label>
                         <div class="controls">
                             <div class="input-append">
                                 <input type="file" ng-model="file" name="file" base-sixty-four-input required maxsize="500" accept="image/*">
@@ -81,27 +81,22 @@
                 <h3 class="box-title">點位資訊</h3>
             </div><!-- /.box-header -->
             <div class="box-body no-padding">
-                <table class="table table-striped">
+                <table class="table table-fixed table-bordered" style="height:380px; overflow:auto;">
                     <thead>
                         <tr>
-                            <th class="col-sm-1"></th>
-                            <th class="col-sm-3">設備編號</th>
-                            <th>偵測項目</th>
-                            <!--<th>顯示</th>-->
-                            <th class="col-sm-2">動作</th>
+                            <th class="col-sm-2">項次</th>
+                            <th class="col-sm-10">偵測項目</th>
+                            <!--<th class="col-sm-5">偵測項目</th>-->
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="l in links" ng-click="Selected(l, $index)" ng-class="{'selected':$index == selectedRow}">
-                            <td class="col-sm-1">{{$index}}</td>
-                            <td class="col-sm-3">{{ l.linkDevName }}</td>
-                            <td>{{ l.tagName }}</td>
-
-                            <!--<td>{{ l.prompt }}</td>-->
                             <td class="col-sm-2">
+                                {{$index}}
                                 <a ng-click="removeLink(l)" style="cursor:pointer"><i class="fa fa-trash"></i></a>
-                                <a ng-click="toggleModal(l)" style="cursor:pointer"><i class="fa fa-cog"></i></a>
                             </td>
+                            <td class="col-sm-10"><a ng-click="toggleModal(l)" style="cursor:pointer">{{l.linkDevName }} {{l.tagName }}</</a></td>
+                            <!--<td class="col-sm-5">{{ l.tagName }}</td>-->
                         </tr>
                     </tbody>
 
@@ -153,7 +148,7 @@
                 </div>
 
             </fieldset>
-            </form>
+        </form>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="setLinkTag(linkTag)">修改</button>
