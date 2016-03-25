@@ -62,9 +62,11 @@
     <Compile Include="Entities\LinkDevSub.cs" />
     <Compile Include="Entities\LinkTag.cs" />
     <Compile Include="Entities\MemTag.cs" />
+    <Compile Include="Entities\OptionSets.cs" />
     <Compile Include="Entities\TagHistory.cs" />
     <Compile Include="Entities\TagObj.cs" />
     <Compile Include="Models\Departments\DepartmentViewModel.cs" />
+    <Compile Include="Models\EventParam.cs" />
     <Compile Include="Models\EventViewModel.cs" />
     <Compile Include="Models\GroupLocationViewModel.cs" />
     <Compile Include="Models\EquipmentViewModel.cs" />

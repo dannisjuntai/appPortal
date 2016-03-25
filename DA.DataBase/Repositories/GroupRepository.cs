@@ -376,7 +376,8 @@ namespace DA.DataBase.Repositories
                         join c in db.TagObj on b.TObjSeq equals c.TObjSeq
                         where a.LinkSubSeq == linkSubSeq &&
                               a.ModifyFlag < 3 &&
-                              b.ModifyFlag < 3
+                              b.ModifyFlag < 3 &&
+                              a.UISelFlag > 0
                         select new { a, b, c };
                 if (q.Any())
                 {
@@ -434,7 +435,7 @@ namespace DA.DataBase.Repositories
                                 GroupId = t.a.GroupId,
                                 CurValue = t.a.CurValue,
                                 CurfValue = t.a.CurfValue,
-                                TagName = t.b.TagName,
+                                TagName = t.b.TagName.Trim(),
                                 TObjName = t.c.TObjName,
                                 CurLinkSta = t.a.CurLinkSta,
                                 CurLinkStaName = t.a.CurLinkSta.GetCurLinkStaName(),
@@ -1896,6 +1897,62 @@ namespace DA.DataBase.Repositories
             return events;
         }
         /// <summary>
+        /// 查詢
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public List<EventViewModel> GetEvents(EventSetPara param)
+        {
+            List<EventViewModel> events = new List<EventViewModel>();
+            DateTime sDt = param.SDateTime.GetStartTime();
+            DateTime sEt = param.EDateTime.GetEndTime();
+            using (var db = new CMSDBContext())
+            {
+                var g = getGroups(param.GroupId);
+                //取得本階
+                var lastGroup = getGroup(param.GroupId);
+                if (lastGroup != null)
+                {
+                    g.Add(lastGroup);
+                }
+                foreach (var o in g.ToList())
+                {
+                    var q = from a in db.EventSet
+                            from b in db.OptionSets 
+                            where a.GroupId == o.GroupId &&
+                                  a.RecTime >= sDt &&
+                                  a.RecTime <= sEt &&
+                                  b.OptionNo == a.EventLevel &&
+                                  b.FieldName == "EventLevel"
+                            orderby a.RestTime descending
+                            select a;
+                    if (param.EventLevel > 0)
+                    {
+                       // q = q.Where(p => p.EventLevel == param.EventLevel);
+           
+                    }
+                    if (q.Any())
+                    {
+
+                        foreach (var p in q.ToList())
+                        {
+                            EventViewModel e = new EventViewModel()
+                            {
+                                LinkTagSeq = p.LinkTagSeq,
+                                RecTime = p.RecTime,
+                                RestTime = p.RestTime,
+                                Name = p.Name
+                            };
+                            events.Add(e);
+                        }
+
+                    }
+                }
+
+            }
+            return events;
+        }
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="groupId"></param>
@@ -1963,6 +2020,32 @@ namespace DA.DataBase.Repositories
                 }
             }
             return mainTools;
+        }
+
+        /// <summary>
+        /// 取得資料集
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public List<OptionSets> GetOptionSets(string fieldName)
+        {
+            using (var db = new CMSDBContext())
+            {
+                DateTime sDt = DateTime.Now.GetStartTime();
+                DateTime sEt = DateTime.Now.GetEndTime();
+
+                var q = from a in db.OptionSets
+                        where a.FieldName == fieldName &&
+                              a.StartDate <= sDt &&
+                              a.EndDate >= sEt
+                        select a;
+
+                if (q.Any() == true)
+                {
+                    return q.ToList();
+                }
+            }
+            return null;
         }
     }
 }

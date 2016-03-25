@@ -1,10 +1,41 @@
-﻿var app = angular.module("app", ['ngRoute', 'routeResolverServices', 'ngResource', 'wc.directives',
-    'angularTreeview', 'naif.base64', 'ngQueue', 'angular-flot', 'ngModal', 'ng-timepicker']);
+﻿var app = angular.module("app", [
+    'ngRoute',
+    'routeResolverServices',
+    'ngResource',
+    'wc.directives',
+    'angularTreeview',
+    'naif.base64',
+    'ngQueue',
+    'angular-flot',
+    'ngModal',
+    'ng-timepicker',
+    'mgcrea.ngStrap', ]);
 var canvas;
 
-app.config(['$routeProvider', 'routeResolverProvider', '$controllerProvider', '$compileProvider', '$filterProvider', '$provide', '$httpProvider', 'ngModalDefaultsProvider',
-function ($routeProvider, routeResolverProvider, $controllerProvider, $compileProvider, $filterProvider, $provide, $httpProvider, ngModalDefaultsProvider) {
+app.config(['$routeProvider',
+    'routeResolverProvider',
+    '$controllerProvider',
+    '$compileProvider',
+    '$filterProvider',
+    '$provide',
+    '$httpProvider',
+    'ngModalDefaultsProvider',
+    '$datepickerProvider',
+function ($routeProvider,
+    routeResolverProvider,
+    $controllerProvider,
+    $compileProvider,
+    $filterProvider,
+    $provide,
+    $httpProvider,
+    ngModalDefaultsProvider,
+    $datepickerProvider) {
 
+    //日期元件設定
+    angular.extend($datepickerProvider.defaults, {
+        dateFormat: 'yyyy/MM/dd',
+        startWeek: 1
+    });
     //Change default views and controllers directory using the following:
     routeResolverProvider.routeConfig.setBaseDirectories('/Areas/rmon/', '/Areas/rmon/');
     ngModalDefaultsProvider.set('closeButtonHtml', "<i class='fa fa-times'></i>");

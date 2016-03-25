@@ -1,8 +1,13 @@
 ﻿var injectParams = ['$scope', '$location', '$routeParams', 'groupFactory', 'breadcrumbService'];
 
 var mt0Controller = function ($scope, $location, $routeParams, groupFactory, breadcrumbService) {
+    $scope.param = { sDateTime: new Date(), eDateTime: new Date(), eventLevel: 0 };
+    //選擇條件
+    $scope.eventLevels = [];
+
+
     $scope.showModal = false;
-    
+
     $scope.tagAlarms = [];
     $scope.breadcrumbs;
     //Main Tool
@@ -40,16 +45,41 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, bre
     //顯示歷史資料 Modal 
     $scope.showHistory = function () {
         if ($scope.groupId != null) {
-            getEvents($scope.groupId);
+            //getEvents($scope.groupId);
+            $scope.searchEvents();
         }
     };
+    //搜尋資料
+    $scope.searchEvents = function () {
+        $scope.param.groupId = $scope.groupId;
 
+        groupFactory.getEvents($scope.param).then(processSuccess, processError);
+
+        function processSuccess(data) {
+            $scope.showModal = !$scope.showModal;
+            $scope.events = data;
+        }
+        function processError(error) {
+        }
+    };
     init();
     //初始化
     function init() {
         getGroup();
         getMainTools();
         getTagAlarm();
+        getEventLevels();
+    }
+    //取得事件項目
+    function getEventLevels() {
+        groupFactory.getEventLevels().then(processSuccess, processError);
+
+        function processSuccess(data) {
+            $scope.eventLevels = data;
+        }
+        function processError(error) {
+
+        }
     }
     //取得部門資料
     function getGroup() {

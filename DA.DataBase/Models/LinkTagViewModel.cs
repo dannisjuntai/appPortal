@@ -37,5 +37,7 @@ namespace DA.DataBase.Models
 
         public bool Selected { get; set; }
 
+        public byte UISelFlag { get; set; }
+
     }
 }

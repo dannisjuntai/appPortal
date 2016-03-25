@@ -416,6 +416,22 @@ namespace appPortal.Controllers
             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "資料讀取錯誤");
         }
         /// <summary>
+        /// 取得事件
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public HttpResponseMessage GetEvents([FromBody]EventSetPara param)
+        {
+            var vms = repository.GetEvents(param);
+
+            if (vms != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, vms);
+            }
+            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "資料讀取錯誤");
+        }
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="id"></param>
@@ -430,6 +446,36 @@ namespace appPortal.Controllers
                 return Request.CreateResponse(HttpStatusCode.OK, vms);
             }
             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "資料讀取錯誤");
+        }
+        /// <summary>
+        /// 取得保養項目
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public HttpResponseMessage GetMaintainItems()
+        {
+            var vm = repository.GetOptionSets("Maintain");
+
+            if (vm != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.Accepted, vm);
+            }
+            return Request.CreateErrorResponse(HttpStatusCode.NotModified, "取得保養項目錯誤");
+        }
+        /// <summary>
+        /// 取得事件項目
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public HttpResponseMessage GetEventLevels()
+        {
+            var vm = repository.GetOptionSets("EventLevel");
+
+            if (vm != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.Accepted, vm);
+            }
+            return Request.CreateErrorResponse(HttpStatusCode.NotModified, "取得事件項目錯誤");
         }
     }
 }

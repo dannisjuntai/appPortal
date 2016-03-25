@@ -195,6 +195,13 @@ var groupFactory = function ($http, $q, $resource) {
             return results.data;
         });
     };
+    //取得事件
+    factory.getEvents = function (param) {
+        url = serviceBase + 'getEvents';
+        return $http.post(url, param).then(function (results) {
+            return results.data;
+        });
+    };
     //設定事件
     factory.setEvents = function (id) {
         url = serviceBase + 'setEvents/' + id;
@@ -212,6 +219,20 @@ var groupFactory = function ($http, $q, $resource) {
     factory.setMaintain = function (id) {
         url = serviceBase + 'setMaintain/' + id;
         return $http.put(url).then(function (results) {
+            return results.data;
+        });
+    }
+    //取得保養項目
+    factory.getMaintainItems = function(){
+        url = serviceBase + 'getMaintainItems';
+        return $http.get(url).then(function (results) {
+            return results.data;
+        });
+    }
+    //取得事件項目
+    factory.getEventLevels = function () {
+        url = serviceBase + 'getEventLevels';
+        return $http.get(url).then(function (results) {
             return results.data;
         });
     }
