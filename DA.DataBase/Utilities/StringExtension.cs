@@ -97,7 +97,7 @@ namespace DA.DataBase.Utilities
                 case 1:
                     return "保養";
                 default:
-                    return "其他";
+                    return "保養";
             }
         }
         /// <summary>
@@ -107,7 +107,7 @@ namespace DA.DataBase.Utilities
         /// <returns></returns>
         public static bool GetMaintain(this byte value)
         {
-            if (value == 1)
+            if (value >= 1)
             {
                 return true;
             }

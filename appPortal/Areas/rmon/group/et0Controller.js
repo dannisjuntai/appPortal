@@ -2,7 +2,18 @@
 
 var et0Controller = function ($scope, $location, $routeParams, groupFactory, breadcrumbService) {
     $scope.breadcrumbs;
-    $scope.showModal = false;
+    //歷史資料查詢參數
+    $scope.history = {
+        modal: false,
+        sDateTime: new Date(),
+        eDateTime: new Date(),
+        optionNo: 0,
+        groupId: 0,
+    };
+    //維護
+    $scope.maintain = { modal: false, groupId: 0, items: [], optionNo: 0, message:"" };
+
+
     //Main Tool
     $scope.equipments = [];
     //初始化
@@ -16,7 +27,7 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, bre
     };
     //設定維護
     $scope.setLink = function (o) {
-    //    $scope.maintain = 'on';
+        //    $scope.maintain = 'on';
     }
     //導覽圖控
     $scope.navDevice = function (o) {
@@ -35,16 +46,59 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, bre
             }
         }
     };
-    //設定維護狀態
-    $scope.setMaintain = function (e) {
+    //顯示維護 modal
+    $scope.setMaintainModal = function (e) {
         if (e && angular.isObject(e)) {
-            setMaintain(e.groupId);
+            if (e.groupId) {
+                $scope.maintain.groupId = e.groupId;
+            }
+
+            if (e.maintainCount > 0) {
+                $scope.setMaintain();
+                alert("取消保養設定");
+            } else {
+                $scope.maintain.modal = !$scope.maintain.modal;
+            }
+
         }
     }
+    //設定維護資料
+    $scope.setMaintain = function () {
+        //
+        $scope.maintain.message = "";
+        groupFactory.setMaintain($scope.maintain).then(processSuccess, processError);
+
+        function processSuccess(data) {
+            //$scope.group = data;
+            //setBreadcrumb(data);
+            //$scope.maintain.modal = !$scope.maintain.modal;
+            $scope.maintain.message = "設定保養項目完成!";
+        }
+        function processError(error) {
+            $scope.maintain.message = "設定保養項目失敗!";
+        }
+    };
+    $scope.exitMaintainModal = function () {
+        $scope.maintain.modal = !$scope.maintain.modal;
+    };
     //顯示歷史資料 Modal 
     $scope.showHistory = function () {
-        if ($scope.groupId != null) {
-            getEvents($scope.groupId);
+        if ($scope.groupId) {
+            $scope.history.groupId = $scope.groupId;
+            $scope.history.modal = !$scope.history.modal;
+        }
+    };
+    $scope.exitModal = function () {
+        $scope.history.modal = !$scope.history.modal;
+    };
+    //搜尋資料
+    $scope.searchEvents = function () {
+        groupFactory.getEvents($scope.history).then(processSuccess, processError);
+
+        function processSuccess(data) {
+            $scope.events = data;
+        }
+        function processError(error) {
         }
     };
 
@@ -58,6 +112,30 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, bre
     function init() {
         getGroup();
         getEquipments();
+        getMaintainItems();
+        getEventLevels();
+    }
+    //取得事件項目
+    function getEventLevels() {
+        groupFactory.getEventLevels().then(processSuccess, processError);
+
+        function processSuccess(data) {
+            $scope.eventLevels = data;
+        }
+        function processError(error) {
+
+        }
+    }
+    //取得事件項目
+    function getMaintainItems() {
+        groupFactory.getMaintainItems().then(processSuccess, processError);
+
+        function processSuccess(data) {
+            $scope.maintain.items = data;
+        }
+        function processError(error) {
+
+        }
     }
     //設定連結
     function setBreadcrumb(obj) {
@@ -106,25 +184,14 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, bre
 
         }
     }
-    function setMaintain(groupId) {
-        //
-        groupFactory.setMaintain(groupId).then(processSuccess, processError);
 
-        function processSuccess(data) {
-            $scope.group = data;
-            setBreadcrumb(data);
-        }
-        function processError(error) {
-
-        }
-    };
     //取得事件資料
     function getEvents(groupId) {
 
         groupFactory.getEvents(groupId).then(processSuccess, processError);
 
         function processSuccess(data) {
-            $scope.showModal = !$scope.showModal;
+            
             $scope.events = data;
         }
         function processError(error) {

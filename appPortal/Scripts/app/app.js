@@ -9,7 +9,7 @@
     'angular-flot',
     'ngModal',
     'ng-timepicker',
-    'mgcrea.ngStrap', ]);
+    'mgcrea.ngStrap']);
 var canvas;
 
 app.config(['$routeProvider',
@@ -21,6 +21,7 @@ app.config(['$routeProvider',
     '$httpProvider',
     'ngModalDefaultsProvider',
     '$datepickerProvider',
+    '$timepickerProvider',
 function ($routeProvider,
     routeResolverProvider,
     $controllerProvider,
@@ -29,13 +30,21 @@ function ($routeProvider,
     $provide,
     $httpProvider,
     ngModalDefaultsProvider,
-    $datepickerProvider) {
+    $datepickerProvider,
+    $timepickerProvider) {
 
     //日期元件設定
     angular.extend($datepickerProvider.defaults, {
         dateFormat: 'yyyy/MM/dd',
         startWeek: 1
     });
+
+    angular.extend($timepickerProvider.defaults, {
+        timeFormat: 'HH:mm',
+        length: 7
+    });
+
+
     //Change default views and controllers directory using the following:
     routeResolverProvider.routeConfig.setBaseDirectories('/Areas/rmon/', '/Areas/rmon/');
     ngModalDefaultsProvider.set('closeButtonHtml', "<i class='fa fa-times'></i>");
@@ -57,6 +66,8 @@ function ($routeProvider,
         //{ url: '/chart', baseName: 'chart', path: 'date/' },
         { url: '/login', baseName: 'login', path: 'system/' },
         { url: '/menu', baseName: 'menu', path: 'group/' },
+        { url: '/menu/set', baseName: 'set', path: 'system/' },
+        { url: '/menu/option', baseName: 'option', path: 'system/' },
         { url: '/dt0', baseName: 'dt0', path: 'group/' },
         { url: '/dt1/:groupId', baseName: 'dt1', path: 'group/' },
         { url: '/mt0/:groupId', baseName: 'mt0', path: 'group/' },
@@ -163,15 +174,6 @@ function mainController($scope, $rootScope, appStoreFatory) {
 
 function appRun($rootScope, $location) {
 
-    $rootScope.title = '';
-    BreadCrumbsService = function () {
-        BreadCrumbsService.push("home",
-        {
-            href: '#/',
-            label: '首頁'
-        });
-    };
-
     //Client-side security. Server-side framework MUST add it's 
     //own security as well since client-based security is easily hacked
     $rootScope.$on("$routeChangeStart", function (event, next, current) {
@@ -183,11 +185,13 @@ function appRun($rootScope, $location) {
             //}
         }
     });
-    //redirectToUrl('/login');
+    
     function redirectToUrl(path) {
         $location.replace();
         $location.path(path);
     }
+    
+
 
 };
 
@@ -214,7 +218,7 @@ app.directive('modal', function () {
             '<div class="modal-dialog" style="width:800px">' +
               '<div class="modal-content">' +
                 '<div class="modal-header">' +
-                  '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
+                  //'<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
                   '<h4 class="modal-title">{{ title }}</h4>' +
                 '</div>' +
                 '<div class="modal-body" ng-transclude></div>' +
@@ -271,4 +275,8 @@ app.directive('datepicker', function () {
     }
 });
 
-
+//共用函式
+function redirectToUrl($location, path) {
+    $location.replace();
+    $location.path(path);
+}

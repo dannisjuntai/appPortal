@@ -59,11 +59,67 @@
     </div>
 </modal>
 
+<!--歷史資料-->
+<modal title="歷史資料" visible="history.modal">
+
+    <div class="modal-header">
+        <form class="form-inline">
+            <div class="form-group">
+                <label>起</label>
+                <input type="text" class="form-control" ng-model="history.sDateTime" name="date" bs-datepicker>
+            </div>
+            <div class="form-group">
+                <label>訖</label>
+                <input type="text" class="form-control" ng-model="history.eDateTime" name="date" bs-datepicker>
+            </div>
+
+            <div class="input-group">
+                <select class="form-control" ng-model="history.optionNo" ng-options="item.optionNo as item.optionName for item in eventLevels"></select>
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-primary" ng-click="searchEvents()">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </span>
+            </div>
+        </form>
+
+    </div>
 
 
-<modal title="告警資料" visible="showEventModal">
+    <div class="box">
+        <div class="box-header">
+        </div>
+
+        <div class="box-body table-responsive no-padding">
+            <table class="table table-fixed table-bordered">
+                <thead>
+                    <tr>
+                        <th class="col-md-3">訊息時間</th>
+                        <th class="col-md-3">復歸時間</th>
+                        <th class="col-md-1">狀態</th>
+                        <th class="col-md-5">訊息名稱</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="e in events">
+                        <td class="col-md-3">{{ e.recTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                        <td class="col-md-3">{{ e.restTime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                        <td class="col-md-1">ABC</td>
+                        <td class="col-md-5">{{ e.name }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success" ng-click="setEvents()">確認資料</button>
+        <button type="button" class="btn btn-warning" ng-click="exitModal()">離開</button>
+    </div>
+</modal>
+
+<!--<modal title="告警資料" visible="history.modal">
     <div class="modal-body">
-        <input type="button">查詢</input>
         <table class="table table-fixed table-bordered">
             <thead>
                 <tr>
@@ -88,4 +144,4 @@
         <button type="button" class="btn btn-default" ng-click="setEvents()">確認資料</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">離開</button>
     </div>
-</modal>
+</modal>-->

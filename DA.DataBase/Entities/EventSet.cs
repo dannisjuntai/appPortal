@@ -30,6 +30,8 @@ namespace DA.DataBase.Entities
         public string Name { get; set; }
         [Required]
         public string Value { get; set; }
+        [Required]
+        public byte Maintain { get; set; }
     }
 
 }

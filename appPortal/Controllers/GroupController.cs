@@ -136,11 +136,11 @@ namespace appPortal.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPut]
-        public HttpResponseMessage SetMaintain(int id)
+        public HttpResponseMessage SetMaintain([FromBody]MaintainParam param)
         {
-            var result = repository.SetMaintain(id);
+            var result = repository.SetMaintain(param);
 
-            if (result >=0 )
+            if (result >= 0)
             {
                 return Request.CreateResponse(HttpStatusCode.Accepted, result);
             }
@@ -274,14 +274,14 @@ namespace appPortal.Controllers
         [HttpPut]
         public HttpResponseMessage SetLinkTag([FromBody] LinkTagViewModel vm)
         {
-            var vms = repository.SetLinkTag(vm);
-            if (vms != null)
+            var status = repository.SetLinkTag(vm);
+            if (status > 0)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, vms);
+                return Request.CreateResponse(HttpStatusCode.OK, status);
             }
             return Request.CreateErrorResponse(HttpStatusCode.NotModified, "資料讀取錯誤");
         }
-        
+
         /// <summary>
         /// 取得告警資料
         /// </summary>
@@ -462,6 +462,38 @@ namespace appPortal.Controllers
             }
             return Request.CreateErrorResponse(HttpStatusCode.NotModified, "取得保養項目錯誤");
         }
+        /// <summary>
+        /// 參數設定集合
+        /// </summary>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public HttpResponseMessage GetOptionSets([FromBody]OptionParam param)
+        {
+            var vm = repository.GetOptionSets(param.FieldName);
+
+            if (vm != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.Accepted, vm);
+            }
+            return Request.CreateErrorResponse(HttpStatusCode.NotModified, "取得保養項目錯誤");
+        }
+
+        /// <summary>
+        /// 參數設定List
+        /// </summary>
+        /// <returns></returns>
+        public HttpResponseMessage GetOptionFieldName()
+        {
+            var vm = repository.GetOptionFieldName();
+
+            if (vm != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.Accepted, vm);
+            }
+            return Request.CreateErrorResponse(HttpStatusCode.NotModified, "取得參數設定錯誤");
+        }
+
         /// <summary>
         /// 取得事件項目
         /// </summary>

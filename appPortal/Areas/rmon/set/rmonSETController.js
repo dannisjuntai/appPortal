@@ -1,6 +1,18 @@
-﻿var injectParams = ['$scope', '$routeParams', 'groupFactory'];
+﻿var injectParams = ['$scope', '$routeParams', '$location', 'groupFactory', 'breadcrumbService'];
 
-var rmonSETController = function ($scope, $routeParams, groupFactory) {
+var rmonSETController = function ($scope, $routeParams,$location, groupFactory, breadcrumbService) {
+    $scope.breadcrumbs;
+
+    //設定 Breadcrumb
+    $scope.setBreadcrumbs = function (b) {
+        if (b && angular.isObject(b)) {
+            var url = breadcrumbService.setBreadcrumbs(b);
+            if (url != '') {
+                //導覽
+                redirectToUrl($location, url);
+            }
+        }
+    };
 
     var status = { Added: 0, Unchanged: 1, Modified: 2, Deleted: 3 };
     var statusEnum = new enums(status);
@@ -44,6 +56,7 @@ var rmonSETController = function ($scope, $routeParams, groupFactory) {
         })
         //設定背景圖
         canvas.setBackgroundImage(imgbase64, canvas.renderAll.bind(canvas));
+        
     };
 
     function enums(eo) {
@@ -56,6 +69,13 @@ var rmonSETController = function ($scope, $routeParams, groupFactory) {
     }
     //初始化
     function init() {
+        breadcrumbService.setBreadcrumb('home', {
+            href: '/rmonSET/' + $scope.groupId,
+            label: '底圖設定'
+        });
+
+        $scope.breadcrumbs = breadcrumbService.getBreadcrumbs();
+
         //取得圖檔
         getGroupImages($scope.groupId);
         //取得圖控資訊

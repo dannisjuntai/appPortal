@@ -1,12 +1,18 @@
 ﻿var injectParams = ['$scope', '$location', '$routeParams', 'groupFactory', 'breadcrumbService'];
 
 var mt0Controller = function ($scope, $location, $routeParams, groupFactory, breadcrumbService) {
-    $scope.param = { sDateTime: new Date(), eDateTime: new Date(), eventLevel: 0 };
+    //歷史資料查詢參數
+    $scope.history = {
+        modal: false,
+        sDateTime: new Date(),
+        eDateTime: new Date(),
+        optionNo: 0,
+        groupId :0,
+    };
+
     //選擇條件
     $scope.eventLevels = [];
 
-
-    $scope.showModal = false;
 
     $scope.tagAlarms = [];
     $scope.breadcrumbs;
@@ -44,24 +50,26 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, bre
 
     //顯示歷史資料 Modal 
     $scope.showHistory = function () {
-        if ($scope.groupId != null) {
-            //getEvents($scope.groupId);
-            $scope.searchEvents();
+        if ($scope.groupId) {
+            $scope.history.groupId = $scope.groupId;
+            $scope.history.modal = !$scope.history.modal;
         }
+    };
+    $scope.exitModal = function () {
+        $scope.history.modal = !$scope.history.modal;
     };
     //搜尋資料
     $scope.searchEvents = function () {
-        $scope.param.groupId = $scope.groupId;
-
-        groupFactory.getEvents($scope.param).then(processSuccess, processError);
+        groupFactory.getEvents($scope.history).then(processSuccess, processError);
 
         function processSuccess(data) {
-            $scope.showModal = !$scope.showModal;
             $scope.events = data;
         }
         function processError(error) {
         }
     };
+
+    //初始化
     init();
     //初始化
     function init() {
@@ -135,8 +143,7 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, bre
         groupFactory.getEvents(groupId).then(processSuccess, processError);
 
         function processSuccess(data) {
-            $scope.showModal = !$scope.showModal;
-            $scope.events = data;
+             $scope.events = data;
         }
         function processError(error) {
         }

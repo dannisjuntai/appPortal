@@ -1,6 +1,7 @@
-﻿var injectParams = ['$scope', '$rootScope', '$q', '$location', '$http', 'groupFactory'];
+﻿var injectParams = ['$scope', '$rootScope', '$q', '$location', '$http', 'groupFactory', 'breadcrumbService'];
 
-var rmonSETMapController = function ($scope, $rootScope, $q, $location, $http, groupFactory) {
+var rmonSETMapController = function ($scope, $rootScope, $q, $location, $http, groupFactory, breadcrumbService) {
+    $scope.breadcrumbs;
 
     $scope.currentView = '';
     $scope.vm = [];
@@ -15,6 +16,17 @@ var rmonSETMapController = function ($scope, $rootScope, $q, $location, $http, g
     $scope.files = [];
     $scope.file = {};
 
+    //設定 Breadcrumb
+    $scope.setBreadcrumbs = function (b) {
+        if (b && angular.isObject(b)) {
+            var url = breadcrumbService.setBreadcrumbs(b);
+            if (url != '') {
+                //導覽
+                redirectToUrl($location, url);
+            }
+        }
+    };
+
     //切換 View
     function setVisble(node) {
         $scope.currentView = node;
@@ -22,6 +34,13 @@ var rmonSETMapController = function ($scope, $rootScope, $q, $location, $http, g
 
     //controller 初始化
     function init() {
+        breadcrumbService.setBreadcrumb('home', {
+            href: '/rmonSETMap/',
+            label: '群組階層'
+        });
+
+        $scope.breadcrumbs = breadcrumbService.getBreadcrumbs();
+
         getGroups();
     }
 
@@ -75,10 +94,7 @@ var rmonSETMapController = function ($scope, $rootScope, $q, $location, $http, g
     }
 
     //重新導向
-    function redirectToUrl(path) {
-        $location.replace();
-        $location.path(path);
-    }
+
 
     //新增群組
     $scope.InsertGroup = function () {
@@ -167,14 +183,13 @@ var rmonSETMapController = function ($scope, $rootScope, $q, $location, $http, g
 
     //取消
     $scope.Cancel = function () {
-
         setVisble('default');
     };
 
     //圖控設定
     $scope.Set = function () {
         if ($scope.vm.currentGroup.groupId) {
-            redirectToUrl('/rmonSET/' + $scope.vm.currentGroup.groupId);
+            redirectToUrl($location, '/rmonSET/' + $scope.vm.currentGroup.groupId);
         }
         else {
             alert("請選擇");
@@ -183,44 +198,12 @@ var rmonSETMapController = function ($scope, $rootScope, $q, $location, $http, g
     };
 
 
-    //重新導向
-
-    //上船圖檔
-    $scope.uploadFiles = function () {
-
-        var files = angular.copy($scope.files);
-
-        if ($scope.file) {
-            files.push($scope.file);
-        }
-
-        if (files.length === 0) {
-            $window.alert('Please select files!');
-            return false;
-        }
-
-        for (var i = files.length - 1; i >= 0; i--) {
-            var file = files[i];
-            $http.post("/api/group/PostFile", file)
-            .success(function (results) {
-                uploadedCount++;
-                //if (uploadedCount == files.length) {
-                //    $window.alert('View uploaded files?');
-                //    $window.location.assign('/uploads');
-                //}
-            });
-        }
-        //redirectToUrl('/rmonSET');
-    };
 
     //選擇階層
     $scope.$watch('group.currentNode', function (newObj, oldObj) {
         if ($scope.group && angular.isObject($scope.group.currentNode)) {
 
             setVisble('default');
-
-            //var data = $scope.group.currentNode.data.split("_");
-            //var id = parseInt(data[1]);
 
             getGroup($scope.group.currentNode.id);
 

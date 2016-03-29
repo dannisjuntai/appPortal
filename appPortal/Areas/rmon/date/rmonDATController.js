@@ -82,8 +82,20 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         getGroupImages($scope.groupId);
         //取得圖控資訊
         getGroupLocations();
+        getEventLevels();
 
     };
+    //取得事件項目
+    function getEventLevels() {
+        groupFactory.getEventLevels().then(processSuccess, processError);
+
+        function processSuccess(data) {
+            $scope.eventLevels = data;
+        }
+        function processError(error) {
+
+        }
+    }
     //取得部門資料
     function getGroup() {
         groupFactory.getGroup($scope.groupId).then(processSuccess, processError);
@@ -330,25 +342,54 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
     };
 
     $scope.showModal = false;
-    $scope.showEventModal = false;
+    //$scope.showEventModal = false;
+
+    //歷史資料查詢參數
+    $scope.history = {
+        modal: false,
+        sDateTime: new Date(),
+        eDateTime: new Date(),
+        optionNo: 0,
+        groupId: 0,
+    };
 
     $scope.toggleModal = function () {
         $scope.showModal = !$scope.showModal;
     };
 
-    $scope.toggleEventModal = function () {
-        $scope.showEventModal = !$scope.showEventModal;
+    //$scope.toggleEventModal = function () {
+    //    $scope.showEventModal = !$scope.showEventModal;
+    //};
+    //顯示歷史資料 Modal 
+    $scope.showHistory = function () {
+        if ($scope.groupId) {
+            $scope.history.groupId = $scope.groupId;
+            $scope.history.modal = !$scope.history.modal;
+        }
+    };
+    $scope.exitModal = function () {
+        $scope.history.modal = !$scope.history.modal;
+    };
+    //搜尋資料
+    $scope.searchEvents = function () {
+        groupFactory.getEvents($scope.history).then(processSuccess, processError);
+
+        function processSuccess(data) {
+            $scope.events = data;
+        }
+        function processError(error) {
+        }
     };
     $scope.goBack = function () {
         redirectToUrl('/equipment/' + $rootScope.groupId);
     };
 
     //顯示歷史資料 Modal 
-    $scope.showHistory = function () {
-        if ($scope.groupId != null) {
-            getEvents($scope.groupId);
-        }
-    };
+    //$scope.showHistory = function () {
+    //    if ($scope.groupId != null) {
+    //        getEvents($scope.groupId);
+    //    }
+    //};
 
     //重新導向
     function redirectToUrl(path) {

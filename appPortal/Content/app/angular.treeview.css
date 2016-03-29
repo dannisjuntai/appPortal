@@ -29,19 +29,19 @@ div[data-tree-model] li {
 /* top right bottom left*/
 div[data-tree-model] li .expanded {
   padding: 0px 15px;
-  background-image: url("../../Assets/img/subtraction.png");
+  background-image: url("../../Assets/interface.png");
   background-repeat: no-repeat;
 }
 /*close*/
 div[data-tree-model] li .collapsed {
   padding: 0px 15px;
-  background-image: url("../../Assets/img/add8.png");
+  background-image: url("../../Assets/arrow.png");
   background-repeat: no-repeat;
 }
 
 div[data-tree-model] li .normal {
   padding: 5px 15px;
-  background-image: url("../../Assets/img/gear39.png");
+  /*background-image: url("../../Assets/img/gear39.png");*/
   background-repeat: no-repeat;
 }
 

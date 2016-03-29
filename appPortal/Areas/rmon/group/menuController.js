@@ -2,8 +2,9 @@
 
 var menuController = function ($scope, $location, $routeParams, $window, groupFactory, breadcrumbService) {
     $scope.breadcrumbs;
+
     $scope.menus = [];
-    //導覽圖控
+    //導覽報表
     $scope.navMenu = function (o) {
         var oo = o;
         if (o && angular.isObject(o)) {
@@ -40,7 +41,7 @@ var menuController = function ($scope, $location, $routeParams, $window, groupFa
         $scope.menus = [
             { name: '設備監控', code: 'Monitor', url: '/dt0', icon: 'fa fa-desktop', color: 'quick-button metro blue' },
             { name: '管理報表', code: 'Report', url: '/reprot', icon: 'fa fa-line-chart', color: 'quick-button metro yellow' },
-            { name: '系統設定', code: 'Setting', url: '/rmonSETMap', icon: 'fa fa-wrench', color: 'quick-button metro pink' }
+            { name: '系統設定', code: 'Setting', url: '/menu/set', icon: 'fa fa-wrench', color: 'quick-button metro pink' }
         ];
     }
     //設定連結

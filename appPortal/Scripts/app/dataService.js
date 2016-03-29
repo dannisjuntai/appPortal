@@ -196,9 +196,9 @@ var groupFactory = function ($http, $q, $resource) {
         });
     };
     //取得事件
-    factory.getEvents = function (param) {
+    factory.getEvents = function (history) {
         url = serviceBase + 'getEvents';
-        return $http.post(url, param).then(function (results) {
+        return $http.post(url, history).then(function (results) {
             return results.data;
         });
     };
@@ -216,9 +216,9 @@ var groupFactory = function ($http, $q, $resource) {
         });
     };
     //設定維護狀態
-    factory.setMaintain = function (id) {
-        url = serviceBase + 'setMaintain/' + id;
-        return $http.put(url).then(function (results) {
+    factory.setMaintain = function (param) {
+        url = serviceBase + 'setMaintain/';
+        return $http.put(url, param).then(function (results) {
             return results.data;
         });
     }
@@ -236,6 +236,21 @@ var groupFactory = function ($http, $q, $resource) {
             return results.data;
         });
     }
+    //取得參數設定List
+    factory.getOptionFieldName = function () {
+        url = serviceBase + 'getOptionFieldName';
+        return $http.get(url).then(function (results) {
+            return results.data;
+        });
+    }
+    //
+    factory.getOptionSets = function (param) {
+        url = serviceBase + 'getOptionSets';
+        return $http.post(url, param).then(function (results) {
+            return results.data;
+        });
+    }
+    
     return factory;
 };
 

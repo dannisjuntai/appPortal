@@ -196,9 +196,14 @@
     <Content Include="Areas\rmon\set\rmonSETMap.html" />
     <Content Include="Areas\rmon\set\rmonSETMapController.js" />
     <Content Include="Areas\rmon\system\home.html" />
+    <Content Include="Areas\rmon\system\option.html" />
+    <Content Include="Areas\rmon\system\optionController.js" />
+    <Content Include="Areas\rmon\system\setController.js" />
     <Content Include="Areas\rmon\system\homeController.js" />
     <Content Include="Areas\rmon\system\login.html" />
     <Content Include="Areas\rmon\system\loginController.js" />
+    <Content Include="Areas\rmon\system\set.html" />
+    <Content Include="Assets\arrow.png" />
     <Content Include="Assets\img\add116.png" />
     <Content Include="Assets\img\add64.png" />
     <Content Include="Assets\img\add8.png" />
@@ -214,6 +219,7 @@
     <Content Include="Assets\img\paper53.png" />
     <Content Include="Assets\img\rectangular12.png" />
     <Content Include="Assets\img\subtraction.png" />
+    <Content Include="Assets\interface.png" />
     <Content Include="Assets\logo.jpg" />
     <Content Include="Assets\mon.png" />
     <Content Include="Assets\spinner.gif" />
@@ -383,6 +389,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\rmon\modal\" />
     <Folder Include="Scripts\services\" />
   </ItemGroup>
   <ItemGroup>

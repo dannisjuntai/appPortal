@@ -74,7 +74,9 @@
     <Compile Include="Models\LinkDeviceViewModel.cs" />
     <Compile Include="Models\LinkTagStatus.cs" />
     <Compile Include="Models\LinkTagViewModel.cs" />
+    <Compile Include="Models\MaintainParam.cs" />
     <Compile Include="Models\MainToolViewModel.cs" />
+    <Compile Include="Models\OptionParam.cs" />
     <Compile Include="Models\TagParamViewModel.cs" />
     <Compile Include="Models\TagValueViewModel.cs" />
     <Compile Include="Models\TagAlramViewModel.cs" />

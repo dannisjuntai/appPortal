@@ -331,7 +331,7 @@ namespace DA.DataBase.Repositories
             {
                 upValue = 1;
             }
-            return (byte)(lowValue +  upValue);
+            return (byte)(lowValue + upValue);
         }
         /// <summary>
         /// 更新簡稱及單位
@@ -413,7 +413,7 @@ namespace DA.DataBase.Repositories
                             LinkSubSeq = o.a.LinkSubSeq,
                             LinkTagSeq = o.a.LinkTagSeq,
                             MTagSeq = o.b.MTagSeq,
-                            TagName = o.a.TagName,
+                            TagName = o.a.TagName.Trim(),
                             TObjSeq = o.c.TObjSeq,
                             TObjName = o.c.TObjName
 
@@ -432,18 +432,14 @@ namespace DA.DataBase.Repositories
         /// <returns></returns>
         public List<TagAlramViewModel> GetTagAlarm(int groupId)
         {
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
             List<TagAlramViewModel> vms = new List<TagAlramViewModel>();
             //group
             using (var db = new CMSDBContext())
             {
                 var g = getGroupMapLinkSubSeq(groupId);
-                //var g = getGroups(groupId);
-                ////取得本階
-                //var lastGroup = getGroup(groupId);
-                //if (lastGroup != null)
-                //{
-                //    g.Add(lastGroup);
-                //}
+
                 foreach (var obj in g.ToList())
                 {
                     var q = from a in db.LinkTag
@@ -471,8 +467,8 @@ namespace DA.DataBase.Repositories
                                 CurSubStaName = t.a.CurSubSta.GetCurSubStaName(),
                                 IsCurSubSta = true,
                                 Maintain = t.a.Maintain,
-                                MaintainName = t.a.Maintain.GetMaintainName(),
-                                IsMaintain = t.a.Maintain.GetMaintain()
+                                //MaintainName = t.a.Maintain.GetMaintainName(),
+                                //IsMaintain = t.a.Maintain.GetMaintain()
                             };
                             //斷線
                             if (tag.CurLinkSta != 1)
@@ -480,7 +476,8 @@ namespace DA.DataBase.Repositories
                                 vms.Add(tag);
                                 continue;
                             }
-                            if (tag.TObjSeq>= 1 && tag.TObjSeq <= 3)
+                            //2態告警
+                            if (tag.TObjSeq >= 1 && tag.TObjSeq <= 3)
                             {
                                 if (tag.CurfValue > 1)
                                 {
@@ -498,16 +495,76 @@ namespace DA.DataBase.Repositories
                             if (tag.Maintain > 0)
                             {
                                 //不顯示保養
-                                vms.Add(tag);
+                                //vms.Add(tag);
                                 continue;
                             }
                         }
                     }
                 }
             }
+            //加入維護
+            var g1 = getGroups(groupId);
+            ////取得本階
+            var lastGroup = getGroup(groupId);
+            if (lastGroup != null)
+            {
+                g1.Add(lastGroup);
+            }
+            foreach (var o in g1.ToList())
+            {
+                var e = getEventSetByData(o.GroupId);
+                if (e!=null)
+                {
+                    vms.Add(e);
+                }
+                
+            }
+            sw.Stop();
+            System.Diagnostics.Debug.WriteLine(sw.ElapsedMilliseconds);
             return vms;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        private TagAlramViewModel getEventSetByData(int groupId)
+        {
+            using (var db = new CMSDBContext())
+            {
+                try
+                {
+                    var q = from a in db.EventSet
+                            from b in db.OptionSets
+                            where a.Maintain == b.OptionNo &&
+                                  b.FieldName == "Maintain" &&
+                                  a.GroupId == groupId &&
+                                  a.RestTime == null
+                            select new { a, b };
+                    if (q.Any())
+                    {
+                        var o = q.FirstOrDefault();
 
+                        TagAlramViewModel tag = new TagAlramViewModel()
+                        {
+                            TagName = o.a.Name,
+                            TObjName = o.b.OptionName,
+                            CurfValue = Convert.ToDecimal(o.a.Value),
+                            Maintain = o.a.Maintain,
+                            MaintainName = o.a.Maintain.GetMaintainName(),
+                            IsMaintain = o.a.Maintain.GetMaintain()
+                        };
+                        return tag;
+                    }
+                }
+                catch
+                {
+
+                }
+
+            }
+            return null;
+        }
         /// <summary>
         /// 取得Group對照 LinkSubSeq
         /// </summary>
@@ -526,18 +583,18 @@ namespace DA.DataBase.Repositories
                 g.Add(lastGroup);
             }
             List<int> groups = new List<int>();
-            foreach(var group in g)
+            foreach (var group in g)
             {
                 groups.Add(group.GroupId);
             }
-            using(var db = new  CMSDBContext())
+            using (var db = new CMSDBContext())
             {
                 var q = from a in db.GroupLocations
                         where groups.Contains(a.GroupId)
                         select a;
                 if (q.Any())
                 {
-                    var list = q.ToList().GroupBy(p=>p.LinkSubSeq);
+                    var list = q.ToList().GroupBy(p => p.LinkSubSeq);
                     foreach (var l in list)
                     {
                         linkSubs.Add(l.Key);
@@ -1205,7 +1262,7 @@ namespace DA.DataBase.Repositories
                             };
                             groups.Add(g);
                         }
-   
+
                     }
 
                 }
@@ -1378,7 +1435,7 @@ namespace DA.DataBase.Repositories
                 if (q.Any())
                 {
                     int count = 0;
-                    
+
                     foreach (var obj in q.OrderByDescending(p => p.b.RecTime).Take(100))
                     {
                         //minute = obj.b.RecTime.ToString("mm:ss")
@@ -1407,51 +1464,50 @@ namespace DA.DataBase.Repositories
         /// <returns></returns>
         public List<TagValueViewModel> GetTagHistories(TagParamViewModel param)
         {
-            List<TagValueViewModel> tags = new List<TagValueViewModel>();
-            string[] time = param.StartTime.Split(':');
-            //開始時間
-            DateTime sdt = new DateTime(param.StartDate.Year, param.StartDate.Month, param.StartDate.Day,
-                int.Parse(time[0]), int.Parse(time[1]), 0);
-            //結束時間
-            time = param.EndTime.Split(':');
-            var edt = new DateTime(param.EndDate.Year, param.EndDate.Month, param.EndDate.Day,
-                int.Parse(time[0]), int.Parse(time[1]), 0);
+            return null;
+            //List<TagValueViewModel> tags = new List<TagValueViewModel>();
+            //string[] time = param.StartTime.Split(':');
+            ////開始時間
+            //DateTime sdt = new DateTime(param.StartDate.Year, param.StartDate.Month, param.StartDate.Day,
+            //    int.Parse(time[0]), int.Parse(time[1]), 0);
+            ////結束時間
+            //time = param.EndTime.Split(':');
+            //var edt = new DateTime(param.EndDate.Year, param.EndDate.Month, param.EndDate.Day,
+            //    int.Parse(time[0]), int.Parse(time[1]), 0);
 
-            using (var db = new CMSDBContext())
-            {
-                var q = from a in db.TagHistory
-                        where a.RecTime >= sdt &&
-                              a.RecTime <= edt &&
-                              a.LinkTagSeq == param.LinkTagSeq
-                        select a;
-                if (q.Any())
-                {
-                    foreach (var o in q.ToList().Take(1000))
-                    {
-                        TagValueViewModel tag = new TagValueViewModel()
-                        {
-                           
-                            Labels =  o.RecTime.ToJavascriptTimestamp(),
-                            Data = o.fValue.ToString()
-                        };
-                        tags.Add(tag);
-                    }
-                }
-            }
-            return tags;
+            //using (var db = new CMSDBContext())
+            //{
+            //    var q = from a in db.TagHistory
+            //            where a.RecTime >= sdt &&
+            //                  a.RecTime <= edt &&
+            //                  a.LinkTagSeq == param.LinkTagSeq
+            //            select a;
+            //    if (q.Any())
+            //    {
+            //        foreach (var o in q.ToList().Take(1000))
+            //        {
+            //            TagValueViewModel tag = new TagValueViewModel()
+            //            {
+
+            //                Labels =  o.RecTime.ToJavascriptTimestamp(),
+            //                Data = o.fValue.ToString()
+            //            };
+            //            tags.Add(tag);
+            //        }
+            //    }
+            //}
+            //return tags;
         }
 
         public List<TagValuesViewModel> GetHistoryTags(TagParamViewModel param)
         {
             List<TagValuesViewModel> tags = new List<TagValuesViewModel>();
-            string[] time = param.StartTime.Split(':');
             //開始時間
             DateTime sdt = new DateTime(param.StartDate.Year, param.StartDate.Month, param.StartDate.Day,
-                int.Parse(time[0]), int.Parse(time[1]), 0);
+                param.StartTime.Hour, param.StartTime.Minute, 0);
             //結束時間
-            time = param.EndTime.Split(':');
             var edt = new DateTime(param.EndDate.Year, param.EndDate.Month, param.EndDate.Day,
-                int.Parse(time[0]), int.Parse(time[1]), 0);
+                param.EndTime.Hour, param.EndTime.Minute, 0);
             //多選
             List<int> selected = new List<int>();
             foreach (var linkTag in param.LinkTags)
@@ -1476,7 +1532,7 @@ namespace DA.DataBase.Repositories
                         where a.RecTime >= sdt &&
                               a.RecTime <= edt &&
                               a.LinkTagSeq == linkTagSeq
-                              orderby a.RecTime
+                        orderby a.RecTime
                         select a;
                 if (q.Any())
                 {
@@ -1498,7 +1554,7 @@ namespace DA.DataBase.Repositories
         /// </summary>
         /// <param name="groupId"></param>
         /// <returns></returns>
-        public int SetMaintain(int groupId)
+        public int SetMaintain(MaintainParam param)
         {
             int errorCode = 0;
             byte maintain = 0;
@@ -1506,7 +1562,7 @@ namespace DA.DataBase.Repositories
             {
                 //找到是否有維護
                 var q = from a in db.EventSet
-                        where a.GroupId == groupId &&
+                        where a.GroupId == param.GroupId &&
                         a.RestTime == null
                         select a;
                 if (q.Any())
@@ -1518,12 +1574,12 @@ namespace DA.DataBase.Repositories
                 {
                     maintain = 1;
                     //新增維護事件
-                    errorCode = insertEvents(groupId);
+                    errorCode = insertEvents(param);
                 }
                 if (errorCode > 0)
                 {
-                    //更新維護狀態
-                    updateLinkTag(groupId, maintain);
+                    //更新維護狀態  暫不執行
+                    updateLinkTag(param.GroupId, maintain);
                 }
             }
             return errorCode;
@@ -1566,24 +1622,26 @@ namespace DA.DataBase.Repositories
         /// </summary>
         /// <param name="groupId"></param>
         /// <returns></returns>
-        private int insertEvents(int groupId)
+        private int insertEvents(MaintainParam param)
         {
             int errorCode = 0;
             using (var db = new CMSDBContext())
             {
                 var q = from a in db.Groups
-                        where a.GroupId == groupId
+                        where a.GroupId == param.GroupId
                         select a;
                 if (q.Any())
                 {
                     var e = new EventSet()
                     {
                         EventLevel = 1,
-                        GroupId = groupId,
+                        GroupId = param.GroupId,
+                        //不紀錄 LinkTag
                         LinkTagSeq = 0,
                         RecTime = DateTime.Now,
                         Name = q.FirstOrDefault().GroupName + "維護",
-                        Value = "1"
+                        Value = "1",
+                        Maintain = (byte)param.OptionNo
                     };
                     db.EventSet.Add(e);
                     errorCode = db.SaveChanges();
@@ -1729,7 +1787,7 @@ namespace DA.DataBase.Repositories
                     foreach (var obj in q.ToList())
                     {
                         var status = getLinkTagAlarm(obj.GroupId);
-
+                        //取得維護次數
                         MainToolViewModel mt = new MainToolViewModel()
                         {
                             GroupId = obj.GroupId,
@@ -1750,6 +1808,21 @@ namespace DA.DataBase.Repositories
             }
 
             return mts;
+        }
+        private int getEventSetByMaintain(int groupId)
+        {
+            using (var db = new CMSDBContext())
+            {
+                var q = from a in db.EventSet
+                        where a.GroupId == groupId &&
+                              a.RestTime == null
+                        select a;
+                if (q.Any())
+                {
+                    return q.Count();
+                }
+            }
+            return 0;
         }
         /// <summary>
         /// 取得告警
@@ -1808,14 +1881,27 @@ namespace DA.DataBase.Repositories
                                select new { Count = g.Count() };
 
             //取得 Maintain 數  > 1
-            var maintainCount = from a in ts
-                                where a.Maintain == 1
-                                group a by new { a.LinkTagSeq } into g
-                                select new { Count = g.Count() };
+            //var maintainCount = from a in ts
+            //                    where a.Maintain == 1
+            //                    group a by new { a.LinkTagSeq } into g
+            //                    select new { Count = g.Count() };
 
             status.Alarm = alarmCount.ToList().Count();
             status.Status = linkStaCount.ToList().Count();
-            status.Maintain = maintainCount.ToList().Count();
+            status.Maintain = 0;
+            //status.Maintain = maintainCount.ToList().Count();
+            var g1 = getGroups(groupId);
+
+            ////取得本階
+            var lastGroup = getGroup(groupId);
+            if (lastGroup != null)
+            {
+                g1.Add(lastGroup);
+            }
+            foreach (var o in g1.ToList())
+            {
+                status.Maintain = getEventSetByMaintain(o.GroupId) + status.Maintain;
+            }
 
             return status;
         }
@@ -1826,9 +1912,6 @@ namespace DA.DataBase.Repositories
         /// <returns></returns>
         public List<EquipmentViewModel> GetEquipments(int groupId)
         {
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
-
             List<EquipmentViewModel> ets = new List<EquipmentViewModel>();
             using (var db = new CMSDBContext())
             {
@@ -1862,8 +1945,6 @@ namespace DA.DataBase.Repositories
                     }
                 }
             }
-            sw.Stop();
-            System.Diagnostics.Debug.WriteLine(sw.ElapsedMilliseconds);
             return ets;
         }
         /// <summary>
@@ -1955,18 +2036,17 @@ namespace DA.DataBase.Repositories
                 foreach (var o in g.ToList())
                 {
                     var q = from a in db.EventSet
-                            from b in db.OptionSets 
+                            from b in db.OptionSets
                             where a.GroupId == o.GroupId &&
                                   a.RecTime >= sDt &&
                                   a.RecTime <= sEt &&
                                   b.OptionNo == a.EventLevel &&
                                   b.FieldName == "EventLevel"
-                            orderby a.RestTime descending
+                            orderby a.RecTime descending
                             select a;
-                    if (param.EventLevel > 0)
+                    if (param.OptionNo > 0)
                     {
-                       // q = q.Where(p => p.EventLevel == param.EventLevel);
-           
+                        q = q.Where(p => p.EventLevel == param.OptionNo).OrderByDescending(p=>p.RecTime);
                     }
                     if (q.Any())
                     {
@@ -1985,7 +2065,6 @@ namespace DA.DataBase.Repositories
 
                     }
                 }
-
             }
             return events;
         }
@@ -2084,5 +2163,20 @@ namespace DA.DataBase.Repositories
             }
             return null;
         }
+        /// <summary>
+        /// 參數設定List
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetOptionFieldName()
+        {
+            using (var db = new CMSDBContext())
+            {
+                var q = (from a in db.OptionSets
+                        select a.FieldName).Distinct();
+
+                return q.ToList();
+            }
+        }
+
     }
 }

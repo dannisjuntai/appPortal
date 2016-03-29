@@ -12,11 +12,11 @@ namespace DA.DataBase.Models
 
         public DateTime StartDate { get; set; }
 
-        public string StartTime { get; set; }
+        public DateTime StartTime { get; set; }
 
         public DateTime EndDate { get; set; }
 
-        public string EndTime { get; set; }
+        public DateTime EndTime { get; set; }
 
         public List<LinkTagViewModel> LinkTags { get; set; }
     }

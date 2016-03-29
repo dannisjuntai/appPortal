@@ -11,7 +11,7 @@
                 <i class="fa fa-link" ng-click="navDevice(e)"></i>
                 <p ng-click="navDevice(e)" style="width:auto;">{{e.name}}</p>
                 <span class="notification1 red">{{e.alarmCount}}</span>
-                <span class="notification2 blue" ng-click="setMaintain(e)">{{e.maintainCount}}</span>
+                <span class="notification2 blue" ng-click="setMaintainModal(e)">{{e.maintainCount}}</span>
                 <span class="notification3 grey">{{e.statusCount}}</span>
             </a>
             <div>&nbsp;</div>
@@ -51,44 +51,7 @@
     </div>
 </div>
 
-
-<!--<div class="main-footer">
-    <div class="box">
-        <div class="box-header">
-            <span class="break"></span>Alram Message
-            <div class="box-icon">
-                <a ng-click="showHistory()" style="cursor:pointer;"><i class="fa fa-line-chart"></i>歷史資料</a>
-            </div>
-        </div>
-        <div class="box-content">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Tag名稱</th>
-                        <th>告警類別</th>
-                        <th>數值</th>
-                        <th>告警狀態</th>
-              
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="t in tagAlarms">
-                        <td class="center"><a ng-click="goChart(t.linkTagSeq)">{{t.tagName}}</a></td>
-                        <td class="center">{{t.tObjName}}</td>
-                        <td class="center">{{t.curfValue}}</td>
-                        <td class="center">
-                            <span class="label red">{{t.curSubStaName}}</span>
-                            <span class="label grey" ng-show="t.isCurLinkSta">{{t.curLinkStaName}}</span>
-                            <span class="label blue" ng-show="t.isMaintain">{{t.maintainName}}</span>
-                        </td>
-
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>-->
-<modal title="告警資料" visible="showModal">
+<!--<modal title="告警資料" visible="showModal">
     <div class="modal-body">
         <table class="table table-hover">
             <thead>
@@ -113,5 +76,86 @@
     <div class="modal-footer">
         <button type="button" class="btn btn-default" ng-click="setEvents()">確認資料</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">離開</button>
+    </div>
+</modal>-->
+<!--歷史資料-->
+
+<modal title="歷史資料" visible="history.modal">
+
+    <div class="modal-header">
+        <form class="form-inline">
+            <div class="form-group">
+                <label>起</label>
+                <input type="text" class="form-control" ng-model="history.sDateTime" name="date" bs-datepicker>
+            </div>
+            <div class="form-group">
+                <label>訖</label>
+                <input type="text" class="form-control" ng-model="history.eDateTime" name="date" bs-datepicker>
+            </div>
+
+            <div class="input-group">
+                <select class="form-control" ng-model="history.optionNo" ng-options="item.optionNo as item.optionName for item in eventLevels"></select>
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-primary" ng-click="searchEvents()">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </span>
+            </div>
+        </form>
+
+    </div>
+
+
+    <div class="box">
+        <div class="box-header">
+        </div>
+
+        <div class="box-body table-responsive no-padding">
+            <table class="table table-fixed table-bordered">
+                <thead>
+                    <tr>
+                        <th class="col-md-3">訊息時間</th>
+                        <th class="col-md-3">復歸時間</th>
+                        <th class="col-md-1">狀態</th>
+                        <th class="col-md-5">訊息名稱</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="e in events">
+                        <td class="col-md-3">{{ e.recTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                        <td class="col-md-3">{{ e.restTime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                        <td class="col-md-1">ABC</td>
+                        <td class="col-md-5">{{ e.name }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success" ng-click="setEvents()">確認資料</button>
+        <button type="button" class="btn btn-warning" ng-click="exitModal()">離開</button>
+    </div>
+</modal>
+<!-- 保養項目 -->
+<modal title="保養項目" visible="maintain.modal">
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">請選擇保養項目 :</label>
+                <div class="col-sm-5 input-group">
+                    <span class="input-group-btn">
+                        <select class="form-control" ng-model="maintain.optionNo" ng-options="item.optionNo as item.optionName for item in maintain.items"></select>
+                        <button type="button" class="btn btn-primary" ng-click="setMaintain()">
+                            <i class="fa fa-check"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </form>
+        {{maintain.message}}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-warning" data-dismiss="modal" ng-click="exitMaintainModal()">離開</button>
     </div>
 </modal>

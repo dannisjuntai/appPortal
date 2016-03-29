@@ -18,7 +18,15 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, b
     };
     $scope.now = new Date().yyyymmdd();
 
-    $scope.tag = { linkTagSeq: 0, startDate: '2016-02-27', startTime: "08:00", endDate: '', endTime: "08:10" };
+    var d = new Date();
+    var endTime = d.getTime() + 600000;
+
+    
+    var now = new Date();
+    var copy = now.getHours();
+  
+
+    $scope.tag = { linkTagSeq: 0, startDate: new Date(), startTime: new Date(), endDate: new Date(), endTime: new Date() };
     $scope.getTagHistories = function () {
         getTagHistories(1038, 1067);
     }
@@ -89,6 +97,7 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, b
 
         $scope.tag.linkTagSeq = $scope.link.linkTagSeq;
         $scope.tag.linkTags = $scope.linkTags;
+
         groupFactory.getHistoryTags($scope.tag).then(processSuccess, processError);
         //groupFactory.getTagHistories(groupId, locationId, 1).then(processSuccess, processError);
         //http://www.pikemere.co.uk/blog/flot-how-to-create-line-graphs/

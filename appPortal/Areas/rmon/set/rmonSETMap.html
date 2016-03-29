@@ -1,4 +1,11 @@
-﻿<div class="row">
+﻿<ul class="breadcrumb">
+    <i class="fa fa-home"></i>
+    <li ng-repeat="b in breadcrumbs">
+        <a ng-click="setBreadcrumbs(b)"><span>{{b.label}}</span></a>
+    </li>
+</ul>
+
+<div class="row">
 
 
     <div class="col-md-4">
@@ -11,14 +18,14 @@
         </div>
     </div>
 
-    <div class="col-md-7" ng-model="currentView">
+    <div class="col-md-5" ng-model="currentView">
 
         <!-- default Template-->
         <div ng-show="currentView == 'default'">
 
-            <div class="box box-info">
+            <div class="box box-widget">
                 <div class="box-header" with-border>
-                    <h3 class="box-title">下階群組</h3>
+                    <h3 class="box-title" style="color:white">下階群組</h3>
                 </div>
                 <form name="editForm">
                     <!-- 新增下階群組 -->
@@ -34,7 +41,7 @@
                         <div class="form-group">
                             <label>群組類型</label>
                             <div class="input-group">
-                                <span class="input-group-addon"><span class="glyphicon glyphicon-globe"></span></span>
+                                <span class="input-group-addon"><span class="fa fa-gamepad"></span></span>
                                 <select class="form-control" ng-model="vm.currentGroup.groupTypeKey" ng-options="item.value as item.key for item in groupTypes" required></select>
                             </div>
                         </div>

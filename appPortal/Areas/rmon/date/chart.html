@@ -9,62 +9,44 @@
         <form class="form-inline">
             <div class="form-group">
                 <label for="exampleInputName2">起始時間</label>
-                <input type="text" class="form-control input-sm" ng-model="tag.startDate" value="2016/03/11" datepicker />
-                <ng-timepicker class="form-control input-sm" ng-model="tag.startTime" init-time="{{tag.startTime}}" step="5"></ng-timepicker>
+                <input type="text" class="form-control" ng-model="tag.startDate" bs-datepicker data-autoclose="1">
+                <input type="text" class="form-control" size="8" ng-model="tag.startTime" bs-timepicker
+                       data-time-format="HH:mm" data-length="1" data-minute-step="1">
+               
             </div>
             <div class="form-group">
                 <label for="exampleInputName2">結束時間</label>
-                <input type="text" class="form-control input-sm" ng-model="tag.endDate" value="2016/03/11" datepicker />
-                <ng-timepicker class="form-control input-sm" ng-model="tag.endTime" init-time="{{tag.endTime}}" step="5"></ng-timepicker>
+                <input type="text" class="form-control" ng-model="tag.endDate" bs-datepicker data-autoclose="1">
+                <input type="text" class="form-control" size="8" ng-model="tag.endTime" bs-timepicker
+                       data-time-format="HH:mm" data-length="1" data-minute-step="1">
+
+                
             </div>
             <div class="form-group">
                 <label>設備名稱</label>
-                <select class="form-control input-sm" ng-model="link.linkSubSeq" ng-options="item.linkSubSeq as item.linkDevName for item in linkDevices"
+                <select class="form-control" ng-model="link.linkSubSeq" ng-options="item.linkSubSeq as item.linkDevName for item in linkDevices"
                         ng-change="changLink(link)" style="width:200px"></select>
             </div>
 
-            <div class="form-group">
-                <label>偵測項目</label>
-                <!--<select class="form-control input-sm" ng-model="link.linkTagSeq" ng-options="sub.linkTagSeq as sub.tagName for sub in linkTags" style="width:200px"></select>-->
 
-                <div class="col-md-6" ng-repeat="l in linkTags">
-                    <input type="checkbox" value="{{l.tagName}}" ng-model="l.selected">{{l.tagName}}
-                </div>
-            </div>
             <div class="form-group">
-                <button type="submit" class="btn btn-default" ng-click="getTagHistories()">查詢</button>
+                <button type="submit" class="btn btn-success" ng-click="getTagHistories()">查詢</button>
             </div>
+            
         </form>
-
-        <!--<div class="row">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    歷史資料
-                </div>
-                <table class="table table-fixed table-bordered">
-                    <thead>
-                        <tr>
-                            <th class="col-xs-2">#</th>
-                            <th class="col-xs-8">Name</th>
-                            <th class="col-xs-2">Points</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="t in tags">
-                            <td class="col-xs-2">{{$index}}</td>
-                            <td class="col-xs-8">{{t.labels}}</td>
-                            <td class="col-xs-2">{{t.data}}</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <label>偵測項目</label>
+        <div class="form-group" style="height:480px; overflow:auto">
+           
+            <div ng-repeat="l in linkTags">
+                <input type="checkbox" value="{{l.tagName}}" ng-model="l.selected">{{l.tagName}}
             </div>
-        </div>-->
+        </div>
 
     </div>
 
     <div class="col-md-8">
         <flot dataset="dataset" options="options" height="480px"></flot>
     </div>
- 
+
 </div>
 

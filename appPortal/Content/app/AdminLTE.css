@@ -1253,7 +1253,7 @@ a:focus {
 .form-control:not(select) {
   -webkit-appearance: none;
   -moz-appearance: none;
-  appearance: none;
+  /*appearance: none;*/
 }
 .form-group.has-success label {
   color: #00a65a;
