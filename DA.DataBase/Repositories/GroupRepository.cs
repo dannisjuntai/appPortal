@@ -2177,6 +2177,110 @@ namespace DA.DataBase.Repositories
                 return q.ToList();
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="option"></param>
+        /// <returns></returns>
+        public List<OptionSets> SetOptionSets(OptionSets option)
+        {
+            int errorCode = 0;
+            using (var db = new CMSDBContext())
+            {
+                var q = from a in db.OptionSets
+                        where a.FieldName == option.FieldName &&
+                              a.OptionNo == option.OptionNo
+                        select a;
+                //update
+                if (q.Any())
+                {
+                    errorCode = updateOptionSets(option);
+                    if (errorCode > 0)
+                    {
+                        return GetOptionSets(option.FieldName);
+                    }
+                }
+                //insert
+                else
+                {
+                    errorCode = insertOptionSets(option);
+                    if (errorCode > 0)
+                    {
+                        return GetOptionSets(option.FieldName);
+                    }
+                }
+                return null;
+            }
+        }
+        private int insertOptionSets(OptionSets option)
+        {
+            using (var db = new CMSDBContext())
+            {
+                try
+                {
+                    option.OptionNo = getOptionNo(option.FieldName);
+                    option.StartDate = DateTime.Now;
+                    option.EndDate = new DateTime(2999, 12, 31, 23, 59, 00);
+                    option.SystemTime = DateTime.Now;
+                    option.SystemUser = 0;
+                    db.OptionSets.Add(option);
+                    return db.SaveChanges();
+                }
+                catch (Exception e)
+                {
+                    return -1;
+                }
 
+            }
+        }
+        
+        private int updateOptionSets(OptionSets option)
+        {
+            using (var db = new CMSDBContext())
+            {
+                try
+                {
+                    var q = from a in db.OptionSets
+                            where a.FieldName == option.FieldName &&
+                                  a.OptionNo == option.OptionNo
+                            select a;
+                    if (q.Any())
+                    {
+                        var o = q.FirstOrDefault();
+                        o.OptionName = option.OptionName;
+                        o.SystemTime = DateTime.Now;
+
+                        return db.Update<OptionSets>(o, o.FieldName, o.OptionNo, o.EndDate);
+                        //return db.SaveChanges();
+                    }
+
+                }
+                catch (System.Data.Entity.Infrastructure.DbUpdateException e)
+                {
+                    return -1;
+                }
+                return 0;
+            }
+        }
+        private byte getOptionNo(string fieldName)
+        {
+            using (var db = new CMSDBContext())
+            {
+                try
+                {
+                    var q = (from a in db.OptionSets
+                             where a.FieldName == fieldName
+                             select a.OptionNo).Max() + 1;
+
+                    return (byte)q ;
+                }
+                catch
+                {
+                    return 0;
+                }
+
+            }
+
+        }
     }
 }

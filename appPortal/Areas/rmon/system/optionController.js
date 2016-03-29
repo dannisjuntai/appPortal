@@ -14,22 +14,39 @@ var optionController = function ($scope, $location, groupFactory, breadcrumbServ
         }
     };
 
-    //$scope.options = [];
     $scope.optionSets = [];
+    $scope.option = {
+        select: [],
+        currentView: '',
+        fieldName: '',
+        optionName: '',
+        optionNo: 0
+    }
 
-    $scope.options = { select: [], fieldName: '' }
-    
 
     $scope.chang = function (f) {
-
         //取得集合
         if (f) {
-            getOptionSets($scope.options);
+            getOptionSets($scope.option);
         }
     };
 
     $scope.setOption = function (optionNo) {
-
+        setView('insert');
+    };
+    $scope.save = function () {
+        setOptionSets($scope.option);
+        setView('');
+    };
+    $scope.update = function (o) {
+        setView('insert');
+        $scope.option.optionName = o.optionName;
+        $scope.option.optionNo = o.optionNo;
+    };
+    $scope.cancel = function () {
+        setView('');
+        $scope.option.optionName = '';
+        $scope.option.optionNo = 0;
     };
     init();
     function init() {
@@ -47,7 +64,7 @@ var optionController = function ($scope, $location, groupFactory, breadcrumbServ
         groupFactory.getOptionFieldName().then(processSuccess, processError);
 
         function processSuccess(data) {
-            $scope.options.select = data;
+            $scope.option.select = data;
         };
         function processError(error) {
 
@@ -62,6 +79,19 @@ var optionController = function ($scope, $location, groupFactory, breadcrumbServ
         function processError(error) {
 
         };
+    }
+    function setOptionSets(option) {
+        groupFactory.setOptionSets(option).then(processSuccess, processError);
+        function processSuccess(data) {
+            $scope.optionSets = data;
+        };
+        function processError(error) {
+
+        };
+    }
+    //設定顯示區塊
+    function setView(view) {
+        $scope.option.currentView = view;
     }
 };
 

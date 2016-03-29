@@ -478,6 +478,23 @@ namespace appPortal.Controllers
             }
             return Request.CreateErrorResponse(HttpStatusCode.NotModified, "取得保養項目錯誤");
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public HttpResponseMessage SetOptionSets([FromBody]OptionSets param)
+        {
+            var vm = repository.SetOptionSets(param);
+
+            if (vm != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.Accepted, vm);
+            }
+            return Request.CreateErrorResponse(HttpStatusCode.NotModified, "取得保養項目錯誤");
+        }
+
 
         /// <summary>
         /// 參數設定List

@@ -250,7 +250,13 @@ var groupFactory = function ($http, $q, $resource) {
             return results.data;
         });
     }
-    
+    //
+    factory.setOptionSets = function (option) {
+        url = serviceBase + 'setOptionSets';
+        return $http.post(url, option).then(function (results) {
+            return results.data;
+        });
+    }
     return factory;
 };
 
