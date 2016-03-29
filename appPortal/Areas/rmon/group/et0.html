@@ -4,22 +4,6 @@
         <a ng-click="setBreadcrumbs(b)"><span>{{b.label}}</span></a>
     </li>
 </ul>
-
-
-<!--<div class="content-wrapper" style="min-height:480px">
-    <div class="row">
-        <div class="col-lg-1 col-md-2 col-sm-2" ng-repeat="e in equipments">
-            <a class="{{e.color}}">
-                <i class="fa fa-comment"></i>
-                <p ng-click="navDevice(e)">{{e.name}}</p>
-                <span class="notification red" ng-click="toggleModal(e)">{}</span>
-                <span class="notification1 blue" ng-click="setMaintain(e)">{{maintain}}</span>
-            </a>
-            <div>&nbsp;</div>
-        </div>
-    </div>
-
-</div>-->
 <div class="content-wrapper" style="min-height:480px">
     <div class="row">
         <div class="col-lg-2 col-md-2 col-sm-2" ng-repeat="e in equipments">
@@ -33,11 +17,42 @@
             <div>&nbsp;</div>
         </div>
     </div>
-
+    <div class="box main-footer">
+        <div class="box-header">
+            <span class="break">Alram Message</span>
+            <div class="box-icon">
+                <a ng-click="showHistory()" style="cursor:pointer;"><i class="fa fa-line-chart"></i>歷史資料</a>
+            </div>
+        </div>
+        <div class="box-body">
+            <table class="table table-fixed">
+                <thead>
+                    <tr>
+                        <th class="col-sm-6">Tag名稱</th>
+                        <th class="col-sm-2">告警類別</th>
+                        <th class="col-sm-2">數值</th>
+                        <th class="col-sm-2">告警狀態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="t in tagAlarms">
+                        <td class="col-sm-6"><a ng-click="goChart(t.linkTagSeq)">{{t.tagName}}</a></td>
+                        <td class="col-sm-2">{{t.tObjName}}</td>
+                        <td class="col-sm-2">{{t.curfValue}}</td>
+                        <td class="col-sm-2">
+                            <span class="label red">{{t.curSubStaName}}</span>
+                            <span class="label grey" ng-show="t.isCurLinkSta">{{t.curLinkStaName}}</span>
+                            <span class="label blue" ng-show="t.isMaintain">{{t.maintainName}}</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 
-<div class="main-footer">
+<!--<div class="main-footer">
     <div class="box">
         <div class="box-header">
             <span class="break"></span>Alram Message
@@ -53,7 +68,7 @@
                         <th>告警類別</th>
                         <th>數值</th>
                         <th>告警狀態</th>
-                        <!--<th>是否離線</th>-->
+              
                     </tr>
                 </thead>
                 <tbody>
@@ -66,15 +81,13 @@
                             <span class="label grey" ng-show="t.isCurLinkSta">{{t.curLinkStaName}}</span>
                             <span class="label blue" ng-show="t.isMaintain">{{t.maintainName}}</span>
                         </td>
-                        <!--<td class="center">
-                            <span class="label grey">{{t.curLinkStaName}}</span>
-                        </td>-->
+
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
-</div>
+</div>-->
 <modal title="告警資料" visible="showModal">
     <div class="modal-body">
         <table class="table table-hover">

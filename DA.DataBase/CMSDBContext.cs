@@ -65,6 +65,10 @@ namespace DA.DataBase
         /// </summary>
         public DbSet<EventSet> EventSet { get; set; }
         /// <summary>
+        /// 
+        /// </summary>
+        public DbSet<OptionSets> OptionSets { get; set; }
+        /// <summary>
         /// Attach 實作 IEFUnitOfWork
         /// 附加 Entity 
         /// </summary>

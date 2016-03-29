@@ -18,5 +18,7 @@ namespace DA.DataBase.Models
         public DateTime? RestTime { get; set; }
 
         public string Name { get; set; }
+
+        public string EventName { get; set; }
     }
 }

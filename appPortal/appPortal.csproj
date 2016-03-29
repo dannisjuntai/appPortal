@@ -278,6 +278,10 @@
     <Content Include="Content\themes\base\minified\jquery.ui.slider.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
+    <Content Include="Content\themes\docs.min.css" />
+    <Content Include="Content\themes\libs.min.css" />
+    <Content Include="Content\themes\main.css" />
+    <Content Include="Content\themes\template.css" />
     <Content Include="dist\bootstrap\css\bootstrap-datepicker.css" />
     <Content Include="dist\bootstrap\js\bootstrap-datepicker.js" />
     <Content Include="dist\chart\angular-chart.js" />
@@ -315,7 +319,12 @@
     <Content Include="Scripts\angular\angular-chartjs-directive.js" />
     <Content Include="Scripts\angular\angular-resource.min.js" />
     <Content Include="Scripts\angular\angular-route.min.js" />
+    <Content Include="Scripts\angular\angular-sanitize.min.js" />
+    <Content Include="Scripts\angular\angular-strap.docs.tpl.js" />
+    <Content Include="Scripts\angular\angular-strap.js" />
+    <Content Include="Scripts\angular\angular-strap.tpl.js" />
     <Content Include="Scripts\angular\angular.min.js" />
+    <Content Include="Scripts\angular\angular.pagination.js" />
     <Content Include="Scripts\angular\angular.treeview.js" />
     <Content Include="Scripts\angular\ng-modal.js" />
     <Content Include="Scripts\angular\ngQueue.js" />
