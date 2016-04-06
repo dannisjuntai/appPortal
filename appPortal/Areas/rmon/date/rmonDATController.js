@@ -1,8 +1,9 @@
-﻿var injectParams = ['$scope', '$location', '$routeParams', '$timeout', '$http', '$queueFactory', 'groupFactory', '$rootScope', 'breadcrumbService'];
+﻿var injectParams = ['$scope', '$location', '$routeParams', '$timeout', '$http', '$queueFactory', 'linkFactory', 'groupFactory', '$rootScope', 'breadcrumbService'];
 
-var rmonDATController = function ($scope, $location, $routeParams, $timeout, $http, $queueFactory, groupFactory, $rootScope, breadcrumbService) {
+var rmonDATController = function ($scope, $location, $routeParams, $timeout, $http, $queueFactory, linkFactory, groupFactory, $rootScope, breadcrumbService) {
     //$scope.breadcrumbs;
     $scope.tagAlarms = [];
+    $scope.linkTags = [];
     $scope.rootGroupId = $rootScope.groupId;
     $scope.groupId = ($routeParams.groupId) ? parseInt($routeParams.groupId) : 0;
     $scope.locationId = 0;
@@ -38,7 +39,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         canvas.setBackgroundImage(imgbase64, canvas.renderAll.bind(canvas));
     };
 
-    var dt = new Date();
+  
 
     //取得告警資料
     function getTagAlarm() {
@@ -52,13 +53,26 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         }
     }
 
+    function getDeviceLinkTags() {
+        linkFactory.getDeviceLinkTags($scope.groupId).then(processSuccess, processError);
+
+        function processSuccess(data) {
+            $scope.linkTags = data.linkTags;
+        }
+        function processError(error) {
+
+        }
+    }
+
     function getData() {
         queue.enqueue(function () {
             getGroupLocations();
-            getTagAlarm();
+            //getTagAlarm();
+            getDeviceLinkTags();
         });
         queue.enqueue(function (data) {
             // all tasks finished
+            var dt = new Date();
             console.log('工作順利完成！' + dt);
         });
     }

@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DA.DataBase.Utilities;
 using DA.DataBase.Models.Departments;
+
 
 namespace DA.DataBase.Repositories
 {
@@ -26,7 +26,6 @@ namespace DA.DataBase.Repositories
         }
         #endregion
 
-
         /// <summary>
         /// 取得群組資料
         /// </summary>
@@ -39,7 +38,7 @@ namespace DA.DataBase.Repositories
 
                 var q = from a in db.Groups
                         where a.ParentId == 0 &&
-                              a.ModifyFlag < 3
+                              a.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select a;
 
                 if (q.Any() == true)
@@ -82,7 +81,7 @@ namespace DA.DataBase.Repositories
             {
                 var q = from a in db.Groups
                         where a.ParentId == parentId &&
-                              a.ModifyFlag < 3
+                              a.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select a;
                 if (q.Any() == true)
                 {
@@ -91,7 +90,7 @@ namespace DA.DataBase.Repositories
                         //判斷是否還有下階
                         var p = from b in db.Groups
                                 where b.ParentId == o.GroupId &&
-                                      b.ModifyFlag < 3
+                                      b.ModifyFlag < (int)ModifyFlagEnum.Delete
                                 select b;
                         if (p.Any() == true)
                         {
@@ -237,8 +236,8 @@ namespace DA.DataBase.Repositories
                         join b in db.MemTag on a.MTagSeq equals b.MTagSeq
                         join c in db.TagObj on b.TObjSeq equals c.TObjSeq
                         where a.LinkSubSeq == linkSubSeq &&
-                              a.ModifyFlag < 3 &&
-                              b.ModifyFlag < 3
+                              a.ModifyFlag < (int)ModifyFlagEnum.Delete &&
+                              b.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select new { a, b, c };
 
                 if (q.Any())
@@ -303,7 +302,7 @@ namespace DA.DataBase.Repositories
                     linkTag.AlarmFlag = getAlarmFlag(vm.IsLowAlarm, vm.IsUpAlarm);
                     linkTag.UpAlarm = vm.UpAlarm;
                     linkTag.LowAlarm = vm.LowAlarm;
-                    linkTag.ModifyFlag = 2;
+                    linkTag.ModifyFlag = (int)ModifyFlagEnum.Update;
                     errorCode = db.Update<LinkTag>(linkTag, linkTag.LinkTagSeq);
                 }
                 if (vm.MTagSeq > 0)
@@ -350,7 +349,7 @@ namespace DA.DataBase.Repositories
                 {
                     memTag.ShortName = shortName;
                     memTag.UnitName = unitName;
-                    memTag.ModifyFlag = 2;
+                    memTag.ModifyFlag = (int)ModifyFlagEnum.Update;
                     errorCode = db.Update<MemTag>(memTag, memTag.MTagSeq);
                 }
             }
@@ -367,8 +366,8 @@ namespace DA.DataBase.Repositories
             {
                 var q = from a in db.LinkDevice
                         join b in db.LinkDevSub on a.LinkID equals b.LinkID
-                        where a.ModifyFlag < 3 &&
-                              b.ModifyFlag < 3
+                        where a.ModifyFlag < (int)ModifyFlagEnum.Delete &&
+                              b.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select new { a.LinkID, a.LinkDevName, b.LinkSubSeq, b.LinkSubName };
                 if (q.Any())
                 {
@@ -400,8 +399,8 @@ namespace DA.DataBase.Repositories
                         join b in db.MemTag on a.MTagSeq equals b.MTagSeq
                         join c in db.TagObj on b.TObjSeq equals c.TObjSeq
                         where a.LinkSubSeq == linkSubSeq &&
-                              a.ModifyFlag < 3 &&
-                              b.ModifyFlag < 3 &&
+                              a.ModifyFlag < (int)ModifyFlagEnum.Delete &&
+                              b.ModifyFlag < (int)ModifyFlagEnum.Delete &&
                               a.UISelFlag == 1
                         select new { a, b, c };
                 if (q.Any())
@@ -513,11 +512,11 @@ namespace DA.DataBase.Repositories
             foreach (var o in g1.ToList())
             {
                 var e = getEventSetByData(o.GroupId);
-                if (e!=null)
+                if (e != null)
                 {
                     vms.Add(e);
                 }
-                
+
             }
             sw.Stop();
             System.Diagnostics.Debug.WriteLine(sw.ElapsedMilliseconds);
@@ -620,7 +619,7 @@ namespace DA.DataBase.Repositories
             {
                 var q = from a in db.Groups
                         where a.GroupId == groupId &&
-                              a.ModifyFlag < 3
+                              a.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select a;
                 if (q.Any())
                 {
@@ -647,7 +646,7 @@ namespace DA.DataBase.Repositories
                         join d in db.LinkTag on a.LinkTagSeq equals d.LinkTagSeq
                         join e in db.MemTag on a.MTagSeq equals e.MTagSeq
                         where a.GroupId == groupId &&
-                              a.ModifyFlag < 3
+                              a.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select new { a, b, c, d, e };
                 if (q.Any())
                 {
@@ -723,7 +722,7 @@ namespace DA.DataBase.Repositories
             {
                 var q = from a in db.GroupLocations
                         where a.GroupId == groupId &&
-                              a.ModifyFlag < 3
+                              a.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select a;
                 if (q.Any())
                 {
@@ -770,7 +769,7 @@ namespace DA.DataBase.Repositories
                 if (obj != null)
                 {
                     obj.GroupId = vm.GroupId;
-                    obj.ModifyFlag = 2;
+                    obj.ModifyFlag = (int)ModifyFlagEnum.Delete;
 
                 }
                 errorCode = db.Update<LinkTag>(obj, obj.LinkTagSeq);
@@ -796,7 +795,7 @@ namespace DA.DataBase.Repositories
                     TObjSeq = vm.TObjSeq,
                     LocationValue = vm.LocationValue,
                     Prompt = vm.Prompt,
-                    ModifyFlag = 0,
+                    ModifyFlag = (int)ModifyFlagEnum.Insert,
                     CreateTime = DateTime.Now,
                     CreateUser = 0,
                     SystemUser = 0,
@@ -862,7 +861,7 @@ namespace DA.DataBase.Repositories
                 if (obj != null)
                 {
                     obj.LocationValue = vm.LocationValue;
-                    obj.ModifyFlag = 1;
+                    obj.ModifyFlag = (int)ModifyFlagEnum.Update;
                     obj.SystemTime = DateTime.Now;
                 }
                 errorCode = db.Update<GroupLocations>(obj, obj.LocationId);
@@ -888,7 +887,7 @@ namespace DA.DataBase.Repositories
                 if (obj != null)
                 {
                     //obj.LocationValue = vm.LocationValue;
-                    obj.ModifyFlag = 3;
+                    obj.ModifyFlag = (int)ModifyFlagEnum.Delete;
                     obj.SystemTime = DateTime.Now;
                 }
                 int errorCode = db.Update<GroupLocations>(obj, obj.LocationId);
@@ -1091,7 +1090,7 @@ namespace DA.DataBase.Repositories
                 if (q.Any())
                 {
                     var o = q.FirstOrDefault();
-                    o.ModifyFlag = 3;
+                    o.ModifyFlag = (int)ModifyFlagEnum.Delete;
                     o.SystemTime = DateTime.Now;
                     return db.SaveChanges();
                 }
@@ -1171,7 +1170,7 @@ namespace DA.DataBase.Repositories
             {
                 var q = from a in db.Groups
                         where a.ParentId == groupId &&
-                              a.ModifyFlag < 3
+                              a.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select a;
                 if (q.Any() == true)
                 {
@@ -1180,7 +1179,7 @@ namespace DA.DataBase.Repositories
                         //判斷是否還有下階
                         var p = from b in db.Groups
                                 where b.ParentId == o.GroupId &&
-                                      b.ModifyFlag < 3
+                                      b.ModifyFlag < (int)ModifyFlagEnum.Delete
                                 select b;
 
                         if (p.Any() == true)
@@ -1209,7 +1208,7 @@ namespace DA.DataBase.Repositories
                         join b in db.GroupLocations on a.GroupId equals b.GroupId into p
                         from r in p.DefaultIfEmpty()
                         where a.ParentId == groupId &&
-                              a.ModifyFlag < 3
+                              a.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select new { a, r };
                 //下階有資料
                 if (q.Any() == true)
@@ -1218,7 +1217,7 @@ namespace DA.DataBase.Repositories
                     {
                         if (o.r != null)
                         {
-                            if (o.r.ModifyFlag >= 3)
+                            if (o.r.ModifyFlag >= (int)ModifyFlagEnum.Delete)
                             {
                                 continue;
                             }
@@ -1226,7 +1225,7 @@ namespace DA.DataBase.Repositories
                         //判斷是否還有下階
                         var p = from b in db.Groups
                                 where b.ParentId == o.a.GroupId &&
-                                      b.ModifyFlag < 3
+                                      b.ModifyFlag < (int)ModifyFlagEnum.Delete
                                 select b;
                         var g = new GroupModel()
                         {
@@ -1247,7 +1246,7 @@ namespace DA.DataBase.Repositories
                     var q1 = from a in db.Groups
                              join b in db.GroupLocations on a.GroupId equals b.GroupId
                              where a.GroupId == groupId &&
-                                   a.ModifyFlag < 3
+                                   a.ModifyFlag < (int)ModifyFlagEnum.Delete
                              select new { a, b };
 
                     if (q1.Any() == true)
@@ -1286,7 +1285,7 @@ namespace DA.DataBase.Repositories
                         join d in db.TagObj on a.TObjSeq equals d.TObjSeq
                         join e in db.MemTag on a.MTagSeq equals e.MTagSeq
                         where a.GroupId == groupId &&
-                              a.ModifyFlag < 3
+                              a.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select new { a, b, c, d, e };
                 if (prompt == true)
                 {
@@ -1405,7 +1404,7 @@ namespace DA.DataBase.Repositories
                     if (obj != null)
                     {
                         obj.CurValue = value;
-                        obj.ModifyFlag = 2;
+                        obj.ModifyFlag = (int)ModifyFlagEnum.Update;
 
                     }
                     result = db.Update<LinkTag>(obj, obj.LinkTagSeq);
@@ -1540,12 +1539,14 @@ namespace DA.DataBase.Repositories
                     {
                         TagValueViewModel tag = new TagValueViewModel()
                         {
-                            Labels = o.RecTime.ToJavascriptTimestamp(),
+
+                            Labels = o.RecTime.ToJavascriptTimestamp(),//(o.RecTime - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds,
                             Data = o.fValue.ToString()
                         };
                         tags.Add(tag);
                     }
                 }
+             
             }
             return tags;
         }
@@ -1605,7 +1606,7 @@ namespace DA.DataBase.Repositories
                         if (link != null)
                         {
                             link.Maintain = maintain;
-                            link.ModifyFlag = 2;
+                            link.ModifyFlag = (int)ModifyFlagEnum.Update;
                             errorCode = db.Update<LinkTag>(link, link.LinkTagSeq);
                             if (errorCode <= 0)
                             {
@@ -1700,7 +1701,7 @@ namespace DA.DataBase.Repositories
             {
                 var q = from a in db.Groups
                         where a.ParentId == 1 &&
-                              a.ModifyFlag < 3
+                              a.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select a;
                 if (q.Any())
                 {
@@ -1741,7 +1742,7 @@ namespace DA.DataBase.Repositories
                 //找尋群組資料
                 var q = from a in db.Groups
                         where a.ParentId == groupId &&
-                              a.ModifyFlag < 3
+                              a.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select a;
                 if (q.Any())
                 {
@@ -1772,6 +1773,8 @@ namespace DA.DataBase.Repositories
         /// <returns></returns>
         public List<MainToolViewModel> GetMainTools(int groupId)
         {
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
 
             List<MainToolViewModel> mts = new List<MainToolViewModel>();
             using (var db = new CMSDBContext())
@@ -1779,7 +1782,7 @@ namespace DA.DataBase.Repositories
                 //找尋群組資料
                 var q = from a in db.Groups
                         where a.ParentId == groupId &&
-                              a.ModifyFlag < 3
+                              a.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select a;
 
                 if (q.Any())
@@ -1806,7 +1809,8 @@ namespace DA.DataBase.Repositories
                     }
                 }
             }
-
+            sw.Stop();
+            System.Diagnostics.Debug.WriteLine(sw.ElapsedMilliseconds);
             return mts;
         }
         private int getEventSetByMaintain(int groupId)
@@ -1848,7 +1852,7 @@ namespace DA.DataBase.Repositories
                 {
                     var q = from a in db.LinkTag
                             where a.LinkSubSeq == o &&
-                                  a.ModifyFlag < 3
+                                  a.ModifyFlag < (int)ModifyFlagEnum.Delete
                             select a;
                     if (q.Any())
                     {
@@ -1918,7 +1922,7 @@ namespace DA.DataBase.Repositories
                 //找尋群組資料
                 var q = from a in db.Groups
                         where a.ParentId == groupId &&
-                              a.ModifyFlag < 3
+                              a.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select a;
 
                 if (q.Any())
@@ -1989,20 +1993,23 @@ namespace DA.DataBase.Repositories
                 foreach (var o in g.ToList())
                 {
                     var q = from a in db.EventSet
+                            join b in db.OptionSets on a.EventLevel equals b.OptionNo
+                             where b.FieldName =="EventLevel"
                             where a.GroupId == o.GroupId &&
-                                  a.ConfirmTime.Value == null
+                                  a.ConfirmTime.Value == null 
                             orderby a.RestTime descending
-                            select a;
+                            select new {a,b};
                     if (q.Any())
                     {
                         foreach (var p in q.ToList())
                         {
                             EventViewModel e = new EventViewModel()
                             {
-                                LinkTagSeq = p.LinkTagSeq,
-                                RecTime = p.RecTime,
-                                RestTime = p.RestTime,
-                                Name = p.Name
+                                LinkTagSeq = p.a.LinkTagSeq,
+                                RecTime = p.a.RecTime,
+                                RestTime = p.a.RestTime,
+                                Name = p.a.Name,
+                                EventName = p.b.OptionName
                             };
                             events.Add(e);
 
@@ -2043,10 +2050,10 @@ namespace DA.DataBase.Repositories
                                   b.OptionNo == a.EventLevel &&
                                   b.FieldName == "EventLevel"
                             orderby a.RecTime descending
-                            select a;
+                            select new { a, b };
                     if (param.OptionNo > 0)
                     {
-                        q = q.Where(p => p.EventLevel == param.OptionNo).OrderByDescending(p=>p.RecTime);
+                        q = q.Where(p => p.a.EventLevel == param.OptionNo).OrderByDescending(p => p.a.RecTime);
                     }
                     if (q.Any())
                     {
@@ -2055,10 +2062,11 @@ namespace DA.DataBase.Repositories
                         {
                             EventViewModel e = new EventViewModel()
                             {
-                                LinkTagSeq = p.LinkTagSeq,
-                                RecTime = p.RecTime,
-                                RestTime = p.RestTime,
-                                Name = p.Name
+                                LinkTagSeq = p.a.LinkTagSeq,
+                                RecTime = p.a.RecTime,
+                                RestTime = p.a.RestTime,
+                                Name = p.a.Name,
+                                EventName = p.b.OptionName
                             };
                             events.Add(e);
                         }
@@ -2117,7 +2125,7 @@ namespace DA.DataBase.Repositories
             {
                 var q = from a in db.Groups
                         where a.ParentId == groupId &&
-                              a.ModifyFlag < 3
+                              a.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select a;
                 if (q.Any())
                 {
@@ -2172,7 +2180,7 @@ namespace DA.DataBase.Repositories
             using (var db = new CMSDBContext())
             {
                 var q = (from a in db.OptionSets
-                        select a.FieldName).Distinct();
+                         select a.FieldName).Distinct();
 
                 return q.ToList();
             }
@@ -2233,7 +2241,7 @@ namespace DA.DataBase.Repositories
 
             }
         }
-        
+
         private int updateOptionSets(OptionSets option)
         {
             using (var db = new CMSDBContext())
@@ -2249,7 +2257,7 @@ namespace DA.DataBase.Repositories
                         var o = q.FirstOrDefault();
                         o.OptionName = option.OptionName;
                         o.SystemTime = DateTime.Now;
-
+                        o.EndDate = option.EndDate;
                         return db.Update<OptionSets>(o, o.FieldName, o.OptionNo, o.EndDate);
                         //return db.SaveChanges();
                     }
@@ -2272,7 +2280,7 @@ namespace DA.DataBase.Repositories
                              where a.FieldName == fieldName
                              select a.OptionNo).Max() + 1;
 
-                    return (byte)q ;
+                    return (byte)q;
                 }
                 catch
                 {

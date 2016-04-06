@@ -18,9 +18,9 @@ var optionController = function ($scope, $location, groupFactory, breadcrumbServ
     $scope.option = {
         select: [],
         currentView: '',
-        fieldName: '',
-        optionName: '',
-        optionNo: 0
+        //fieldName: '',
+        //optionName: '',
+        //optionNo: 0
     }
 
 
@@ -39,14 +39,13 @@ var optionController = function ($scope, $location, groupFactory, breadcrumbServ
         setView('');
     };
     $scope.update = function (o) {
+        $scope.option = o;
         setView('insert');
-        $scope.option.optionName = o.optionName;
-        $scope.option.optionNo = o.optionNo;
-    };
+
+    }
     $scope.cancel = function () {
         setView('');
-        $scope.option.optionName = '';
-        $scope.option.optionNo = 0;
+        //$scope.option =[];
     };
     init();
     function init() {

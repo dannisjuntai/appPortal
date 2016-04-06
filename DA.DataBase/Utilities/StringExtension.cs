@@ -245,13 +245,8 @@ namespace DA.DataBase.Utilities
         /// <returns></returns>
         public static double ToJavascriptTimestamp(this DateTime input)
         {
-            //var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            //var time = input.Subtract(new TimeSpan(epoch.Ticks));
-
-            //return (long)((time.Ticks + 28800) / 10000);
-
-            DateTime d1 = new DateTime(1970, 1, 1);
-            DateTime d2 = input.ToUniversalTime();
+            DateTime d1 = new DateTime(1970, 1, 1, 0, 0, 0);
+            DateTime d2 = input;
             TimeSpan ts = new TimeSpan(d2.Ticks - d1.Ticks);
 
 

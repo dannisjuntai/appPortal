@@ -160,6 +160,7 @@
     <Compile Include="Controllers\AuthenticateController.cs" />
     <Compile Include="Controllers\GroupController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LinkController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -399,6 +400,10 @@
     <ProjectReference Include="..\DA.DataBase\DA.DataBase.csproj">
       <Project>{f674dcea-6556-4c48-aa3a-38407700b44e}</Project>
       <Name>DA.DataBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FABTool\FABTool.csproj">
+      <Project>{7e7999d1-ec8e-47bc-934b-811e7d169c00}</Project>
+      <Name>FABTool</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

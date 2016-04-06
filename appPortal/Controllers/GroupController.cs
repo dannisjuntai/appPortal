@@ -1,6 +1,7 @@
 ﻿using DA.DataBase.Entities;
 using DA.DataBase.Models;
 using DA.DataBase.Repositories;
+using FABTool.Repositories;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,9 @@ namespace appPortal.Controllers
     public class GroupController : ApiController
     {
         static GroupRepository repository = new GroupRepository();
+
         public GroupController() { }
+
         /// <summary>
         /// 
         /// </summary>

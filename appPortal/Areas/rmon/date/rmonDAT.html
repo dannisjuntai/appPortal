@@ -34,14 +34,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="t in tagAlarms">
-                        <td class="col-sm-6"><a ng-click="goChart(t.linkTagSeq)">{{t.tagName}}</a></td>
+                    <tr ng-repeat="t in linkTags">
+                        <td class="col-sm-6"><a ng-click="goChart(t.linkTagSeq)">{{t.linkTag.tagName}}</a></td>
                         <td class="col-sm-2">{{t.tObjName}}</td>
-                        <td class="col-sm-2">{{t.curfValue}}</td>
+                        <td class="col-sm-2">{{t.linkTag.curfValue}}</td>
                         <td class="col-sm-2">
                             <span class="label red">{{t.curSubStaName}}</span>
-                            <span class="label grey" ng-show="t.isCurLinkSta">{{t.curLinkStaName}}</span>
-                            <span class="label blue" ng-show="t.isMaintain">{{t.maintainName}}</span>
+                            <span class="label grey">{{t.curLinkStaName}}</span>
+                            <span class="label blue">{{t.maintainName}}</span>
                         </td>
                     </tr>
                 </tbody>
@@ -96,16 +96,16 @@
                     <tr>
                         <th class="col-md-3">訊息時間</th>
                         <th class="col-md-3">復歸時間</th>
-                        <th class="col-md-1">狀態</th>
-                        <th class="col-md-5">訊息名稱</th>
+                        <th class="col-md-2">類別</th>
+                        <th class="col-md-4">訊息名稱</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="e in events">
                         <td class="col-md-3">{{ e.recTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                         <td class="col-md-3">{{ e.restTime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                        <td class="col-md-1">ABC</td>
-                        <td class="col-md-5">{{ e.name }}</td>
+                        <td class="col-md-2">{{e.eventName}}</td>
+                        <td class="col-md-4">{{ e.name }}</td>
                     </tr>
                 </tbody>
             </table>

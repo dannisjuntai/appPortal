@@ -1,7 +1,8 @@
-﻿var injectParams = ['$scope', '$location', '$routeParams', 'groupFactory', 'breadcrumbService'];
+﻿var injectParams = ['$scope', '$location', '$routeParams', 'groupFactory', 'linkFactory', 'breadcrumbService'];
 
-var et0Controller = function ($scope, $location, $routeParams, groupFactory, breadcrumbService) {
+var et0Controller = function ($scope, $location, $routeParams, groupFactory, linkFactory, breadcrumbService) {
     $scope.breadcrumbs;
+    $scope.linkTags = [];
     //歷史資料查詢參數
     $scope.history = {
         modal: false,
@@ -17,7 +18,7 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, bre
     //Main Tool
     $scope.equipments = [];
     //初始化
-    $scope.groupId = ($routeParams.groupId) ? parseInt($routeParams.groupId) : 1;
+    $scope.groupId = ($routeParams.groupId) ? parseInt($routeParams.groupId) : 0;
     $scope.group;
 
     //顯示Modal 
@@ -114,6 +115,8 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, bre
         getEquipments();
         getMaintainItems();
         getEventLevels();
+        //即時訊息
+        getEquipmentLinkTags($scope.groupId);
     }
     //取得事件項目
     function getEventLevels() {
@@ -197,11 +200,19 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, bre
         function processError(error) {
         }
     };
+    function getEquipmentLinkTags(id) {
+        linkFactory.getEquipmentLinkTags(id).then(processSuccess, processError);
+        function processSuccess(data) {
+            $scope.linkTags = data.linkTags;
+        }
+        function processError(error) { }
+    }
     //執行資料更新
     var changLinkTag = setInterval(function () {
         getEquipments();
-        getTagAlarm();
-    }, 1000);
+        //getTagAlarm();
+        getEquipmentLinkTags($scope.groupId);
+    }, 2000);
 
     $scope.$on("$routeChangeStart", function (next, current) {
 

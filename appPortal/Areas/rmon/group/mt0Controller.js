@@ -1,6 +1,6 @@
-﻿var injectParams = ['$scope', '$location', '$routeParams', 'groupFactory', 'breadcrumbService'];
+﻿var injectParams = ['$scope', '$location', '$routeParams', 'groupFactory', 'linkFactory', 'breadcrumbService'];
 
-var mt0Controller = function ($scope, $location, $routeParams, groupFactory, breadcrumbService) {
+var mt0Controller = function ($scope, $location, $routeParams, groupFactory, linkFactory, breadcrumbService) {
     //歷史資料查詢參數
     $scope.history = {
         modal: false,
@@ -15,11 +15,13 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, bre
 
 
     $scope.tagAlarms = [];
+    //即時訊息
+    $scope.linkTags = [];
     $scope.breadcrumbs;
     //Main Tool
     $scope.mainTools = [];
     //初始化
-    $scope.groupId = ($routeParams.groupId) ? parseInt($routeParams.groupId) : 1;
+    $scope.groupId = ($routeParams.groupId) ? parseInt($routeParams.groupId) : 0;
 
     $scope.group;
     $scope.parentUrl;
@@ -75,8 +77,11 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, bre
     function init() {
         getGroup();
         getMainTools();
-        getTagAlarm();
+        //getTagAlarm();
         getEventLevels();
+
+        //修正
+        getMainToolLinkTags($scope.groupId);
     }
     //取得事件項目
     function getEventLevels() {
@@ -148,11 +153,19 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, bre
         function processError(error) {
         }
     };
+    //
+    function getMainToolLinkTags(id) {
+        linkFactory.getMainToolLinkTags(id).then(processSuccess, processError);
+        function processSuccess(data) {
+            $scope.linkTags = data.linkTags;
+        }
+        function processError(error) { }
+    }
 
     //執行資料更新
     var changLinkTag = setInterval(function () {
         getMainTools();
-        getTagAlarm();
+        getMainToolLinkTags($scope.groupId);
     }, 2000);
 
     $scope.$on("$routeChangeStart", function (next, current) {

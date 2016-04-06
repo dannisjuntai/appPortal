@@ -35,6 +35,7 @@ var groupFactory = function ($http, $q, $resource) {
 
     var url = "";
 
+
     //取得 群組階層
     factory.getGroups = function () {
         return $http.get(serviceBase + 'GetGroups').then(function (results) {
@@ -161,12 +162,12 @@ var groupFactory = function ($http, $q, $resource) {
         });
     };
     //取得部門資料
-    factory.getDepartments = function () {
-        url = serviceBase + 'getDepartments';
-        return $http.get(url).then(function (results) {
-            return results.data;
-        });
-    };
+    //factory.getDepartments = function () {
+    //    url = serviceBase + 'getDepartments';
+    //    return $http.get(url).then(function (results) {
+    //        return results.data;
+    //    });
+    //};
     //取得部門資料
     factory.getDepartment = function (groupId) {
         url = serviceBase + 'getDepartment/' + groupId;
@@ -223,7 +224,7 @@ var groupFactory = function ($http, $q, $resource) {
         });
     }
     //取得保養項目
-    factory.getMaintainItems = function(){
+    factory.getMaintainItems = function () {
         url = serviceBase + 'getMaintainItems';
         return $http.get(url).then(function (results) {
             return results.data;
@@ -264,6 +265,72 @@ groupFactory.$inject = injectParams;
 
 app.factory('groupFactory', groupFactory);
 
+var linkFactory = function ($http, $q, $resource) {
+    var serviceBase = '/api/link/', factory = {};
+
+    var url = "";
+    //取得組織
+    factory.getOrganization = function () {
+        url = serviceBase + 'getOrganization';
+        return $http.get(url).then(function (results) {
+            return results.data;
+        });
+    };
+    //取得部門
+    factory.getDepartments = function (id) {
+        url = serviceBase + 'getDepartments/' + id;
+        return $http.get(url).then(function (results) {
+            return results.data;
+        });
+    };
+    //取得主機台
+    factory.getMainTools = function (id) {
+        url = serviceBase + 'getMainTools/' + id;
+        return $http.get(url).then(function (results) {
+            return results.data;
+        });
+    };
+    //取得設備
+    factory.getEquipments = function (id) {
+        url = serviceBase + 'getEquipments/' + id;
+        return $http.get(url).then(function (results) {
+            return results.data;
+        });
+    };
+    //getMainToolLinkTags
+    factory.getMainToolLinkTags = function (id) {
+        url = serviceBase + 'getMainToolLinkTags/' + id;
+        return $http.get(url).then(function (results) {
+            return results.data;
+        });
+    };
+    //getEquipmentLinkTags
+    factory.getEquipmentLinkTags = function (id) {
+        url = serviceBase + 'getEquipmentLinkTags/' + id;
+        return $http.get(url).then(function (results) {
+            return results.data;
+        });
+    };
+    //getDeviceLinkTags
+    factory.getDeviceLinkTags = function (id) {
+        url = serviceBase + 'getDeviceLinkTags/' + id;
+        return $http.get(url).then(function (results) {
+            return results.data;
+        });
+    };
+    //取得趨勢圖
+    factory.getHistoryTags = function (vm) {
+        url = serviceBase + 'getHistoryTags';
+        return $http.post(url, vm).then(function (results) {
+            return results.data;
+        });
+    };
+    return factory;
+};
+
+linkFactory.$inject = injectParams;
+
+app.factory('linkFactory', linkFactory);
 var breadcrumbService = function () {
     var self = this;
     var breadcrumbs = [];
