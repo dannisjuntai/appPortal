@@ -139,7 +139,7 @@ namespace appPortal.Controllers
         [HttpPost]
         public HttpResponseMessage GetHistoryTags([FromBody]DA.DataBase.Models.TagParamViewModel param)
         {
-   
+
             var result = linkRepo.GetHistoryTags(param);
 
             if (result != null)
@@ -149,5 +149,21 @@ namespace appPortal.Controllers
             return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "取得趨勢圖錯誤");
         }
         #endregion
+        /// <summary>
+        /// 取得趨勢圖
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public HttpResponseMessage GetHistoryTag(DA.DataBase.Models.TagParam param)
+        {
+            var result = linkRepo.GetHistoryTag(param);
+
+            if (result != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.Accepted, result);
+            }
+            return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "取得趨勢圖錯誤");
+        }
     }
 }

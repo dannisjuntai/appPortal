@@ -325,6 +325,13 @@ var linkFactory = function ($http, $q, $resource) {
             return results.data;
         });
     };
+    //取得趨勢圖 單點
+    factory.getHistoryTag = function (param) {
+        url = serviceBase + 'getHistoryTag';
+        return $http.post(url, param).then(function (results) {
+            return results.data;
+        });
+    };
     return factory;
 };
 

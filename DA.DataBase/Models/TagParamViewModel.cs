@@ -20,4 +20,10 @@ namespace DA.DataBase.Models
 
         public List<LinkTagViewModel> LinkTags { get; set; }
     }
+    public class TagParam
+    {
+        public int GroupId { get; set; }
+
+        public int LocationId { get; set; }
+    }
 }

@@ -1419,29 +1419,33 @@ namespace DA.DataBase.Repositories
         /// <param name="locationId"></param>
         /// <param name="limitDt"></param>
         /// <returns></returns>
-        public List<TagValueViewModel> GetTagHistories(int groupId, int locationId, int limitDt)
+        public Chart GetTagHistories(int groupId, int locationId, int limitDt)
         {
+            Chart chart = new Chart();
+
             List<TagValueViewModel> tags = new List<TagValueViewModel>();
             using (var db = new CMSDBContext())
             {
                 var q = from a in db.GroupLocations
                         join b in db.TagHistory on a.LinkTagSeq equals b.LinkTagSeq
+                        join c in db.LinkTag on b.LinkTagSeq equals c.LinkTagSeq
                         where a.GroupId == groupId &
                               a.LocationId == locationId &
                               b.RecTime >= new DateTime(2015, 12, 20)
                         orderby b.RecTime
-                        select new { a, b };
+                        select new { a, b, c };
                 if (q.Any())
                 {
                     int count = 0;
+                    string label = q.FirstOrDefault().c.TagName;
 
                     foreach (var obj in q.OrderByDescending(p => p.b.RecTime).Take(100))
                     {
-                        //minute = obj.b.RecTime.ToString("mm:ss")
                         TagValueViewModel tag = new TagValueViewModel()
                         {
                             Labels = obj.b.RecTime.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds,
                             Data = obj.b.fValue.ToString()
+
                         };
 
                         tags.Add(tag);
@@ -1451,10 +1455,95 @@ namespace DA.DataBase.Repositories
                             break;
                         }
                     }
+                    TagValuesViewModel vms = new TagValuesViewModel()
+                    {
+                        List = tags,
+                        Label =label,
+                        Yaxis = 0
+                    };
+                    chart.Data.Add(vms);
+                    double firstX = tags.FirstOrDefault().Labels;
+                    double lastX = tags.LastOrDefault().Labels;
+                    //加入上下限值
+                    var uporlow = getUpAndLow(firstX, lastX, q.FirstOrDefault().a.LinkTagSeq);
+                    if (uporlow != null)
+                        chart.Data.AddRange(uporlow);
+                    return chart;
                 }
             }
-
-            return tags;
+            
+            return null;
+        }
+        private List<TagValuesViewModel> getUpAndLow(double firstX, double lastX, int linkTagSeq)
+        {
+            List<TagValuesViewModel> vms = new List<TagValuesViewModel>();
+            using (var db = new CMSDBContext())
+            {
+                var q = from a in db.LinkTag
+                        where a.LinkTagSeq == linkTagSeq
+                        select a;
+                if (q.Any())
+                {
+                    var o = q.FirstOrDefault();
+                    if (o.AlarmFlag ==1)
+                    {
+                        TagValuesViewModel vm = new TagValuesViewModel()
+                        {
+                            List = getUp(firstX, lastX, o.UpAlarm),
+                            Label = "超值",
+                            Yaxis = 1
+                        };
+                        vms.Add(vm);
+                       
+                    }
+                    else if (o.AlarmFlag ==2)
+                    {
+                        TagValuesViewModel vm = new TagValuesViewModel()
+                        {
+                            List = getUp(firstX, lastX, o.LowAlarm),
+                            Label = "低值",
+                            Yaxis = 1
+                        };
+                        vms.Add(vm);
+                    }
+                    else if (o.AlarmFlag ==3)
+                    {
+                        TagValuesViewModel vm1 = new TagValuesViewModel()
+                        {
+                            List = getUp(firstX, lastX, o.UpAlarm),
+                            Label = "超值",
+                            Yaxis = 2
+                        };
+                        vms.Add(vm1);
+                        TagValuesViewModel vm2 = new TagValuesViewModel()
+                        {
+                            List = getUp(firstX, lastX, o.LowAlarm),
+                            Label = "低值",
+                            Yaxis = 3
+                        };
+                        vms.Add(vm2);
+                    }
+                    return vms;
+                }
+            }
+            return null;
+        }
+        private List<TagValueViewModel> getUp(double firstX, double lastX, decimal? y)
+        {
+            List<TagValueViewModel> vms = new List<TagValueViewModel>();
+            TagValueViewModel tag1 = new TagValueViewModel()
+            {
+                Labels = firstX,
+                Data = y.ToString()
+            };
+            vms.Add(tag1);
+            TagValueViewModel tag2 = new TagValueViewModel()
+            {
+                Labels = lastX,
+                Data = y.ToString()
+            };
+            vms.Add(tag2);
+            return vms;
         }
         /// <summary>
         /// 取得歷史資料

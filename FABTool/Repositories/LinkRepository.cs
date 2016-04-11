@@ -138,7 +138,7 @@ namespace FABTool.Repositories
                         tags.Add(tag);
                     }
                     //加入保養?
-        
+
                     //連線狀態
                     LinkDeviceViewModel vm = new LinkDeviceViewModel()
                     {
@@ -189,7 +189,159 @@ namespace FABTool.Repositories
         #region  取得群組 告警狀態
         #endregion
 
-        public List<TagsViewModel> GetHistoryTags(DA.DataBase.Models.TagParamViewModel param)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public ChartViewModel GetHistoryTag(DA.DataBase.Models.TagParam param)
+        {
+            List<TagsViewModel> tags = new List<TagsViewModel>();
+            var recTime = DateTime.Now.AddDays(-60);
+            List<Yaxis> yaxes = new List<Yaxis>();
+
+            using (var db = new CMSDBContext())
+            {
+                //取得單點
+                var q = from a in db.GroupLocations
+                        join b in db.LinkTag on a.LinkTagSeq equals b.LinkTagSeq
+                        where a.ModifyFlag < (byte)ModifyFlagEnum.Delete &&
+                              b.ModifyFlag < (byte)ModifyFlagEnum.Delete &&
+                              a.GroupId == param.GroupId &&
+                              a.LocationId == param.LocationId
+                        select new { a, b };
+
+                if (q.Any())
+                {
+                    int y = 0;
+                    var o = q.FirstOrDefault();
+                    var t = getTagHistory(recTime, DateTime.Now, o.a.LinkTagSeq);
+
+                    TagsViewModel tag = new TagsViewModel()
+                    {
+                        Label = o.b.TagName,
+                        Yaxis = y,
+                        Data = t,
+                    };
+                    tags.Add(tag);
+
+                    var yaxis = new Yaxis();
+                    yaxis.Position = "left";
+                    yaxes.Add(yaxis);
+
+                    double first = t.FirstOrDefault().X;
+                    double last = t.LastOrDefault().X;
+
+                    //設定 上下限值
+                    if (o.b.AlarmFlag >= 1)
+                    {
+                        //超值
+                        if (o.b.AlarmFlag == 1)
+                        {
+                            tags.Add(new TagsViewModel()
+                            {
+                                Label = "超值",
+                                Yaxis = 1,
+                                Data = getUp(first, last, o.b.UpAlarm)
+                            });
+                            var yaxis1 = new Yaxis();
+                            yaxis1.Position = "right";
+                            yaxes.Add(yaxis1);
+                        }
+                        //低值
+                        if (o.b.AlarmFlag == 2)
+                        {
+                            tags.Add(new TagsViewModel()
+                            {
+                                Label = "低值",
+                                Yaxis = 1,
+                                Data = getLow(first, last, o.b.LowAlarm)
+                            });
+                            var yaxis1 = new Yaxis();
+                            yaxis1.Position = "right";
+                            yaxes.Add(yaxis1);
+                        }
+                        //2者都有
+                        if (o.b.AlarmFlag == 3)
+                        {
+                            tags.Add(new TagsViewModel()
+                            {
+                                Label = "超值",
+                                Yaxis = 1,
+                                Data = getUp(first, last, o.b.UpAlarm)
+                            });
+                            var yaxis2 = new Yaxis();
+                            yaxis2.Position = "right";
+                            yaxes.Add(yaxis2);
+                            {
+                                tags.Add(new TagsViewModel()
+                                {
+                                    Label = "低值",
+                                    Yaxis = 2,
+                                    Data = getLow(first, last, o.b.LowAlarm)
+                                });
+                            }
+                            var yaxis3 = new Yaxis();
+                            yaxis3.Position = "right";
+                            yaxes.Add(yaxis3);
+                        }
+                    }
+                }
+            }
+            ChartViewModel vm = new ChartViewModel()
+            {
+                Datasets = tags,
+                Yaxes = yaxes
+            };
+            return vm;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="firstX"></param>
+        /// <param name="lastX"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        private List<TagViewModel> getUp(double firstX, double lastX, decimal? y)
+        {
+            List<TagViewModel> vms = new List<TagViewModel>();
+            TagViewModel tag1 = new TagViewModel()
+            {
+                X = firstX,
+                Y = y.ToString()
+            };
+            vms.Add(tag1);
+            TagViewModel tag2 = new TagViewModel()
+            {
+                X = lastX,
+                Y = y.ToString()
+            };
+            vms.Add(tag2);
+            return vms;
+        }
+        private List<TagViewModel> getLow(double firstX, double lastX, decimal? y)
+        {
+            List<TagViewModel> vms = new List<TagViewModel>();
+            TagViewModel tag1 = new TagViewModel()
+            {
+                X = firstX,
+                Y = y.ToString()
+            };
+            vms.Add(tag1);
+            TagViewModel tag2 = new TagViewModel()
+            {
+                X = lastX,
+                Y = y.ToString()
+            };
+            vms.Add(tag2);
+            return vms;
+        }
+        /// <summary>
+        /// 取得歷史紀錄
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public ChartViewModel GetHistoryTags(DA.DataBase.Models.TagParamViewModel param)
         {
             List<TagsViewModel> tags = new List<TagsViewModel>();
             //開始時間
@@ -200,24 +352,42 @@ namespace FABTool.Repositories
                 param.EndTime.Hour, param.EndTime.Minute, 0);
             //多選
             List<int> selected = new List<int>();
+            List<Yaxis> yaxes = new List<Yaxis>();
             int y = 0;
-
             foreach (var linkTag in param.LinkTags)
             {
                 if (linkTag.Selected == true)
                 {
                     y++;
                     var t = getTagHistory(sdt, edt, linkTag.LinkTagSeq);
-                    TagsViewModel vm = new TagsViewModel()
+                    TagsViewModel tag = new TagsViewModel()
                     {
                         Label = linkTag.TagName,
                         Yaxis = y,
-                        Data = t
+                        Data = t,
                     };
-                    tags.Add(vm);
+                    tags.Add(tag);
+                    //
+                    var yaxis = new Yaxis();
+                    if (y > 1)
+                    {
+                        yaxis.Position = "right";
+                    }
+                    else
+                    {
+                        yaxis.Position = "left";
+                    }
+                    yaxes.Add(yaxis);
                 }
             }
-            return tags;
+
+            ChartViewModel vm = new ChartViewModel()
+            {
+                Datasets = tags,
+                Yaxes = yaxes
+
+            };
+            return vm;
         }
 
         private List<TagViewModel> getTagHistory(DateTime sdt, DateTime edt, int linkTagSeq)

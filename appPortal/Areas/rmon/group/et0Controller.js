@@ -12,7 +12,7 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
         groupId: 0,
     };
     //維護
-    $scope.maintain = { modal: false, groupId: 0, items: [], optionNo: 0, message:"" };
+    $scope.maintain = { modal: false, groupId: 0, items: [], optionNo: 0, message: "" };
 
 
     //Main Tool
@@ -83,10 +83,14 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
         $scope.maintain.modal = !$scope.maintain.modal;
     };
     //顯示歷史資料 Modal 
-    $scope.showHistory = function () {
-        if ($scope.groupId) {
-            $scope.history.groupId = $scope.groupId;
-            $scope.history.modal = !$scope.history.modal;
+    $scope.showHistory = function (index) {
+        if (index == 1) {
+            $scope.goChart(0);
+        } else {
+            if ($scope.groupId) {
+                $scope.history.groupId = $scope.groupId;
+                $scope.history.modal = !$scope.history.modal;
+            }
         }
     };
     $scope.exitModal = function () {
@@ -194,7 +198,7 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
         groupFactory.getEvents(groupId).then(processSuccess, processError);
 
         function processSuccess(data) {
-            
+
             $scope.events = data;
         }
         function processError(error) {

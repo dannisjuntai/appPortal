@@ -428,18 +428,25 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         groupFactory.getTagHistories(groupId, locationId, 1).then(processSuccess, processError);
 
         function processSuccess(data) {
-
-            $scope.dataset[0].data = [];
+          
             var i = 0;
-            var ticks = [];
-            data.forEach(function (entry) {
-                $scope.dataset[0].data.push([i, entry.data]);
+            //清空
+            $scope.dataset.forEach(function (d) {
+                d.data = [];
+                d.label = '';
+            });
 
-                ticks.push([i, entry.labels]);
+            data.data.forEach(function (d) {
+
+                d.list.forEach(function (entry) {
+                    $scope.dataset[i].data.push([entry.labels, entry.data]);
+
+                });
+                $scope.dataset[i].label = d.label;
                 i++;
             });
-            //$scope.options.xaxis.ticks = ticks;
-            //$scope.options.tooltipOpts.content = content;
+
+       
             $scope.toggleModal();
         }
 
@@ -455,7 +462,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         }
     };
 
-    $scope.dataset = [{ data: [] }];
+    $scope.dataset = [{ data: [] }, { data: [] }, { data: [] }];
 
     $scope.options = {
         legend: { show: true },
@@ -468,22 +475,11 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             }
         },
         grid: {
-            borderWidth: 1,
-            minBorderMargin: 20,
-            labelMargin: 20,
-            backgroundColor: {
-                colors: ["#fff", "#e4f4f4"]
-            },
-            margin: {
-                top: 8,
-                bottom: 25,
-                left: 20
-            }
+            hoverable: true,
+            clickable: true
         },
-        //xaxis: { min: 0 },
-        //yaxis: { min: 0 },
+        xaxis: { mode: "time" },
         tooltip: { show: true }
-
     };
 
 

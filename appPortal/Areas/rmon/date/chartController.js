@@ -22,7 +22,7 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
     }
     //$scope.tags = [];
 
-    $scope.dataset = [{ data: [] }];
+    //$scope.dataset = [{ data: [] }];
 
     //設定 Breadcrumb
     $scope.setBreadcrumbs = function (b) {
@@ -75,6 +75,15 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
         xaxis: {
             mode: "time", tickSize: [1, "minute"],
         },
+
+        yaxes: [{
+            //[第一個軸]
+            //如果沒有要設定, 就留空白
+        }, {
+            //[第二個軸]
+            position: "right"  //設定標籤是顯示在圖表的右方或是左方
+        }
+        ],
         grid: {
             hoverable: true,
             clickable: true
@@ -92,16 +101,17 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
         linkFactory.getHistoryTags($scope.tag).then(processSuccess, processError);
 
         function processSuccess(data) {
-            $scope.dataset = data;
+            $scope.dataset = data.datasets;
+            $scope.options.yaxes = data.yaxes;
             var i = 0;
-            data.forEach(function (d) {
+            data.datasets.forEach(function (d) {
                 var l = d.data;
                 d.data.forEach(function (entry) {
                     $scope.dataset[i].data.push([entry.x, entry.y]);
                 });
-
                 i++;
             });
+            var y = $scope.options.yaxes;
         }
         function processError(error) {
         }

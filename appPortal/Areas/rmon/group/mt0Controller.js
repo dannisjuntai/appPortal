@@ -51,10 +51,14 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, lin
     };
 
     //顯示歷史資料 Modal 
-    $scope.showHistory = function () {
-        if ($scope.groupId) {
-            $scope.history.groupId = $scope.groupId;
-            $scope.history.modal = !$scope.history.modal;
+    $scope.showHistory = function (index) {
+        if (index == 1) {
+            $scope.goChart(0);
+        } else {
+            if ($scope.groupId) {
+                $scope.history.groupId = $scope.groupId;
+                $scope.history.modal = !$scope.history.modal;
+            }
         }
     };
     $scope.exitModal = function () {

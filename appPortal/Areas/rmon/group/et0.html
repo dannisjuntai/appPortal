@@ -21,7 +21,8 @@
         <div class="box-header">
             <span class="break">Alram Message</span>
             <div class="box-icon">
-                <a ng-click="showHistory()" style="cursor:pointer;"><i class="fa fa-line-chart"></i>歷史資料</a>
+                <a ng-click="showHistory(1)" style="cursor:pointer;"><i class="fa fa-line-chart"></i>歷史紀錄</a>
+                <a ng-click="showHistory(2)" style="cursor:pointer;"><i class="fa fa-history"></i>歷史資料</a>
             </div>
         </div>
         <div class="box-body">
@@ -118,9 +119,9 @@
                 <div class="col-sm-5 input-group">
                     <span class="input-group-btn">
                         <select class="form-control" ng-model="maintain.optionNo" ng-options="item.optionNo as item.optionName for item in maintain.items"></select>
-                        <button type="button" class="btn btn-primary" ng-click="setMaintain()">
+                        <!--<button type="button" class="btn btn-primary" ng-click="setMaintain()">
                             <i class="fa fa-check"></i>
-                        </button>
+                        </button>-->
                     </span>
                 </div>
             </div>
@@ -128,6 +129,7 @@
         {{maintain.message}}
     </div>
     <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="setMaintain()">確認</button>
         <button type="button" class="btn btn-warning" data-dismiss="modal" ng-click="exitMaintainModal()">離開</button>
     </div>
 </modal>
