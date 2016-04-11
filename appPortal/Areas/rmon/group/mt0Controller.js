@@ -7,7 +7,8 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, lin
         sDateTime: new Date(),
         eDateTime: new Date(),
         optionNo: 0,
-        groupId :0,
+        groupId: 0,
+        groupType: 1
     };
 
     //選擇條件

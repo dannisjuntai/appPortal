@@ -1458,7 +1458,7 @@ namespace DA.DataBase.Repositories
                     TagValuesViewModel vms = new TagValuesViewModel()
                     {
                         List = tags,
-                        Label =label,
+                        Label = label,
                         Yaxis = 0
                     };
                     chart.Data.Add(vms);
@@ -1471,7 +1471,7 @@ namespace DA.DataBase.Repositories
                     return chart;
                 }
             }
-            
+
             return null;
         }
         private List<TagValuesViewModel> getUpAndLow(double firstX, double lastX, int linkTagSeq)
@@ -1485,7 +1485,7 @@ namespace DA.DataBase.Repositories
                 if (q.Any())
                 {
                     var o = q.FirstOrDefault();
-                    if (o.AlarmFlag ==1)
+                    if (o.AlarmFlag == 1)
                     {
                         TagValuesViewModel vm = new TagValuesViewModel()
                         {
@@ -1494,9 +1494,9 @@ namespace DA.DataBase.Repositories
                             Yaxis = 1
                         };
                         vms.Add(vm);
-                       
+
                     }
-                    else if (o.AlarmFlag ==2)
+                    else if (o.AlarmFlag == 2)
                     {
                         TagValuesViewModel vm = new TagValuesViewModel()
                         {
@@ -1506,7 +1506,7 @@ namespace DA.DataBase.Repositories
                         };
                         vms.Add(vm);
                     }
-                    else if (o.AlarmFlag ==3)
+                    else if (o.AlarmFlag == 3)
                     {
                         TagValuesViewModel vm1 = new TagValuesViewModel()
                         {
@@ -1635,7 +1635,7 @@ namespace DA.DataBase.Repositories
                         tags.Add(tag);
                     }
                 }
-             
+
             }
             return tags;
         }
@@ -2083,11 +2083,11 @@ namespace DA.DataBase.Repositories
                 {
                     var q = from a in db.EventSet
                             join b in db.OptionSets on a.EventLevel equals b.OptionNo
-                             where b.FieldName =="EventLevel"
+                            where b.FieldName == "EventLevel"
                             where a.GroupId == o.GroupId &&
-                                  a.ConfirmTime.Value == null 
+                                  a.ConfirmTime.Value == null
                             orderby a.RestTime descending
-                            select new {a,b};
+                            select new { a, b };
                     if (q.Any())
                     {
                         foreach (var p in q.ToList())
@@ -2115,8 +2115,12 @@ namespace DA.DataBase.Repositories
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public List<EventViewModel> GetEvents(EventSetPara param)
+        public List<EventViewModel> GetEvents(EventSetParam param)
         {
+            var es = GetEvents1(param).OrderByDescending(p => p.RecTime).ToList();
+            return es;
+
+
             List<EventViewModel> events = new List<EventViewModel>();
             DateTime sDt = param.SDateTime.GetStartTime();
             DateTime sEt = param.EDateTime.GetEndTime();
@@ -2160,6 +2164,132 @@ namespace DA.DataBase.Repositories
                             events.Add(e);
                         }
 
+                    }
+                }
+            }
+            return events;
+        }
+
+        public List<EventViewModel> GetEvents1(EventSetParam param)
+        {
+            List<EventViewModel> events = new List<EventViewModel>();
+            DateTime sDt = param.SDateTime.GetStartTime();
+            DateTime eDt = param.EDateTime.GetEndTime();
+            using (var db = new CMSDBContext())
+            {
+                //LinkSubSeq
+                /*
+                 
+select f.LinkSubSeq
+  from Groups as b
+  join Groups as c on b.GroupId = c.ParentId
+  join Groups as d on c.GroupId = d.ParentId
+  join GroupLocations as e on d.GroupId =  e.GroupId
+  join LinkTag as f on e.LinkTagSeq = f.LinkTagSeq
+
+  where b.GroupId = 1038 
+    and e.ModifyFlag < 3
+	group by f.LinkSubSeq
+
+                 
+                 */
+                var q = from a in db.Groups                                         // Department
+                        join b in db.Groups on a.GroupId equals b.ParentId          // MainTool
+                        join c in db.Groups on b.GroupId equals c.ParentId          // Equipment
+                        join d in db.GroupLocations on c.GroupId equals d.GroupId   // 位置
+                        join e in db.LinkTag on d.LinkTagSeq equals e.LinkTagSeq
+                        where d.ModifyFlag < (byte)ModifyFlagEnum.Delete
+                        select new { a, b, c, d, e };
+                if (param.GroupType == 1) //Department
+                {
+                    q = q.Where(p => p.a.GroupId == param.GroupId);
+                }
+                if (param.GroupType == 2) //MainTool
+                {
+                    q = q.Where(p => p.b.GroupId == param.GroupId);
+                }
+                if (param.GroupType == 3) //Equipment
+                {
+                    q = q.Where(p => p.c.GroupId == param.GroupId);
+                }
+                if (q.Any())
+                {
+                    List<int> sub = new List<int>();
+                    foreach (var o in q.ToList().GroupBy(p => p.e.LinkSubSeq))
+                    {
+                        sub.Add(o.Key);
+                    }
+                    //取得 LinkSubSeq
+                    events.AddRange(getEventSetByLinkSubSeq(sub));
+                }
+                //取得 保養狀態的
+                events.AddRange(getEventSets(sDt, eDt));
+            }
+            return events;
+        }
+
+        /// <summary>
+        /// 取得 LinkSubSeq 的EventSets
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        private List<EventViewModel> getEventSetByLinkSubSeq(List<int> list)
+        {
+            List<EventViewModel> events = new List<EventViewModel>();
+            using (var db = new CMSDBContext())
+            {
+                var q = from a in db.LinkTag
+                        join b in db.EventSet on a.LinkTagSeq equals b.LinkTagSeq
+                        join c in db.OptionSets on b.EventLevel equals c.OptionNo
+                        where list.Contains(a.LinkSubSeq) &&
+                              c.FieldName == "EventLevel"
+                        select new { a, b, c };
+                if (q.Any())
+                {
+                    foreach (var o in q.ToList())
+                    {
+                        EventViewModel e = new EventViewModel()
+                        {
+                            LinkTagSeq = o.a.LinkTagSeq,
+                            RecTime = o.b.RecTime,
+                            RestTime = o.b.RestTime,
+                            Name = o.b.Name,
+                            EventName = o.c.OptionName
+                        };
+                        events.Add(e);
+                    }
+                }
+            }
+            return events;
+        }
+
+        private List<EventViewModel> getEventSets(DateTime sDt, DateTime eDt)
+        {
+            List<EventViewModel> events = new List<EventViewModel>();
+            using (var db = new CMSDBContext())
+            {
+                var q = from a in db.EventSet
+                        join b in db.OptionSets on a.EventLevel equals b.OptionNo
+                        join c in db.OptionSets on a.Maintain equals c.OptionNo
+                        where a.RecTime >= sDt &&
+                              a.RecTime <= eDt &&
+                              a.EventLevel == 1 &&
+                              b.FieldName == "EventLevel" &&
+                              c.FieldName == "Maintain"
+                        select new { a, b, c };
+                if (q.Any())
+                {
+                    foreach (var o in q.ToList())
+                    {
+                        EventViewModel e = new EventViewModel()
+                        {
+                            LinkTagSeq = o.a.LinkTagSeq,
+                            RecTime = o.a.RecTime,
+                            RestTime = o.a.RestTime,
+                            Name = string.Format("{0}-{1}", o.a.Name, o.c.OptionName),
+                            EventName = o.b.OptionName
+                        };
+                        events.Add(e);
                     }
                 }
             }
@@ -2285,8 +2415,7 @@ namespace DA.DataBase.Repositories
             using (var db = new CMSDBContext())
             {
                 var q = from a in db.OptionSets
-                        where a.FieldName == option.FieldName &&
-                              a.OptionNo == option.OptionNo
+                        where a.OptionId == option.OptionId
                         select a;
                 //update
                 if (q.Any())
@@ -2338,17 +2467,16 @@ namespace DA.DataBase.Repositories
                 try
                 {
                     var q = from a in db.OptionSets
-                            where a.FieldName == option.FieldName &&
-                                  a.OptionNo == option.OptionNo
+                            where a.OptionId == option.OptionId
                             select a;
                     if (q.Any())
                     {
                         var o = q.FirstOrDefault();
                         o.OptionName = option.OptionName;
-                        o.SystemTime = DateTime.Now;
                         o.EndDate = option.EndDate;
-                        return db.Update<OptionSets>(o, o.FieldName, o.OptionNo, o.EndDate);
-                        //return db.SaveChanges();
+                        o.SystemTime = DateTime.Now;
+                        //return db.Update<OptionSets>(o, o.FieldName, o.OptionNo, o.EndDate);
+                        return db.SaveChanges();
                     }
 
                 }

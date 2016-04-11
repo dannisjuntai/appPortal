@@ -424,7 +424,7 @@ namespace appPortal.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public HttpResponseMessage GetEvents([FromBody]EventSetPara param)
+        public HttpResponseMessage GetEvents([FromBody]EventSetParam param)
         {
             var vms = repository.GetEvents(param);
 

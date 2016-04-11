@@ -15,8 +15,13 @@ var optionController = function ($scope, $location, groupFactory, breadcrumbServ
     };
 
     $scope.optionSets = [];
+    //
+    $scope.param = {
+        fieldName: '',
+        select: []
+    };
     $scope.option = {
-        select: [],
+        
         currentView: '',
         //fieldName: '',
         //optionName: '',
@@ -27,12 +32,13 @@ var optionController = function ($scope, $location, groupFactory, breadcrumbServ
     $scope.chang = function (f) {
         //取得集合
         if (f) {
-            getOptionSets($scope.option);
+            getOptionSets($scope.param);
         }
     };
 
     $scope.setOption = function (optionNo) {
         setView('insert');
+        $scope.option.optionId = 0;
     };
     $scope.save = function () {
         setOptionSets($scope.option);
@@ -63,7 +69,7 @@ var optionController = function ($scope, $location, groupFactory, breadcrumbServ
         groupFactory.getOptionFieldName().then(processSuccess, processError);
 
         function processSuccess(data) {
-            $scope.option.select = data;
+            $scope.param.select = data;
         };
         function processError(error) {
 

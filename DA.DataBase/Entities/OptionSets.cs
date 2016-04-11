@@ -12,19 +12,17 @@ namespace DA.DataBase.Entities
     public class OptionSets
     {
         [Key]
-        [Column(Order = 1)]
+        [Required]
+        public int OptionId { get; set; }
+
         [Required]
         public string FieldName { get; set; }
-        [Key]
-        [Column(Order = 2)]
         [Required]
         public byte OptionNo { get; set; }
         [Required]
         public string OptionName { get; set; }
         [Required]
         public DateTime StartDate { get; set; }
-        [Key]
-        [Column(Order = 3)]
         [Required]
         public DateTime EndDate { get; set; }
         [Required]

@@ -6,14 +6,11 @@
 </ul>
 
 <div class="row">
-
-
-
     <form class="form-inline">
         <div class="form-group">
             <label for="">參數類別</label>
-            <select class="form-control" ng-model="option.fieldName" ng-options="option as option for option in option.select"
-                    ng-change="chang(option.fieldName)" style="width:200px"></select>
+            <select class="form-control" ng-model="param.fieldName" ng-options="option as option for option in param.select"
+                    ng-change="chang(param.fieldName)" style="width:200px"></select>
         </div>
 
         <input type="button" class="btn btn-primary" ng-click="setOption(0)" value="新增" />
