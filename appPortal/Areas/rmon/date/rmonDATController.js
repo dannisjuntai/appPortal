@@ -14,13 +14,13 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             var url = breadcrumbService.setBreadcrumbs(b);
             if (url != '') {
                 //導覽
-                redirectToUrl(url);
+                redirectToUrl($location, url);
             }
         }
     };
     //導覽到 圖表資料
     $scope.goChart = function () {
-        redirectToUrl('/chart/' + 0);
+        redirectToUrl($location, '/chart/' + 0);
     };
 
     canvas = new fabric.Canvas(document.getElementById("playCanvas"));
@@ -39,7 +39,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         canvas.setBackgroundImage(imgbase64, canvas.renderAll.bind(canvas));
     };
 
-  
+
 
     //取得告警資料
     function getTagAlarm() {
@@ -148,8 +148,6 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         groupFactory.getGroupLocations($scope.groupId).then(processSuccess, processError);
 
         function processSuccess(data) {
-            // binding 資料
-            //image.src = "data:image/png;base64," + data.base64;
             $scope.links = data;
             DrawLinks();
         }
@@ -365,6 +363,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         eDateTime: new Date(),
         optionNo: 0,
         groupId: 0,
+        groupType: 3
     };
 
     $scope.toggleModal = function () {
@@ -375,11 +374,16 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
     //    $scope.showEventModal = !$scope.showEventModal;
     //};
     //顯示歷史資料 Modal 
-    $scope.showHistory = function () {
-        if ($scope.groupId) {
-            $scope.history.groupId = $scope.groupId;
-            $scope.history.modal = !$scope.history.modal;
+    $scope.showHistory = function (index) {
+        if (index == 1) {
+            $scope.goChart(0);
+        } else {
+            if ($scope.groupId) {
+                $scope.history.groupId = $scope.groupId;
+                $scope.history.modal = !$scope.history.modal;
+            }
         }
+
     };
     $scope.exitModal = function () {
         $scope.history.modal = !$scope.history.modal;
@@ -395,7 +399,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         }
     };
     $scope.goBack = function () {
-        redirectToUrl('/equipment/' + $rootScope.groupId);
+        redirectToUrl($location, '/equipment/' + $rootScope.groupId);
     };
 
     //顯示歷史資料 Modal 
@@ -405,11 +409,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
     //    }
     //};
 
-    //重新導向
-    function redirectToUrl(path) {
-        $location.replace();
-        $location.path(path);
-    }
+
     //取得事件資料
     function getEvents(groupId) {
 
@@ -428,7 +428,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         groupFactory.getTagHistories(groupId, locationId, 1).then(processSuccess, processError);
 
         function processSuccess(data) {
-          
+
             var i = 0;
             //清空
             $scope.dataset.forEach(function (d) {
@@ -446,7 +446,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
                 i++;
             });
 
-       
+
             $scope.toggleModal();
         }
 

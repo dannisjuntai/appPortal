@@ -11,7 +11,7 @@ var menuController = function ($scope, $location, $routeParams, $window, groupFa
             if (o.url == '/reprot') {
                 $window.open('http://10.92.198.66:8075/WebReport/ReportServer?op=fs_load&cmd=fs_signin&_=1458118273592', 'FABTool Report');
             } else {
-                redirectToUrl(o.url);
+                redirectToUrl($location, o.url);
             }
             
         }
@@ -22,7 +22,7 @@ var menuController = function ($scope, $location, $routeParams, $window, groupFa
             var url = breadcrumbService.setBreadcrumbs(b);
             if (url != '') {
                 //導覽
-                redirectToUrl(url);
+                redirectToUrl($location, url);
             }
         }
     };
@@ -52,11 +52,7 @@ var menuController = function ($scope, $location, $routeParams, $window, groupFa
         });
         $scope.breadcrumbs = breadcrumbService.getBreadcrumbs();
     };
-    //重新導向
-    function redirectToUrl(path) {
-        $location.replace();
-        $location.path(path);
-    }
+
 };
 
 menuController.$inject = injectParams;

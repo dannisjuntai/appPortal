@@ -8,7 +8,7 @@ namespace FABTool.Models.Charts
 {
     public class TagsViewModel
     {
-        public string  Label { get; set; }
+        public string Label { get; set; }
 
         public int Yaxis { get; set; }
 
@@ -38,6 +38,8 @@ namespace FABTool.Models.Charts
         ///   "left" or "right"
         /// </summary>
         public List<Yaxis> Yaxes { get; set; }
+
+        public Xaxis Xaxis { get; set; }
     }
 
     public class Dataset
@@ -48,9 +50,20 @@ namespace FABTool.Models.Charts
     public class Options
     {
         public List<Yaxis> Yaxes { get; set; }
+
     }
     public class Yaxis
     {
         public string Position { get; set; }
+    }
+
+    public class Xaxis
+    {
+        /// <summary>
+        /// mode: "time", tickSize: [10, "minute"],
+        /// </summary>
+        public string Mode { get; set; }
+
+        public KeyValuePair<int, string> TickSize { get; set; }
     }
 }

@@ -34,19 +34,11 @@ var rmonDATMapController = function ($scope, $location, groupFactory) {
             return null;
         }
     };
-
-
-    //重新導向
-    function redirectToUrl(path) {
-        $location.replace();
-        $location.path(path);
-    }
-
     //導覽資料
     $scope.navDataMap = function () {
 
         if ($scope.group && angular.isObject($scope.group.currentNode)) {
-            redirectToUrl('/rmonDAT/' + $scope.group.currentNode.id);
+            redirectToUrl($location, '/rmonDAT/' + $scope.group.currentNode.id);
         }
     };
     //controller 初始化
@@ -67,7 +59,7 @@ var rmonDATMapController = function ($scope, $location, groupFactory) {
                 $scope.isET = 'ET';
                 //導到
                 if ($scope.group && angular.isObject($scope.group.currentNode)) {
-                    redirectToUrl('/rmonDAT/' + $scope.group.currentNode.id);
+                    redirectToUrl($location, '/rmonDAT/' + $scope.group.currentNode.id);
                 }
             }
             else {

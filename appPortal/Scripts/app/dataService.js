@@ -351,6 +351,15 @@ var breadcrumbService = function () {
     //新增 Breadcrumb
     self.setBreadcrumb = function (id, item) {
         ensureIdIsRegistered(id);
+        breadcrumbs.forEach(function (obj) {
+            if (obj.label == item.label) {
+                var index = breadcrumbs.indexOf(obj);
+      
+                if (breadcrumbs.length > 1 + index) {
+                    breadcrumbs.splice(index, breadcrumbs.length - index);
+                }
+            }
+        });
         breadcrumbs.push(item);
     };
     //取得 Breadcrumb

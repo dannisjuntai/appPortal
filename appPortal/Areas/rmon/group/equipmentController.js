@@ -11,15 +11,9 @@ var equipmentController = function ($scope, $location, $routeParams, groupFactor
     $scope.navDevice = function (o) {
         var oo = o;
         if (o && angular.isObject(o)) {
-            redirectToUrl('/rmonDAT/' + o.identity);
+            redirectToUrl($location, '/rmonDAT/' + o.identity);
         }
     };
-    //重新導向
-    function redirectToUrl(path) {
-        $location.replace();
-        $location.path(path);
-    }
-
     //取得所有 Equipments
     function getEquipments() {
         groupFactory.getLinkGroups($scope.groupId).then(processSuccess, processError);

@@ -11,7 +11,7 @@ var dt1Controller = function ($scope, $location, $routeParams, groupFactory, $ro
     //導覽至Main Tool
     $scope.navMainTool = function (o) {
         if (o && angular.isObject(o)) {
-            redirectToUrl('/mt0/' + o.groupId);
+            redirectToUrl($location, '/mt0/' + o.groupId);
         }
     };
     //設定 Breadcrumb
@@ -23,7 +23,7 @@ var dt1Controller = function ($scope, $location, $routeParams, groupFactory, $ro
                 console.log("last");
             } else {
                 //導覽
-                redirectToUrl(url);
+                redirectToUrl($location, url);
             }
         }
     };
@@ -62,11 +62,7 @@ var dt1Controller = function ($scope, $location, $routeParams, groupFactory, $ro
 
         }
     };
-    //重新導向
-    function redirectToUrl(path) {
-        $location.replace();
-        $location.path(path);
-    }
+
 };
 
 dt1Controller.$inject = injectParams;

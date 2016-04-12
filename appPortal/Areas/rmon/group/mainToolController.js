@@ -22,7 +22,7 @@ var mainToolController = function ($scope, $location, $routeParams, groupFactory
     $scope.navDataMap = function (o) {
         var oo = o;
         if (o && angular.isObject(o)) {
-            redirectToUrl('/rmonDAT/' + o.identity);
+            redirectToUrl($location, '/rmonDAT/' + o.identity);
         }
     };
 
@@ -44,11 +44,6 @@ var mainToolController = function ($scope, $location, $routeParams, groupFactory
         getMainTool(1);
     }
 
-    //重新導向
-    function redirectToUrl(path) {
-        $location.replace();
-        $location.path(path);
-    }
     //取得監控資料
     function getLinkGroups() {
         groupFactory.getLinkGroups(1).then(processSuccess, processError);

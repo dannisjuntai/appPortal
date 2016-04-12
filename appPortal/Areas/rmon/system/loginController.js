@@ -14,7 +14,7 @@ var loginController = function ($scope, $window, $location, appStoreFatory, link
 
             if (login == true) {
                 //$window.location.replace("#/dt0");
-                redirectToUrl("/menu");
+                redirectToUrl($location, "/menu");
             }
         }
 
@@ -72,10 +72,6 @@ var loginController = function ($scope, $window, $location, appStoreFatory, link
             var d = data;
         }
         function processError(error) { }
-    }
-    function redirectToUrl(path) {
-        $location.replace();
-        $location.path(path);
     }
 
 };

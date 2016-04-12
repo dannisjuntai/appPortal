@@ -14,18 +14,14 @@ var departmentController = function ($scope, $location, $routeParams, groupFacto
     //導覽資料
     $scope.navEquipment = function (o) {
         if (o && angular.isObject(o)) {
-            redirectToUrl('/equipment/' + o.groupId);
+            redirectToUrl($location, '/equipment/' + o.groupId);
         }
     };
     //
     $scope.setEvents = function () {
         groupFactory.setEvents($scope.groupId).then(processSuccess, processError);
     }
-    //重新導向
-    function redirectToUrl(path) {
-        $location.replace();
-        $location.path(path);
-    }
+
     //取得部門資料
     function getDepartments() {
         groupFactory.getDepartments()

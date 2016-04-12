@@ -10,6 +10,7 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
         eDateTime: new Date(),
         optionNo: 0,
         groupId: 0,
+        groupType: 2
     };
     //維護
     $scope.maintain = { modal: false, groupId: 0, items: [], optionNo: 0, message: "" };
@@ -34,7 +35,7 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
     $scope.navDevice = function (o) {
         var oo = o;
         if (o && angular.isObject(o)) {
-            redirectToUrl('/rmonDAT/' + o.groupId);
+            redirectToUrl($location, '/rmonDAT/' + o.groupId);
         }
     };
     //設定 Breadcrumb
@@ -43,7 +44,7 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
             var url = breadcrumbService.setBreadcrumbs(b);
             if (url != '') {
                 //導覽
-                redirectToUrl(url);
+                redirectToUrl($location, url);
             }
         }
     };
@@ -70,9 +71,6 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
         groupFactory.setMaintain($scope.maintain).then(processSuccess, processError);
 
         function processSuccess(data) {
-            //$scope.group = data;
-            //setBreadcrumb(data);
-            //$scope.maintain.modal = !$scope.maintain.modal;
             $scope.maintain.message = "設定保養項目完成!";
         }
         function processError(error) {
@@ -109,7 +107,7 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
 
     //導覽到 圖表資料
     $scope.goChart = function (linkTagSeq) {
-        redirectToUrl('/chart/' + linkTagSeq);
+        redirectToUrl($location, '/chart/' + linkTagSeq);
     };
 
     init();
@@ -175,11 +173,7 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
 
         }
     };
-    //重新導向
-    function redirectToUrl(path) {
-        $location.replace();
-        $location.path(path);
-    }
+
     //取得告警資料
     function getTagAlarm() {
         groupFactory.getTagAlarm($scope.groupId).then(processSuccess, processError);

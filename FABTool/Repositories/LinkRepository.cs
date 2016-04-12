@@ -291,7 +291,12 @@ namespace FABTool.Repositories
             ChartViewModel vm = new ChartViewModel()
             {
                 Datasets = tags,
-                Yaxes = yaxes
+                Yaxes = yaxes,
+                Xaxis = new Xaxis()
+                {
+                    Mode = "time",
+                    TickSize = new KeyValuePair<int, string>(5, "minute") 
+                }
             };
             return vm;
         }
@@ -380,11 +385,16 @@ namespace FABTool.Repositories
                     yaxes.Add(yaxis);
                 }
             }
-
+            
             ChartViewModel vm = new ChartViewModel()
             {
                 Datasets = tags,
-                Yaxes = yaxes
+                Yaxes = yaxes,
+                Xaxis = new Xaxis()
+                {
+                    Mode = "time",
+                    TickSize = new KeyValuePair<int, string>(5, "minute")
+                }
 
             };
             return vm;

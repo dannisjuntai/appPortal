@@ -33,7 +33,7 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, lin
     $scope.navEquipment = function (o) {
         if (o && angular.isObject(o)) {
             //
-            redirectToUrl('/et0/' + o.groupId);
+            redirectToUrl($location, '/et0/' + o.groupId);
         }
     };
     //設定 Breadcrumb
@@ -42,13 +42,13 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, lin
             var url = breadcrumbService.setBreadcrumbs(b);
             if (url != '') {
                 //導覽
-                redirectToUrl(url);
+                redirectToUrl($location, url);
             }
         }
     };
     //導覽到 圖表資料
     $scope.goChart = function (linkTagSeq) {
-        redirectToUrl('/chart/' + linkTagSeq);
+        redirectToUrl($location, '/chart/' + linkTagSeq);
     };
 
     //顯示歷史資料 Modal 
@@ -142,11 +142,7 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, lin
 
         }
     }
-    //重新導向
-    function redirectToUrl(path) {
-        $location.replace();
-        $location.path(path);
-    }
+
     //取得事件資料
     function getEvents(groupId) {
 

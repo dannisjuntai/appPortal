@@ -20,7 +20,8 @@
         <div class="box-header">
             <span class="break">Alram Message</span>
             <div class="box-icon">
-                <a ng-click="showHistory()" style="cursor:pointer;"><i class="fa fa-line-chart"></i>歷史資料</a>
+                <a ng-click="showHistory(1)" style="cursor:pointer;"><i class="fa fa-line-chart"></i>歷史紀錄</a>
+                <a ng-click="showHistory(2)" style="cursor:pointer;"><i class="fa fa-line-chart"></i>歷史資料</a>
             </div>
         </div>
         <div class="box-body">
@@ -35,7 +36,7 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="t in linkTags">
-                        <td class="col-sm-6"><a ng-click="goChart(t.linkTagSeq)">{{t.linkTag.tagName}}</a></td>
+                        <td class="col-sm-6"><a ng-click="goChart(t.linkTag.linkTagSeq)">{{t.linkTag.tagName}}</a></td>
                         <td class="col-sm-2">{{t.tObjName}}</td>
                         <td class="col-sm-2">{{t.linkTag.curfValue}}</td>
                         <td class="col-sm-2">

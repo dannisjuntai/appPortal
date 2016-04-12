@@ -29,7 +29,7 @@
 angular.module('angular-flot', []).directive('flot', ['$timeout', function ($timeout) {
     return {
         restrict: 'EA',
-        template: '<div></div>',
+        template: '<div></div>{{item}}',
         scope: {
             dataset: '=',
             options: '=',

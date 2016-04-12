@@ -7,12 +7,12 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
     $scope.link = { linkSubSeq: 0, linkTagSeq: 0 };
 
     $scope.link.linkTagSeq = ($routeParams.linkTagSeq) ? parseInt($routeParams.linkTagSeq) : 1;
-
+    var sDt = new Date();
     $scope.tag = {
         linkSubSeq: 0,
         linkTagSeq: 0,
         startDate: new Date(),
-        startTime: new Date(),
+        startTime: sDt.setMinutes(sDt.getMinutes() - 30),
         endDate: new Date(),
         endTime: new Date()
     };
@@ -30,7 +30,7 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
             var url = breadcrumbService.setBreadcrumbs(b);
             if (url != '') {
                 //導覽
-                redirectToUrl(url);
+                redirectToUrl($location, url);
             }
         }
     };
@@ -73,9 +73,9 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
             points: { fillColor: "#0062FF", show: true }
         },
         xaxis: {
-            mode: "time", tickSize: [1, "minute"],
+            mode: "time", tickSize: ["10", "minute"],
         },
-
+        //"second", "minute", "hour", "day", "month" and "year"
         yaxes: [{
             //[第一個軸]
             //如果沒有要設定, 就留空白
@@ -103,6 +103,7 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
         function processSuccess(data) {
             $scope.dataset = data.datasets;
             $scope.options.yaxes = data.yaxes;
+            $scope.options.xaxis.tickSize = [data.xaxis.tickSize.key, data.xaxis.tickSize.value];
             var i = 0;
             data.datasets.forEach(function (d) {
                 var l = d.data;
@@ -166,11 +167,6 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
         function processError(error) {
         }
     };
-    //重新導向
-    function redirectToUrl(path) {
-        $location.replace();
-        $location.path(path);
-    }
 };
 
 chartController.$inject = injectParams;

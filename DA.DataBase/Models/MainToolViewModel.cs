@@ -40,5 +40,14 @@ namespace DA.DataBase.Models
         /// 通訊狀態
         /// </summary>
         public byte CurLinkSta { get; set; }
+        /// <summary>
+        /// 多態告警
+        /// </summary>
+        public int TObjSeq { get; set; }
+        /// <summary>
+        /// LinkTag Value
+        /// </summary>
+        public decimal? CurfValue { get; set; }
+       
     }
 }

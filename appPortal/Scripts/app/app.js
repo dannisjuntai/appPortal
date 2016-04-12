@@ -186,13 +186,6 @@ function appRun($rootScope, $location) {
         }
     });
     
-    function redirectToUrl(path) {
-        $location.replace();
-        $location.path(path);
-    }
-    
-
-
 };
 
 app.run(['$rootScope', '$location', appRun]);
@@ -277,6 +270,6 @@ app.directive('datepicker', function () {
 
 //共用函式
 function redirectToUrl($location, path) {
-    $location.replace();
+    //$location.replace();
     $location.path(path);
 }
