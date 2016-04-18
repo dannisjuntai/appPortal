@@ -8,13 +8,14 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
 
     $scope.link.linkTagSeq = ($routeParams.linkTagSeq) ? parseInt($routeParams.linkTagSeq) : 1;
     var sDt = new Date();
+    var eDt = new Date();
     $scope.tag = {
         linkSubSeq: 0,
         linkTagSeq: 0,
         startDate: new Date(),
         startTime: sDt.setMinutes(sDt.getMinutes() - 30),
         endDate: new Date(),
-        endTime: new Date()
+        endTime: eDt
     };
     //
     $scope.getTagHistories = function () {
