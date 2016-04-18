@@ -2,15 +2,21 @@
 
 var mt0Controller = function ($scope, $location, $routeParams, groupFactory, linkFactory, breadcrumbService) {
     //歷史資料查詢參數
-    $scope.history = {
+    $scope.param = {
         modal: false,
         sDateTime: new Date(),
         eDateTime: new Date(),
         optionNo: 0,
         groupId: 0,
-        groupType: 1
+        groupType: 1,
+        itemsPerPage: 20,
+        currentPage: 0
     };
-
+    //控制畫面
+    $scope.control = {
+        pagedItems: [],
+        selectedRow: -1
+    };
     //選擇條件
     $scope.eventLevels = [];
 
@@ -57,23 +63,37 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, lin
             $scope.goChart(0);
         } else {
             if ($scope.groupId) {
-                $scope.history.groupId = $scope.groupId;
-                $scope.history.modal = !$scope.history.modal;
+                $scope.param.groupId = $scope.groupId;
+                $scope.param.modal = !$scope.param.modal;
             }
         }
     };
     $scope.exitModal = function () {
-        $scope.history.modal = !$scope.history.modal;
+        $scope.param.modal = !$scope.param.modal;
     };
     //搜尋資料
     $scope.searchEvents = function () {
-        groupFactory.getEvents($scope.history).then(processSuccess, processError);
+        getEvents($scope.param);
+    };
 
-        function processSuccess(data) {
-            $scope.events = data;
+    //上一頁
+    $scope.prevPage = function () {
+        if ($scope.param.currentPage > 0) {
+            $scope.param.currentPage--;
+            getEvents($scope.param);
         }
-        function processError(error) {
+    };
+    //下一頁
+    $scope.nextPage = function () {
+        if ($scope.param.currentPage < $scope.control.pagedItems.length - 1) {
+            $scope.param.currentPage++;
+            getEvents($scope.param);
         }
+    };
+    //設定目前頁面
+    $scope.setPage = function (n) {
+        $scope.param.currentPage = n;
+        getEvents($scope.param);
     };
 
     //初始化
@@ -148,17 +168,22 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, lin
         $location.path(path);
     }
     //取得事件資料
-    function getEvents(groupId) {
+    function getEvents(param) {
 
-        groupFactory.getEvents(groupId).then(processSuccess, processError);
+        groupFactory.getEvents(param).then(processSuccess, processError);
 
         function processSuccess(data) {
-             $scope.events = data;
+            $scope.events = data;
+            $scope.control.pagedItems = [];
+            //產生頁數
+            for (var i = 0; i < data.pagedItems; i++) {
+                $scope.control.pagedItems.push(i);
+            }
         }
         function processError(error) {
         }
     };
-    //
+    
     function getMainToolLinkTags(id) {
         linkFactory.getMainToolLinkTags(id).then(processSuccess, processError);
         function processSuccess(data) {

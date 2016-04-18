@@ -2115,90 +2115,37 @@ namespace DA.DataBase.Repositories
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public List<EventViewModel> GetEvents(EventSetParam param)
+        public EventsViewModel GetEvents(EventSetParam param)
         {
             var es = GetEvents1(param).OrderByDescending(p => p.RecTime).ToList();
-            return es;
+            int count = es.Count;
 
-
-            List<EventViewModel> events = new List<EventViewModel>();
-            DateTime sDt = param.SDateTime.GetStartTime();
-            DateTime sEt = param.EDateTime.GetEndTime();
-            using (var db = new CMSDBContext())
+            //
+            EventsViewModel events = new EventsViewModel()
             {
-                var g = getGroups(param.GroupId);
-                //取得本階
-                var lastGroup = getGroup(param.GroupId);
-                if (lastGroup != null)
-                {
-                    g.Add(lastGroup);
-                }
-                foreach (var o in g.ToList())
-                {
-                    var q = from a in db.EventSet
-                            from b in db.OptionSets
-                            where a.GroupId == o.GroupId &&
-                                  a.RecTime >= sDt &&
-                                  a.RecTime <= sEt &&
-                                  b.OptionNo == a.EventLevel &&
-                                  b.FieldName == "EventLevel"
-                            orderby a.RecTime descending
-                            select new { a, b };
-                    if (param.OptionNo > 0)
-                    {
-                        q = q.Where(p => p.a.EventLevel == param.OptionNo).OrderByDescending(p => p.a.RecTime);
-                    }
-                    if (q.Any())
-                    {
-
-                        foreach (var p in q.ToList())
-                        {
-                            EventViewModel e = new EventViewModel()
-                            {
-                                LinkTagSeq = p.a.LinkTagSeq,
-                                RecTime = p.a.RecTime,
-                                RestTime = p.a.RestTime,
-                                Name = p.a.Name,
-                                EventName = p.b.OptionName
-                            };
-                            events.Add(e);
-                        }
-
-                    }
-                }
-            }
+                EventSets = es.Skip(param.CurrentPage * param.ItemsPerPage).Take(param.ItemsPerPage),
+                //分頁數量
+                PagedItems = Math.Ceiling((decimal)count / (decimal)param.ItemsPerPage)
+            };
             return events;
         }
 
         public List<EventViewModel> GetEvents1(EventSetParam param)
         {
             List<EventViewModel> events = new List<EventViewModel>();
-            DateTime sDt = param.SDateTime.GetStartTime();
-            DateTime eDt = param.EDateTime.GetEndTime();
+
             using (var db = new CMSDBContext())
             {
-                //LinkSubSeq
-                /*
-                 
-select f.LinkSubSeq
-  from Groups as b
-  join Groups as c on b.GroupId = c.ParentId
-  join Groups as d on c.GroupId = d.ParentId
-  join GroupLocations as e on d.GroupId =  e.GroupId
-  join LinkTag as f on e.LinkTagSeq = f.LinkTagSeq
-
-  where b.GroupId = 1038 
-    and e.ModifyFlag < 3
-	group by f.LinkSubSeq
-
-                 
-                 */
                 var q = from a in db.Groups                                         // Department
                         join b in db.Groups on a.GroupId equals b.ParentId          // MainTool
                         join c in db.Groups on b.GroupId equals c.ParentId          // Equipment
                         join d in db.GroupLocations on c.GroupId equals d.GroupId   // 位置
                         join e in db.LinkTag on d.LinkTagSeq equals e.LinkTagSeq
-                        where d.ModifyFlag < (byte)ModifyFlagEnum.Delete
+                        where d.ModifyFlag < (byte)ModifyFlagEnum.Delete &&
+                              a.ModifyFlag < (byte)ModifyFlagEnum.Delete &&
+                              b.ModifyFlag < (byte)ModifyFlagEnum.Delete &&
+                              c.ModifyFlag < (byte)ModifyFlagEnum.Delete &&
+                              e.ModifyFlag < (byte)ModifyFlagEnum.Delete
                         select new { a, b, c, d, e };
                 if (param.GroupType == 1) //Department
                 {
@@ -2215,15 +2162,16 @@ select f.LinkSubSeq
                 if (q.Any())
                 {
                     List<int> sub = new List<int>();
+
                     foreach (var o in q.ToList().GroupBy(p => p.e.LinkSubSeq))
                     {
                         sub.Add(o.Key);
                     }
                     //取得 LinkSubSeq
-                    events.AddRange(getEventSetByLinkSubSeq(sub));
+                    events.AddRange(getEventSetByLinkSubSeq(sub, param));
                 }
                 //取得 保養狀態的
-                events.AddRange(getEventSets(sDt, eDt));
+                events.AddRange(getEventSets(param));
             }
             return events;
         }
@@ -2233,16 +2181,20 @@ select f.LinkSubSeq
         /// </summary>
         /// <param name="list"></param>
         /// <returns></returns>
-        private List<EventViewModel> getEventSetByLinkSubSeq(List<int> list)
+        private List<EventViewModel> getEventSetByLinkSubSeq(List<int> list, EventSetParam param)
         {
             List<EventViewModel> events = new List<EventViewModel>();
+            DateTime sDt = param.SDateTime.GetStartTime();
+            DateTime eDt = param.EDateTime.GetEndTime();
             using (var db = new CMSDBContext())
             {
                 var q = from a in db.LinkTag
                         join b in db.EventSet on a.LinkTagSeq equals b.LinkTagSeq
                         join c in db.OptionSets on b.EventLevel equals c.OptionNo
                         where list.Contains(a.LinkSubSeq) &&
-                              c.FieldName == "EventLevel"
+                              c.FieldName == "EventLevel" &&
+                              b.RecTime >= sDt &&
+                              b.RecTime <= eDt 
                         select new { a, b, c };
                 if (q.Any())
                 {
@@ -2263,9 +2215,11 @@ select f.LinkSubSeq
             return events;
         }
 
-        private List<EventViewModel> getEventSets(DateTime sDt, DateTime eDt)
+        private List<EventViewModel> getEventSets(EventSetParam param)
         {
             List<EventViewModel> events = new List<EventViewModel>();
+            DateTime sDt = param.SDateTime.GetStartTime();
+            DateTime eDt = param.EDateTime.GetEndTime();
             using (var db = new CMSDBContext())
             {
                 var q = from a in db.EventSet

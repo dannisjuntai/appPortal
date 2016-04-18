@@ -4,16 +4,22 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
     $scope.breadcrumbs;
     $scope.linkTags = [];
     //歷史資料查詢參數
-    $scope.history = {
+    $scope.param = {
         modal: false,
         sDateTime: new Date(),
         eDateTime: new Date(),
         optionNo: 0,
         groupId: 0,
+        itemsPerPage: 20,
+        currentPage: 0
+    };
+    //控制畫面
+    $scope.control = {
+        pagedItems: [],
+        selectedRow: -1
     };
     //維護
     $scope.maintain = { modal: false, groupId: 0, items: [], optionNo: 0, message: "" };
-
 
     //Main Tool
     $scope.equipments = [];
@@ -88,30 +94,42 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
             $scope.goChart(0);
         } else {
             if ($scope.groupId) {
-                $scope.history.groupId = $scope.groupId;
-                $scope.history.modal = !$scope.history.modal;
+                $scope.param.groupId = $scope.groupId;
+                $scope.param.modal = !$scope.param.modal;
             }
         }
     };
     $scope.exitModal = function () {
-        $scope.history.modal = !$scope.history.modal;
+        $scope.param.modal = !$scope.param.modal;
     };
     //搜尋資料
     $scope.searchEvents = function () {
-        groupFactory.getEvents($scope.history).then(processSuccess, processError);
-
-        function processSuccess(data) {
-            $scope.events = data;
-        }
-        function processError(error) {
-        }
+        getEvents($scope.param);
     };
 
     //導覽到 圖表資料
     $scope.goChart = function (linkTagSeq) {
         redirectToUrl('/chart/' + linkTagSeq);
     };
-
+    //上一頁
+    $scope.prevPage = function () {
+        if ($scope.param.currentPage > 0) {
+            $scope.param.currentPage--;
+            getEvents($scope.param);
+        }
+    };
+    //下一頁
+    $scope.nextPage = function () {
+        if ($scope.param.currentPage < $scope.control.pagedItems.length - 1) {
+            $scope.param.currentPage++;
+            getEvents($scope.param);
+        }
+    };
+    //設定目前頁面
+    $scope.setPage = function (n) {
+        $scope.param.currentPage = n;
+        getEvents($scope.param);
+    };
     init();
     //初始化
     function init() {
@@ -193,13 +211,17 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
     }
 
     //取得事件資料
-    function getEvents(groupId) {
+    function getEvents(param) {
 
-        groupFactory.getEvents(groupId).then(processSuccess, processError);
+        groupFactory.getEvents(param).then(processSuccess, processError);
 
         function processSuccess(data) {
-
             $scope.events = data;
+            $scope.control.pagedItems = [];
+            //產生頁數
+            for (var i = 0; i < data.pagedItems; i++) {
+                $scope.control.pagedItems.push(i);
+            }
         }
         function processError(error) {
         }
