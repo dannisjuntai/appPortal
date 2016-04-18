@@ -39,8 +39,6 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         canvas.setBackgroundImage(imgbase64, canvas.renderAll.bind(canvas));
     };
 
-  
-
     //取得告警資料
     function getTagAlarm() {
         groupFactory.getTagAlarm($scope.groupId).then(processSuccess, processError);
@@ -88,6 +86,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             clearInterval(dataPoint);
         }
     });
+
     showChart($scope);
     //初始化
     function init() {
@@ -130,7 +129,6 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         });
         $scope.breadcrumbs = breadcrumbService.getBreadcrumbs();
     };
-
     //從資料庫 取得Background 圖檔
     function getGroupImages(id) {
         groupFactory.getGroupImages(id).then(processSuccess, processError);
@@ -385,7 +383,9 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             if ($scope.groupId) {
                 $scope.param.groupId = $scope.groupId;
                 $scope.param.modal = !$scope.param.modal;
-           
+
+            };
+        }
     };
     $scope.exitModal = function () {
         $scope.param.modal = !$scope.param.modal;
@@ -439,7 +439,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         groupFactory.getTagHistories(groupId, locationId, 1).then(processSuccess, processError);
 
         function processSuccess(data) {
-          
+
             var i = 0;
             //清空
             $scope.dataset.forEach(function (d) {
@@ -457,7 +457,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
                 i++;
             });
 
-       
+
             $scope.toggleModal();
         }
 
@@ -492,9 +492,6 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         xaxis: { mode: "time" },
         tooltip: { show: true }
     };
-
-
-
 };
 
 rmonDATController.$inject = injectParams;
