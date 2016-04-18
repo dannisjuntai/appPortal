@@ -21,4 +21,19 @@ namespace DA.DataBase.Models
 
         public string EventName { get; set; }
     }
+
+    public class EventsViewModel
+    {
+        public IEnumerable<EventViewModel> EventSets { get; set; }
+
+        /// <summary>
+        /// 每頁數量
+        /// </summary>
+        public virtual decimal PagedItems
+        {
+            get;
+            set;
+        }
+
+    }
 }

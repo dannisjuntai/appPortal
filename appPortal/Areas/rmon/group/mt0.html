@@ -56,26 +56,30 @@
 </div>
 
 <!--歷史資料-->
-<modal title="歷史資料" visible="history.modal" aria-hidden="false">
+<modal title="歷史資料" visible="param.modal" aria-hidden="false">
 
     <div class="modal-header">
         <form class="form-inline">
             <div class="form-group">
                 <label>起</label>
-                <input type="text" class="form-control" ng-model="history.sDateTime" name="date" bs-datepicker>
+                <input type="text" class="form-control" ng-model="param.sDateTime" name="date" bs-datepicker>
             </div>
             <div class="form-group">
                 <label>訖</label>
-                <input type="text" class="form-control" ng-model="history.eDateTime" name="date" bs-datepicker>
+                <input type="text" class="form-control" ng-model="param.eDateTime" name="date" bs-datepicker>
             </div>
 
             <div class="input-group">
-                <select class="form-control" ng-model="history.optionNo" ng-options="item.optionNo as item.optionName for item in eventLevels"></select>
+                <select class="form-control" ng-model="param.optionNo" ng-options="item.optionNo as item.optionName for item in eventLevels"></select>
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-primary" ng-click="searchEvents()">
                         <i class="fa fa-search"></i>
                     </button>
                 </span>
+            </div>
+            <div class="form-group">
+                <label>每頁顯示</label>
+                <input type="text" class="form-control" ng-model="param.itemsPerPage" style="width:50px"  />
             </div>
         </form>
 
@@ -96,8 +100,28 @@
                         <th class="col-md-4">訊息名稱</th>
                     </tr>
                 </thead>
+                <tfoot>
+                    <tr>
+                        <td colspan="4">
+
+                            <div data-role="group" data-group-type="one-state">
+                                <button class="button" ng-class="{disabled: param.currentPage == 0}" ng-click="prevPage()">
+                                    « Prev
+                                </button>
+
+                                <button class="button" ng-repeat="n in control.pagedItems" ng-class="{active: n == param.currentPage}" ng-click="setPage(n)">
+                                    {{n+1}}
+                                </button>
+                                <button class="button" ng-class="{disabled: (param.currentPage) == control.pagedItems.length-1}" ng-click="nextPage()">
+                                    Next »
+                                </button>
+                            </div>
+
+                        </td>
+                    </tr>
+                </tfoot>
                 <tbody>
-                    <tr ng-repeat="e in events">
+                    <tr ng-repeat="e in events.eventSets">
                         <td class="col-md-3">{{ e.recTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                         <td class="col-md-3">{{ e.restTime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
                         <td class="col-md-2">{{e.eventName}}</td>

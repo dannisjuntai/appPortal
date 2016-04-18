@@ -14,13 +14,13 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             var url = breadcrumbService.setBreadcrumbs(b);
             if (url != '') {
                 //導覽
-                redirectToUrl($location, url);
+                redirectToUrl(url);
             }
         }
     };
     //導覽到 圖表資料
     $scope.goChart = function () {
-        redirectToUrl($location, '/chart/' + 0);
+        redirectToUrl('/chart/' + 0);
     };
 
     canvas = new fabric.Canvas(document.getElementById("playCanvas"));
@@ -38,8 +38,6 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         //設定背景圖顏色
         canvas.setBackgroundImage(imgbase64, canvas.renderAll.bind(canvas));
     };
-
-
 
     //取得告警資料
     function getTagAlarm() {
@@ -88,6 +86,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             clearInterval(dataPoint);
         }
     });
+
     showChart($scope);
     //初始化
     function init() {
@@ -130,7 +129,6 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         });
         $scope.breadcrumbs = breadcrumbService.getBreadcrumbs();
     };
-
     //從資料庫 取得Background 圖檔
     function getGroupImages(id) {
         groupFactory.getGroupImages(id).then(processSuccess, processError);
@@ -148,6 +146,8 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         groupFactory.getGroupLocations($scope.groupId).then(processSuccess, processError);
 
         function processSuccess(data) {
+            // binding 資料
+            //image.src = "data:image/png;base64," + data.base64;
             $scope.links = data;
             DrawLinks();
         }
@@ -272,13 +272,8 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             width: 150,
             height: 20,
             opacity: 1,
-            //stroke: '#909ab2',
-            //strokeWidth: 2,
-            //borderColor: 'red',
-            //cornerColor: 'green',
             hasRotatingPoint: false,
             transparentCorners: false
-            //cornerSize: 6
         });
         //判斷簡稱
         var name;
@@ -292,7 +287,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
 
         //新增圖文
         var type = 'prompt_' + link.locationId;
-        var text = name;// + '  ' + link.curfValue;
+        var text = name;
         var left = rect.left + 10;
         var top = rect.top + 5;
 
@@ -302,11 +297,13 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             top: top,
             fontSize: 16,
             fill: '#000000',
+
             originX: 'left',
-            //textBackgroundColor: '#ffc40d',
+            textBackgroundColor: '#ffc40d',
             hasRotatingPoint: true,
             centerTransform: true,
-            selectable: false
+            selectable: false,
+           
         });
 
         var value = ' ' + link.curfValue + ' ' + link.unitName;
@@ -327,7 +324,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             type: 'group_' + link.locationId,
             left: obj.x,
             top: obj.y,
-            //evented: false,
+
             selectable: false,
             hasControls: false,
             hasBorders: false
@@ -357,66 +354,77 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
     //$scope.showEventModal = false;
 
     //歷史資料查詢參數
-    $scope.history = {
+    $scope.param = {
         modal: false,
         sDateTime: new Date(),
         eDateTime: new Date(),
         optionNo: 0,
         groupId: 0,
-        groupType: 3
+        itemsPerPage: 20,
+        currentPage: 0
     };
-
+    //控制畫面
+    $scope.control = {
+        pagedItems: [],
+        selectedRow: -1
+    };
     $scope.toggleModal = function () {
         $scope.showModal = !$scope.showModal;
     };
 
-    //$scope.toggleEventModal = function () {
-    //    $scope.showEventModal = !$scope.showEventModal;
-    //};
     //顯示歷史資料 Modal 
     $scope.showHistory = function (index) {
         if (index == 1) {
             $scope.goChart(0);
         } else {
             if ($scope.groupId) {
-                $scope.history.groupId = $scope.groupId;
-                $scope.history.modal = !$scope.history.modal;
-            }
-        }
+                $scope.param.groupId = $scope.groupId;
+                $scope.param.modal = !$scope.param.modal;
 
+            };
+        }
     };
     $scope.exitModal = function () {
-        $scope.history.modal = !$scope.history.modal;
+        $scope.param.modal = !$scope.param.modal;
     };
     //搜尋資料
     $scope.searchEvents = function () {
-        groupFactory.getEvents($scope.history).then(processSuccess, processError);
-
-        function processSuccess(data) {
-            $scope.events = data;
-        }
-        function processError(error) {
-        }
-    };
-    $scope.goBack = function () {
-        redirectToUrl($location, '/equipment/' + $rootScope.groupId);
+        getEvents($scope.param);
     };
 
-    //顯示歷史資料 Modal 
-    //$scope.showHistory = function () {
-    //    if ($scope.groupId != null) {
-    //        getEvents($scope.groupId);
-    //    }
+    //$scope.goBack = function () {
+    //    redirectToUrl('/equipment/' + $rootScope.groupId);
     //};
-
-
+    //上一頁
+    $scope.prevPage = function () {
+        if ($scope.param.currentPage > 0) {
+            $scope.param.currentPage--;
+            getEvents($scope.param);
+        }
+    };
+    //下一頁
+    $scope.nextPage = function () {
+        if ($scope.param.currentPage < $scope.control.pagedItems.length - 1) {
+            $scope.param.currentPage++;
+            getEvents($scope.param);
+        }
+    };
+    //設定目前頁面
+    $scope.setPage = function (n) {
+        $scope.param.currentPage = n;
+        getEvents($scope.param);
+    };
+    //重新導向
+    function redirectToUrl(path) {
+        $location.replace();
+        $location.path(path);
+    }
     //取得事件資料
-    function getEvents(groupId) {
+    function getEvents(param) {
 
-        groupFactory.getEvents(groupId).then(processSuccess, processError);
+        groupFactory.getEvents(param).then(processSuccess, processError);
 
         function processSuccess(data) {
-            $scope.showEventModal = !$scope.showEventModal;
             $scope.events = data;
         }
         function processError(error) {
@@ -481,13 +489,6 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         xaxis: { mode: "time" },
         tooltip: { show: true }
     };
-
-
-
-    function getTooltip(label, x, y) {
-        return y;
-    }
-
 };
 
 rmonDATController.$inject = injectParams;
@@ -528,4 +529,4 @@ function showChart($scope) {
         .on('mouse:up', mouseUp)
         .on('mouse:over', mouseOver);
 
-}
+};

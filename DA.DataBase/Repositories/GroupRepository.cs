@@ -637,8 +637,6 @@ namespace DA.DataBase.Repositories
         /// <returns></returns>
         public List<GroupLocationViewModel> GetGroupLocations(int groupId)
         {
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
             List<GroupLocationViewModel> vms = new List<GroupLocationViewModel>();
             using (var db = new CMSDBContext())
             {
@@ -679,8 +677,7 @@ namespace DA.DataBase.Repositories
                         vms.Add(vm);
                     }
                 }
-                sw.Stop();
-                System.Diagnostics.Debug.WriteLine(sw.ElapsedMilliseconds);
+
                 return vms;
             }
         }
@@ -772,7 +769,7 @@ namespace DA.DataBase.Repositories
                 if (obj != null)
                 {
                     obj.GroupId = vm.GroupId;
-                    obj.ModifyFlag = (int)ModifyFlagEnum.Update;
+                    obj.ModifyFlag = (int)ModifyFlagEnum.Delete;
 
                 }
                 errorCode = db.Update<LinkTag>(obj, obj.LinkTagSeq);
@@ -1865,20 +1862,24 @@ namespace DA.DataBase.Repositories
         /// <returns></returns>
         public List<MainToolViewModel> GetMainTools(int groupId)
         {
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+
             List<MainToolViewModel> mts = new List<MainToolViewModel>();
             using (var db = new CMSDBContext())
             {
+                //找尋群組資料
                 var q = from a in db.Groups
-                        where a.ModifyFlag < (int)ModifyFlagEnum.Delete &&
-                              a.ParentId == groupId
+                        where a.ParentId == groupId &&
+                              a.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select a;
+
                 if (q.Any())
                 {
                     foreach (var obj in q.ToList())
                     {
-                        var status = getLinkSubSeqs(obj.GroupId, obj.GroupTypeKey);
+                        var status = getLinkTagAlarm(obj.GroupId);
                         //取得維護次數
-                        status.Maintain = getMaintainCount(obj.GroupId, obj.GroupTypeKey);
                         MainToolViewModel mt = new MainToolViewModel()
                         {
                             GroupId = obj.GroupId,
@@ -1890,125 +1891,16 @@ namespace DA.DataBase.Repositories
                             StatusCount = status.Status,
                             MaintainCount = status.Maintain,
                             Color = status.Color
+                            //取得main tool 事件
+                            //MainTools = getMainTools(obj.GroupId)
                         };
                         mts.Add(mt);
                     }
                 }
             }
+            sw.Stop();
+            System.Diagnostics.Debug.WriteLine(sw.ElapsedMilliseconds);
             return mts;
-
-        }
-
-        private LinkTagStatus getLinkSubSeqs(int groupId, string groupType)
-        {
-            LinkTagStatus status = new LinkTagStatus();
-            using (var db = new CMSDBContext())
-            {
-                var q = from a in db.Groups                                 // M
-                        join b in db.Groups on a.GroupId equals b.ParentId  // E
-                        join c in db.GroupLocations on b.GroupId equals c.GroupId
-                        where a.ModifyFlag < (int)ModifyFlagEnum.Delete &&
-                              b.ModifyFlag < (int)ModifyFlagEnum.Delete &&
-                              c.ModifyFlag < (int)ModifyFlagEnum.Delete 
-                        select new { a, b, c };
-                if (groupType == "1")
-                {
-                    q = q.Where(p => p.a.GroupId == groupId);
-                }
-                if (groupType == "2")
-                {
-                    q = q.Where(p => p.b.GroupId == groupId);
-                }
-                if (q.Any())
-                {
-                    var o = q.GroupBy(p => p.c.LinkSubSeq).Select(p=>p.Key);
-
-                    status = getLinkTagStatus(o.ToList());
-
-                    return status;
-                }
-            }
-            return status;
-        }
-
-        private int getMaintainCount(int groupId, string groupType)
-        {
-            using(var db = new CMSDBContext())
-            {
-                var q = from a in db.Groups
-                        join b in db.Groups on a.GroupId equals b.ParentId
-                        join c in db.EventSet on b.GroupId equals c.GroupId
-                        where c.EventLevel == 1 &&
-                              c.RestTime == null //維護
-                        select new { a, b, c };
-                if (groupType == "1")
-                {
-                    q = q.Where(p => p.a.GroupId == groupId);
-                }
-                if (groupType == "2")
-                {
-                    q = q.Where(p => p.b.GroupId == groupId);
-                }
-                if (q.Any())
-                {
-                    return q.Count();
-                }
-            }
-            return 0;
-        }
-        private LinkTagStatus getLinkTagStatus(List<int> linkSubSeqs)
-        {
-            LinkTagStatus status = new LinkTagStatus();
-            List<TagStatus> ts = new List<TagStatus>();
-
-            using(var db = new CMSDBContext())
-            {
-                var q = from a in db.LinkTag
-                        join b in db.MemTag on a.MTagSeq equals b.MTagSeq
-                        join c in db.TagObj on b.TObjSeq equals c.TObjSeq
-                        where a.ModifyFlag < (int)ModifyFlagEnum.Delete &&
-                              linkSubSeqs.Contains(a.LinkSubSeq)
-                        select new { a, b, c };
-                if (q.Any())
-                {
-                    foreach (var o in q.ToList())
-                    {
-                        TagStatus t = new TagStatus()
-                        {
-                            LinkTagSeq = o.a.LinkTagSeq,
-                            CurSubSta = o.a.CurSubSta,
-                            Maintain = o.a.Maintain,
-                            CurLinkSta = o.a.CurLinkSta,
-                            TObjSeq = o.c.TObjSeq,
-                            CurfValue = o.a.CurfValue
-                        };
-                        ts.Add(t);
-                    }
-                }
-            }
-            //取得 alarm 總數
-            var alarmCount = from a in ts
-                             where a.CurSubSta > 1
-                             group a by new { a.LinkTagSeq } into g
-                             select new { Count = g.Count() };
-
-            //取得 LinkSta總數
-            var linkStaCount = from a in ts
-                               where a.CurLinkSta != 1
-                               group a by new { a.LinkTagSeq } into g
-                               select new { Count = g.Count() };
-            //2態告警..
-            var mutilCount = from a in ts
-                             where a.TObjSeq >= 1 &&
-                                   a.TObjSeq <= 3 &&
-                                   a.CurfValue > 0
-                             group a by new { a.LinkTagSeq } into g
-                             select new { Count = g.Count() };
-            status.Alarm = alarmCount.ToList().Count() + mutilCount.ToList().Count();
-            status.Status = linkStaCount.ToList().Count();
-            status.Maintain = 0;
-            
-            return status;
         }
         private int getEventSetByMaintain(int groupId)
         {
@@ -2026,12 +1918,6 @@ namespace DA.DataBase.Repositories
             return 0;
         }
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <returns></returns>
-
-        /// <summary>
         /// 取得告警
         /// </summary>
         /// <param name="groupId"></param>
@@ -2043,6 +1929,14 @@ namespace DA.DataBase.Repositories
             using (var db = new CMSDBContext())
             {
                 var g = getGroupMapLinkSubSeq(groupId);
+                //var g = getGroups(groupId);
+                ////
+                ////取得本階
+                //var lastGroup = getGroup(groupId);
+                //if (lastGroup != null)
+                //{
+                //    g.Add(lastGroup);
+                //}
                 foreach (var o in g.ToList())
                 {
                     var q = from a in db.LinkTag
@@ -2079,6 +1973,11 @@ namespace DA.DataBase.Repositories
                                group a by new { a.LinkTagSeq } into g
                                select new { Count = g.Count() };
 
+            //取得 Maintain 數  > 1
+            //var maintainCount = from a in ts
+            //                    where a.Maintain == 1
+            //                    group a by new { a.LinkTagSeq } into g
+            //                    select new { Count = g.Count() };
 
             status.Alarm = alarmCount.ToList().Count();
             status.Status = linkStaCount.ToList().Count();
@@ -2106,8 +2005,6 @@ namespace DA.DataBase.Repositories
         /// <returns></returns>
         public List<EquipmentViewModel> GetEquipments(int groupId)
         {
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
             List<EquipmentViewModel> ets = new List<EquipmentViewModel>();
             using (var db = new CMSDBContext())
             {
@@ -2122,9 +2019,8 @@ namespace DA.DataBase.Repositories
                     var o = q.ToList();
                     foreach (var obj in q.ToList())
                     {
-                        var status = getLinkSubSeqs(obj.GroupId, obj.GroupTypeKey);
-                        //
-                        status.Maintain = getMaintainCount(obj.GroupId, obj.GroupTypeKey);
+                        var status = getLinkTagAlarm(obj.GroupId);
+
                         EquipmentViewModel et = new EquipmentViewModel()
                         {
                             GroupId = obj.GroupId,
@@ -2135,13 +2031,13 @@ namespace DA.DataBase.Repositories
                             StatusCount = status.Status,
                             MaintainCount = status.Maintain,
                             Color = status.Color
+                            //取得main tool 事件
+                            //MainTools = getMainTools(obj.GroupId)
                         };
                         ets.Add(et);
                     }
                 }
             }
-            sw.Stop();
-            System.Diagnostics.Debug.WriteLine(sw.ElapsedMilliseconds);
             return ets;
         }
         /// <summary>
@@ -2219,107 +2115,54 @@ namespace DA.DataBase.Repositories
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public List<EventViewModel> GetEvents(EventSetParam param)
+        public EventsViewModel GetEvents(EventSetParam param)
         {
             var es = GetEvents1(param).OrderByDescending(p => p.RecTime).ToList();
-            return es;
+            int count = es.Count;
 
-
-            List<EventViewModel> events = new List<EventViewModel>();
-            DateTime sDt = param.SDateTime.GetStartTime();
-            DateTime sEt = param.EDateTime.GetEndTime();
-            using (var db = new CMSDBContext())
+            //
+            EventsViewModel events = new EventsViewModel()
             {
-                var g = getGroups(param.GroupId);
-                //取得本階
-                var lastGroup = getGroup(param.GroupId);
-                if (lastGroup != null)
-                {
-                    g.Add(lastGroup);
-                }
-                foreach (var o in g.ToList())
-                {
-                    var q = from a in db.EventSet
-                            from b in db.OptionSets
-                            where a.GroupId == o.GroupId &&
-                                  a.RecTime >= sDt &&
-                                  a.RecTime <= sEt &&
-                                  b.OptionNo == a.EventLevel &&
-                                  b.FieldName == "EventLevel"
-                            orderby a.RecTime descending
-                            select new { a, b };
-                    if (param.OptionNo > 0)
-                    {
-                        q = q.Where(p => p.a.EventLevel == param.OptionNo).OrderByDescending(p => p.a.RecTime);
-                    }
-                    if (q.Any())
-                    {
-
-                        foreach (var p in q.ToList())
-                        {
-                            EventViewModel e = new EventViewModel()
-                            {
-                                LinkTagSeq = p.a.LinkTagSeq,
-                                RecTime = p.a.RecTime,
-                                RestTime = p.a.RestTime,
-                                Name = p.a.Name,
-                                EventName = p.b.OptionName
-                            };
-                            events.Add(e);
-                        }
-
-                    }
-                }
-            }
+                EventSets = es.Skip(param.CurrentPage * param.ItemsPerPage).Take(param.ItemsPerPage),
+                //分頁數量
+                PagedItems = Math.Ceiling((decimal)count / (decimal)param.ItemsPerPage)
+            };
             return events;
         }
 
         public List<EventViewModel> GetEvents1(EventSetParam param)
         {
             List<EventViewModel> events = new List<EventViewModel>();
-            DateTime sDt = param.SDateTime.GetStartTime();
-            DateTime eDt = param.EDateTime.GetEndTime();
+
             using (var db = new CMSDBContext())
             {
-                //LinkSubSeq
-                /*
-                 
-select f.LinkSubSeq
-  from Groups as b
-  join Groups as c on b.GroupId = c.ParentId
-  join Groups as d on c.GroupId = d.ParentId
-  join GroupLocations as e on d.GroupId =  e.GroupId
-  join LinkTag as f on e.LinkTagSeq = f.LinkTagSeq
-
-  where b.GroupId = 1038 
-    and e.ModifyFlag < 3
-	group by f.LinkSubSeq
-
-                 
-                 */
                 var q = from a in db.Groups                                         // Department
                         join b in db.Groups on a.GroupId equals b.ParentId          // MainTool
                         join c in db.Groups on b.GroupId equals c.ParentId          // Equipment
                         join d in db.GroupLocations on c.GroupId equals d.GroupId   // 位置
                         join e in db.LinkTag on d.LinkTagSeq equals e.LinkTagSeq
-                        where d.ModifyFlag < (byte)ModifyFlagEnum.Delete
+                        where d.ModifyFlag < (byte)ModifyFlagEnum.Delete &&
+                              a.ModifyFlag < (byte)ModifyFlagEnum.Delete &&
+                              b.ModifyFlag < (byte)ModifyFlagEnum.Delete &&
+                              c.ModifyFlag < (byte)ModifyFlagEnum.Delete &&
+                              e.ModifyFlag < (byte)ModifyFlagEnum.Delete
                         select new { a, b, c, d, e };
-                if (param.GroupType == 1) //MainTool
+                if (param.GroupType == 1) //Department
                 {
                     q = q.Where(p => p.a.GroupId == param.GroupId);
                 }
-                if (param.GroupType == 2) //Equipment
+                if (param.GroupType == 2) //MainTool
                 {
                     q = q.Where(p => p.b.GroupId == param.GroupId);
                 }
-                if (param.GroupType == 3) //Device
+                if (param.GroupType == 3) //Equipment
                 {
                     q = q.Where(p => p.c.GroupId == param.GroupId);
                 }
-
                 if (q.Any())
                 {
                     List<int> sub = new List<int>();
+
                     foreach (var o in q.ToList().GroupBy(p => p.e.LinkSubSeq))
                     {
                         sub.Add(o.Key);
@@ -2328,7 +2171,7 @@ select f.LinkSubSeq
                     events.AddRange(getEventSetByLinkSubSeq(sub, param));
                 }
                 //取得 保養狀態的
-                events.AddRange(getEventSets(sDt, eDt));
+                events.AddRange(getEventSets(param));
             }
             return events;
         }
@@ -2351,14 +2194,8 @@ select f.LinkSubSeq
                         where list.Contains(a.LinkSubSeq) &&
                               c.FieldName == "EventLevel" &&
                               b.RecTime >= sDt &&
-                              b.RecTime <= eDt
+                              b.RecTime <= eDt 
                         select new { a, b, c };
-
-
-                if (param.OptionNo > 0)
-                {
-                    q = q.Where(p => p.b.EventLevel == param.OptionNo);
-                }
                 if (q.Any())
                 {
                     foreach (var o in q.ToList())
@@ -2378,9 +2215,11 @@ select f.LinkSubSeq
             return events;
         }
 
-        private List<EventViewModel> getEventSets(DateTime sDt, DateTime eDt)
+        private List<EventViewModel> getEventSets(EventSetParam param)
         {
             List<EventViewModel> events = new List<EventViewModel>();
+            DateTime sDt = param.SDateTime.GetStartTime();
+            DateTime eDt = param.EDateTime.GetEndTime();
             using (var db = new CMSDBContext())
             {
                 var q = from a in db.EventSet

@@ -442,13 +442,13 @@ namespace appPortal.Controllers
         [HttpDelete]
         public HttpResponseMessage SetEvents(int id)
         {
-            var vms = repository.SetEvents(id);
+            var status = repository.SetEvents(id);
 
-            if (vms != null)
+            if (status >0)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, vms);
+                return Request.CreateResponse(HttpStatusCode.OK, status);
             }
-            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "資料讀取錯誤");
+            return Request.CreateErrorResponse(HttpStatusCode.NotFound, "資料讀取錯誤");
         }
         /// <summary>
         /// 取得保養項目
