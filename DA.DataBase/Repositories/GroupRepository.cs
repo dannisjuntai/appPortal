@@ -1431,7 +1431,7 @@ namespace DA.DataBase.Repositories
                         join c in db.LinkTag on b.LinkTagSeq equals c.LinkTagSeq
                         where a.GroupId == groupId &
                               a.LocationId == locationId &
-                              b.RecTime >= new DateTime(2015, 12, 20)
+                              b.RecTime >= DateTime.Now.GetStartTime()
                         orderby b.RecTime
                         select new { a, b, c };
                 if (q.Any())

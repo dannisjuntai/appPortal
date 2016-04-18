@@ -7,24 +7,57 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
     $scope.link = { linkSubSeq: 0, linkTagSeq: 0 };
 
     $scope.link.linkTagSeq = ($routeParams.linkTagSeq) ? parseInt($routeParams.linkTagSeq) : 1;
-    var sDt = new Date();
+    var dt = new Date();
+
+    var sDt = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), dt.getHours(), dt.getMinutes() - 60, 00);
     var eDt = new Date();
-    $scope.tag = {
+    $scope.param = {
         linkSubSeq: 0,
         linkTagSeq: 0,
-        startDate: new Date(),
-        startTime: sDt.setMinutes(sDt.getMinutes() - 30),
+        startDate: sDt,
+        startTime: sDt,
         endDate: new Date(),
-        endTime: eDt
+        endTime: eDt,
+        itemsPerPage: 5000,
+        currentPage: 0
     };
-    //
+    //取得歷史資訊
     $scope.getTagHistories = function () {
-        getTagHistories();
+        $scope.param.linkTagSeq = $scope.link.linkTagSeq;
+        $scope.param.linkTags = $scope.linkTags;
+
+        linkFactory.getHistoryTags($scope.param).then(processSuccess, processError);
+
+        function processSuccess(data) {
+            $scope.dataset = data.datasets;
+            $scope.options.yaxes = data.yaxes;
+            $scope.options.xaxis.tickSize = [data.xaxis.tickSize.key, data.xaxis.tickSize.value];
+            var i = 0;
+            data.datasets.forEach(function (d) {
+                var l = d.data;
+                d.data.forEach(function (entry) {
+                    $scope.dataset[i].data.push([entry.x, entry.y]);
+                });
+                i++;
+            });
+            var y = $scope.options.yaxes;
+        }
+        function processError(error) {
+        }
     }
-    //$scope.tags = [];
 
-    //$scope.dataset = [{ data: [] }];
+    $scope.setTime = function (type) {
+        //前
+        if (type == -1) {
+            var dt = $scope.param.startDate;
+            $scope.param.startDate = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), dt.getHours(), dt.getMinutes() - 60, 00);
+        }
+        else {
+            var dt = $scope.param.endDate;
+            $scope.param.endDate = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), dt.getHours(), dt.getMinutes() + 60, 00);
+        }
 
+    }
     //設定 Breadcrumb
     $scope.setBreadcrumbs = function (b) {
         if (b && angular.isObject(b)) {
@@ -36,22 +69,16 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
         }
     };
 
-    // selected fruits
-    //$scope.selection = [];
 
-    // helper method to get selected fruits
-    //$scope.selectedFruits = function selectedFruits() {
-    //    return filterFilter($scope.linkTags, { selected: true });
-    //};
 
     // watch fruits for changes
-    $scope.$watch('linkTags|filter:{selected:true}', function (nv) {
-        $scope.selection = nv.map(function (linkTag) {
-            //linkTag.linkTagSeq
-            var linkTags = $scope.linkTags;
-            return linkTag.tagName;
-        });
-    }, true);
+    //$scope.$watch('linkTags|filter:{selected:true}', function (nv) {
+    //    $scope.selection = nv.map(function (linkTag) {
+    //        //linkTag.linkTagSeq
+    //        var linkTags = $scope.linkTags;
+    //        return linkTag.tagName;
+    //    });
+    //}, true);
 
 
     init();
@@ -93,31 +120,8 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
             show: true
         }
     };
-    //取得歷史資訊
-    function getTagHistories() {
 
-        $scope.tag.linkTagSeq = $scope.link.linkTagSeq;
-        $scope.tag.linkTags = $scope.linkTags;
 
-        linkFactory.getHistoryTags($scope.tag).then(processSuccess, processError);
-
-        function processSuccess(data) {
-            $scope.dataset = data.datasets;
-            $scope.options.yaxes = data.yaxes;
-            $scope.options.xaxis.tickSize = [data.xaxis.tickSize.key, data.xaxis.tickSize.value];
-            var i = 0;
-            data.datasets.forEach(function (d) {
-                var l = d.data;
-                d.data.forEach(function (entry) {
-                    $scope.dataset[i].data.push([entry.x, entry.y]);
-                });
-                i++;
-            });
-            var y = $scope.options.yaxes;
-        }
-        function processError(error) {
-        }
-    }
     //
     $scope.changLink = function (link) {
         getLinkTags(link.linkSubSeq);

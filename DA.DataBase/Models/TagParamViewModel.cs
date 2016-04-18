@@ -19,6 +19,17 @@ namespace DA.DataBase.Models
         public DateTime EndTime { get; set; }
 
         public List<LinkTagViewModel> LinkTags { get; set; }
+
+        /// <summary>
+        /// 分頁數量
+        /// </summary>
+        public int ItemsPerPage { get; set; }
+        /// <summary>
+        /// 目前分頁位置
+        /// </summary>
+        public int CurrentPage { get; set; }
+
+
     }
     public class TagParam
     {

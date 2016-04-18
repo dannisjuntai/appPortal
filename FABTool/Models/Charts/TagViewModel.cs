@@ -40,6 +40,15 @@ namespace FABTool.Models.Charts
         public List<Yaxis> Yaxes { get; set; }
 
         public Xaxis Xaxis { get; set; }
+
+        /// <summary>
+        /// 每頁數量
+        /// </summary>
+        public virtual decimal PagedItems
+        {
+            get;
+            set;
+        }
     }
 
     public class Dataset

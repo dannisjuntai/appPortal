@@ -192,117 +192,6 @@ namespace FABTool.Repositories
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        public ChartViewModel GetHistoryTag(DA.DataBase.Models.TagParam param)
-        {
-            List<TagsViewModel> tags = new List<TagsViewModel>();
-            var recTime = DateTime.Now.AddDays(-60);
-            List<Yaxis> yaxes = new List<Yaxis>();
-
-            using (var db = new CMSDBContext())
-            {
-                //取得單點
-                var q = from a in db.GroupLocations
-                        join b in db.LinkTag on a.LinkTagSeq equals b.LinkTagSeq
-                        where a.ModifyFlag < (byte)ModifyFlagEnum.Delete &&
-                              b.ModifyFlag < (byte)ModifyFlagEnum.Delete &&
-                              a.GroupId == param.GroupId &&
-                              a.LocationId == param.LocationId
-                        select new { a, b };
-
-                if (q.Any())
-                {
-                    int y = 0;
-                    var o = q.FirstOrDefault();
-                    var t = getTagHistory(recTime, DateTime.Now, o.a.LinkTagSeq);
-
-                    TagsViewModel tag = new TagsViewModel()
-                    {
-                        Label = o.b.TagName,
-                        Yaxis = y,
-                        Data = t,
-                    };
-                    tags.Add(tag);
-
-                    var yaxis = new Yaxis();
-                    yaxis.Position = "left";
-                    yaxes.Add(yaxis);
-
-                    double first = t.FirstOrDefault().X;
-                    double last = t.LastOrDefault().X;
-
-                    //設定 上下限值
-                    if (o.b.AlarmFlag >= 1)
-                    {
-                        //超值
-                        if (o.b.AlarmFlag == 1)
-                        {
-                            tags.Add(new TagsViewModel()
-                            {
-                                Label = "超值",
-                                Yaxis = 1,
-                                Data = getUp(first, last, o.b.UpAlarm)
-                            });
-                            var yaxis1 = new Yaxis();
-                            yaxis1.Position = "right";
-                            yaxes.Add(yaxis1);
-                        }
-                        //低值
-                        if (o.b.AlarmFlag == 2)
-                        {
-                            tags.Add(new TagsViewModel()
-                            {
-                                Label = "低值",
-                                Yaxis = 1,
-                                Data = getLow(first, last, o.b.LowAlarm)
-                            });
-                            var yaxis1 = new Yaxis();
-                            yaxis1.Position = "right";
-                            yaxes.Add(yaxis1);
-                        }
-                        //2者都有
-                        if (o.b.AlarmFlag == 3)
-                        {
-                            tags.Add(new TagsViewModel()
-                            {
-                                Label = "超值",
-                                Yaxis = 1,
-                                Data = getUp(first, last, o.b.UpAlarm)
-                            });
-                            var yaxis2 = new Yaxis();
-                            yaxis2.Position = "right";
-                            yaxes.Add(yaxis2);
-                            {
-                                tags.Add(new TagsViewModel()
-                                {
-                                    Label = "低值",
-                                    Yaxis = 2,
-                                    Data = getLow(first, last, o.b.LowAlarm)
-                                });
-                            }
-                            var yaxis3 = new Yaxis();
-                            yaxis3.Position = "right";
-                            yaxes.Add(yaxis3);
-                        }
-                    }
-                }
-            }
-            ChartViewModel vm = new ChartViewModel()
-            {
-                Datasets = tags,
-                Yaxes = yaxes,
-                Xaxis = new Xaxis()
-                {
-                    Mode = "time",
-                    TickSize = new KeyValuePair<int, string>(5, "minute") 
-                }
-            };
-            return vm;
-        }
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="firstX"></param>
         /// <param name="lastX"></param>
         /// <param name="y"></param>
@@ -349,12 +238,7 @@ namespace FABTool.Repositories
         public ChartViewModel GetHistoryTags(DA.DataBase.Models.TagParamViewModel param)
         {
             List<TagsViewModel> tags = new List<TagsViewModel>();
-            //開始時間
-            DateTime sdt = new DateTime(param.StartDate.Year, param.StartDate.Month, param.StartDate.Day,
-                param.StartTime.Hour, param.StartTime.Minute, 0);
-            //結束時間
-            var edt = new DateTime(param.EndDate.Year, param.EndDate.Month, param.EndDate.Day,
-                param.EndTime.Hour, param.EndTime.Minute, 0);
+
             //多選
             List<int> selected = new List<int>();
             List<Yaxis> yaxes = new List<Yaxis>();
@@ -364,7 +248,7 @@ namespace FABTool.Repositories
                 if (linkTag.Selected == true)
                 {
                     y++;
-                    var t = getTagHistory(sdt, edt, linkTag.LinkTagSeq);
+                    var t = getTagHistory(param, linkTag.LinkTagSeq);
                     TagsViewModel tag = new TagsViewModel()
                     {
                         Label = linkTag.TagName,
@@ -385,7 +269,7 @@ namespace FABTool.Repositories
                     yaxes.Add(yaxis);
                 }
             }
-            
+            //
             ChartViewModel vm = new ChartViewModel()
             {
                 Datasets = tags,
@@ -393,27 +277,70 @@ namespace FABTool.Repositories
                 Xaxis = new Xaxis()
                 {
                     Mode = "time",
-                    TickSize = new KeyValuePair<int, string>(5, "minute")
-                }
-
+                    TickSize = getTickSize(param)//new KeyValuePair<int, string>(5, "minute")
+                },
+                PagedItems = 0
             };
             return vm;
         }
+        /// <summary>
+        /// 取得動態時間
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        private KeyValuePair<int, string> getTickSize(DA.DataBase.Models.TagParamViewModel param)
+        {
 
-        private List<TagViewModel> getTagHistory(DateTime sdt, DateTime edt, int linkTagSeq)
+            TimeSpan s = new TimeSpan(param.StartDate.Ticks);
+            TimeSpan e = new TimeSpan(param.EndDate.Ticks);
+            var diff = e - s;
+            double days = diff.TotalDays;
+            double hours = diff.TotalHours;
+            double minutes = diff.TotalMinutes;
+            if (days > 1)
+            {
+                //
+                return new KeyValuePair<int, string>(1, "day");
+            }
+            if (hours > 1)
+            {
+                //
+                return new KeyValuePair<int, string>(1, "hour");
+            }
+            if (minutes > 10)
+            {
+                return new KeyValuePair<int, string>(5, "minute");
+            }
+            return new KeyValuePair<int, string>(1, "minute");
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sdt"></param>
+        /// <param name="edt"></param>
+        /// <param name="linkTagSeq"></param>
+        /// <param name="pageNum"></param>
+        /// <returns></returns>
+        private List<TagViewModel> getTagHistory(DA.DataBase.Models.TagParamViewModel param, int linkTagSeq)
         {
             List<TagViewModel> tags = new List<TagViewModel>();
+
             using (var db = new CMSDBContext())
             {
                 var q = from a in db.TagHistory
-                        where a.RecTime >= sdt &&
-                              a.RecTime <= edt &&
+                        where a.RecTime >= param.StartDate &&
+                              a.RecTime <= param.EndDate &&
                               a.LinkTagSeq == linkTagSeq
                         orderby a.RecTime
                         select a;
                 if (q.Any())
                 {
-                    foreach (var o in q.ToList().Take(1000))
+                    List<TagHistory> t = new List<TagHistory>();
+
+                    t = q.ToList().Skip(param.CurrentPage * param.ItemsPerPage).Take(param.ItemsPerPage).ToList();
+
+
+                    foreach (var o in t)
                     {
                         TagViewModel tag = new TagViewModel()
                         {

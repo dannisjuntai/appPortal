@@ -249,7 +249,6 @@ namespace DA.DataBase.Utilities
             DateTime d2 = input;
             TimeSpan ts = new TimeSpan(d2.Ticks - d1.Ticks);
 
-
             return ts.TotalMilliseconds;
         }
         public static DateTime ToDateTime(this string date)

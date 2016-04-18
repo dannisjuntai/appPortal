@@ -29,7 +29,7 @@
 angular.module('angular-flot', []).directive('flot', ['$timeout', function ($timeout) {
     return {
         restrict: 'EA',
-        template: '<div></div>{{item}}',
+        template: '<div></div>{{item}} {{datetime}}',
         scope: {
             dataset: '=',
             options: '=',
@@ -97,6 +97,7 @@ angular.module('angular-flot', []).directive('flot', ['$timeout', function ($tim
                 if (item) {
                     //scope.item = getKeyByValue(item.series.xaxis.categories, item.dataIndex);
                     scope.item = item.datapoint[1];
+                    scope.datetime = new Date(item.datapoint[0]).getUTCDate();
                     scope.$apply();
                 }
             });

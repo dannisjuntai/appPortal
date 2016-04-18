@@ -326,12 +326,12 @@ var linkFactory = function ($http, $q, $resource) {
         });
     };
     //取得趨勢圖 單點
-    factory.getHistoryTag = function (param) {
-        url = serviceBase + 'getHistoryTag';
-        return $http.post(url, param).then(function (results) {
-            return results.data;
-        });
-    };
+    //factory.getHistoryTag = function (param) {
+    //    url = serviceBase + 'getHistoryTag';
+    //    return $http.post(url, param).then(function (results) {
+    //        return results.data;
+    //    });
+    //};
     return factory;
 };
 
