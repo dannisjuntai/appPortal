@@ -272,13 +272,8 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             width: 150,
             height: 20,
             opacity: 1,
-            //stroke: '#909ab2',
-            //strokeWidth: 2,
-            //borderColor: 'red',
-            //cornerColor: 'green',
             hasRotatingPoint: false,
             transparentCorners: false
-            //cornerSize: 6
         });
         //判斷簡稱
         var name;
@@ -292,7 +287,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
 
         //新增圖文
         var type = 'prompt_' + link.locationId;
-        var text = name;// + '  ' + link.curfValue;
+        var text = name;
         var left = rect.left + 10;
         var top = rect.top + 5;
 
@@ -302,11 +297,13 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             top: top,
             fontSize: 16,
             fill: '#000000',
+
             originX: 'left',
-            //textBackgroundColor: '#ffc40d',
+            textBackgroundColor: '#ffc40d',
             hasRotatingPoint: true,
             centerTransform: true,
-            selectable: false
+            selectable: false,
+           
         });
 
         var value = ' ' + link.curfValue + ' ' + link.unitName;
@@ -327,7 +324,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             type: 'group_' + link.locationId,
             left: obj.x,
             top: obj.y,
-            //evented: false,
+
             selectable: false,
             hasControls: false,
             hasBorders: false
