@@ -6,7 +6,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
     $scope.linkTags = [];
     $scope.rootGroupId = $rootScope.groupId;
     $scope.groupId = ($routeParams.groupId) ? parseInt($routeParams.groupId) : 0;
-    $scope.locationId = 0;
+    //$scope.locationId = 0;
 
     //設定 Breadcrumb
     $scope.setBreadcrumbs = function (b) {
@@ -303,7 +303,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             hasRotatingPoint: true,
             centerTransform: true,
             selectable: false,
-           
+
         });
 
         var value = ' ' + link.curfValue + ' ' + link.unitName;
@@ -360,8 +360,30 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         eDateTime: new Date(),
         optionNo: 0,
         groupId: 0,
+        locationId :0,
         itemsPerPage: 20,
-        currentPage: 0
+        currentPage: 0,
+        //單點趨勢圖參數
+        typeName: '分',
+        typeValue: 30,
+        type: 3
+    };
+
+    $scope.setTime = function (type) {
+        $scope.param.type = type;
+
+        if (type == 1) {
+            $scope.param.typeName = '日';
+        }
+        if (type == 2) {
+            $scope.param.typeName = '時';
+        }
+        if (type == 3) {
+            $scope.param.typeName = '分';
+        }
+    };
+    $scope.getTagHistory = function (show) {
+        getTagHistory($scope.param, show);
     };
     //控制畫面
     $scope.control = {
@@ -384,6 +406,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             };
         }
     };
+
     $scope.exitModal = function () {
         $scope.param.modal = !$scope.param.modal;
     };
@@ -392,9 +415,6 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         getEvents($scope.param);
     };
 
-    //$scope.goBack = function () {
-    //    redirectToUrl('/equipment/' + $rootScope.groupId);
-    //};
     //上一頁
     $scope.prevPage = function () {
         if ($scope.param.currentPage > 0) {
@@ -426,14 +446,18 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
 
         function processSuccess(data) {
             $scope.events = data;
+            //產生頁數
+            for (var i = 0; i < data.pagedItems; i++) {
+                $scope.control.pagedItems.push(i);
+            }
         }
         function processError(error) {
         }
     };
     //取得歷史資訊
-    $scope.getTagHistories = function (groupId, locationId) {
-
-        groupFactory.getTagHistories(groupId, locationId, 1).then(processSuccess, processError);
+    function getTagHistory(param, show) {
+        $scope.param.groupId = $scope.groupId;
+        groupFactory.getTagHistory(param).then(processSuccess, processError);
 
         function processSuccess(data) {
 
@@ -443,7 +467,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
                 d.data = [];
                 d.label = '';
             });
-
+            $scope.options.xaxis.tickSize = [data.xaxis.tickSize.key, data.xaxis.tickSize.value];
             data.data.forEach(function (d) {
 
                 d.list.forEach(function (entry) {
@@ -454,30 +478,31 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
                 i++;
             });
 
-
-            $scope.toggleModal();
+            if (show) {
+                $scope.toggleModal();
+            }
         }
 
         function processError(error) {
-            return null;
+            if (show) {
+                $scope.toggleModal();
+            }
         }
     }
 
-    $scope.myChart = {
-        "data": $scope.chartdata, "options": {
-            scaleShowGridLines: true,
-            scaleShowHorizontalLines: true
-        }
-    };
+    //$scope.myChart = {
+    //    "data": $scope.chartdata, "options": {
+    //        scaleShowGridLines: true,
+    //        scaleShowHorizontalLines: true
+    //    }
+    //};
 
     $scope.dataset = [{ data: [] }, { data: [] }, { data: [] }];
 
     $scope.options = {
         legend: { show: true },
         series: {
-            lines: {
-                show: true
-            },
+            lines: { show: true },
             points: {
                 show: true
             }
@@ -486,7 +511,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             hoverable: true,
             clickable: true
         },
-        xaxis: { mode: "time" },
+        xaxis: { mode: "time", tickSize: ["10", "minute"] },
         tooltip: { show: true }
     };
 };
@@ -511,15 +536,16 @@ function showChart($scope) {
         var device = options.target;
         var token = device.type.split("_");
         var lid = token[1];
-        $scope.locationId = lid;
-        $scope.getTagHistories($scope.groupId, lid);
+        //$scope.locationId = lid;
+        $scope.param.locationId = lid;
+        $scope.getTagHistory(true);
 
-        console.log('mouse over');
+        //console.log('mouse over');
     };
 
     function mouseOver(options) {
         var p = $scope.canvas.getPointer(options.e);
-        console.log('mouse over');
+        //console.log('mouse over');
     };
     $scope.canvas
         .on('object:selected', updateScope)

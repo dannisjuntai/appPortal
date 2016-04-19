@@ -36,5 +36,13 @@ namespace DA.DataBase.Models
         public int GroupId { get; set; }
 
         public int LocationId { get; set; }
+        /// <summary>
+        /// 日 1 時 2 分 3
+        /// </summary>
+        public int Type { get; set; }
+        /// <summary>
+        /// 類別數值
+        /// </summary>
+        public int TypeValue { get; set; }
     }
 }

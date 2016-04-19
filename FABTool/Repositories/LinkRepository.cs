@@ -297,10 +297,14 @@ namespace FABTool.Repositories
             double days = diff.TotalDays;
             double hours = diff.TotalHours;
             double minutes = diff.TotalMinutes;
-            if (days > 1)
+            if (days > 2)
             {
                 //
                 return new KeyValuePair<int, string>(1, "day");
+            }
+            if(days >= 1 && days <=2)
+            {
+                return new KeyValuePair<int, string>(6, "hour");
             }
             if (hours > 1)
             {

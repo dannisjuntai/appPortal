@@ -45,8 +45,8 @@
                         <td class="col-sm-2">{{t.linkTag.curfValue}}</td>
                         <td class="col-sm-2">
                             <span class="label red">{{t.curSubStaName}}</span>
-                            <span class="label grey" >{{t.curLinkStaName}}</span>
-                            <span class="label blue" >{{t.maintainName}}</span>
+                            <span class="label grey">{{t.curLinkStaName}}</span>
+                            <span class="label blue">{{t.maintainName}}</span>
                         </td>
                     </tr>
                 </tbody>
@@ -79,7 +79,7 @@
             </div>
             <div class="form-group">
                 <label>每頁顯示</label>
-                <input type="text" class="form-control" ng-model="param.itemsPerPage" style="width:50px"  />
+                <input type="text" class="form-control" ng-model="param.itemsPerPage" style="width:50px" />
             </div>
         </form>
 
@@ -104,18 +104,25 @@
                     <tr>
                         <td colspan="4">
 
-                            <div data-role="group" data-group-type="one-state">
-                                <button class="button" ng-class="{disabled: param.currentPage == 0}" ng-click="prevPage()">
-                                    « Prev
-                                </button>
 
-                                <button class="button" ng-repeat="n in control.pagedItems" ng-class="{active: n == param.currentPage}" ng-click="setPage(n)">
-                                    {{n+1}}
-                                </button>
-                                <button class="button" ng-class="{disabled: (param.currentPage) == control.pagedItems.length-1}" ng-click="nextPage()">
-                                    Next »
-                                </button>
-                            </div>
+                            <nav>
+                                <ul class="pagination">
+                                    <li>
+                                        <a aria-label="Previous" ng-class="{disabled: param.currentPage == 0}" ng-click="prevPage()">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    <li ng-repeat="n in control.pagedItems" ng-class="{active: n == param.currentPage}">
+                                        <a ng-click="setPage(n)">{{n+1}}</a>
+
+                                    </li>
+                                    <li>
+                                        <a aria-label="Next" ng-class="{disabled: (param.currentPage) == control.pagedItems.length-1}" ng-click="nextPage()">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
 
                         </td>
                     </tr>

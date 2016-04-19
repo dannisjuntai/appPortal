@@ -61,24 +61,10 @@
                                 <span>Admin</span>
                             </a>
                             <ul class="dropdown-menu">
-                                <!--<li class="menu">
-                                    <div>
-                                        <a href="#rmonSETMap">圖控設定作業</a>
-                                    </div>
-                                </li>
+     
                                 <li class="menu">
                                     <div>
-                                        <a href="#dt">即時資料監控</a>
-                                    </div>
-                                </li>
-                                <li class="menu">
-                                    <div>
-                                        <a href="#">變更密碼</a>
-                                    </div>
-                                </li>-->
-                                <li class="menu">
-                                    <div>
-                                        <a href="#">登出</a>
+                                        <i class="fa fa-sign-out"><a href="#">登出</a></i> 
                                     </div>
                                 </li>
 
@@ -90,29 +76,9 @@
             </nav>
         </header>
 
-        <!--<div class="main-sidebar" >
-            <section class="sidebar">
-
-                <ul class="sidebar-menu">
-                    <li class="header">功能選單</li>
-                    <li  ng-repeat="m in menus">
-                        <a href="{{m.parentApp.templateUrl}}" ng-click="check($index)"><i class="fa fa-link"></i><span>{{m.parentApp.appName}}</span> </a>
-                        <ul class="treeview-menu">
-                            <li ng-repeat="p in m.items">
-                                <a href="{{p.templateUrl}}" id="{{p.appNo}}">{{p.appName}}</a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-
-            </section>
-        </div>-->
-
         <div id="content">
             <div ng-view></div>
         </div>
-        <!-- 內容 -->
-        <!-- Main Footer -->
     </div>
 
 

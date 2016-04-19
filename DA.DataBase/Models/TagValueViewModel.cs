@@ -35,5 +35,17 @@ namespace DA.DataBase.Models
             this.Data = new List<TagValuesViewModel>();
         }
        public List<TagValuesViewModel> Data { get; set; }
+
+       public Xaxis Xaxis { get; set; }
+    }
+
+    public class Xaxis
+    {
+        /// <summary>
+        /// mode: "time", tickSize: [10, "minute"],
+        /// </summary>
+        public string Mode { get; set; }
+
+        public KeyValuePair<int, string> TickSize { get; set; }
     }
 }

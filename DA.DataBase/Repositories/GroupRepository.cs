@@ -808,7 +808,7 @@ namespace DA.DataBase.Repositories
                     return errorCode;
                 }
                 //更新 LinkTag GroupId
-                updateLinkTag(vm);
+                //updateLinkTag(vm);
             }
             return errorCode;
         }
@@ -870,7 +870,7 @@ namespace DA.DataBase.Repositories
                     return errorCode;
                 }
                 //更新 LinkTag GroupId
-                updateLinkTag(vm);
+                //updateLinkTag(vm);
             }
             return errorCode;
         }
@@ -895,7 +895,7 @@ namespace DA.DataBase.Repositories
                 {
                     //刪除時，更新 LinkTag GroupId
                     vm.GroupId = 0;
-                    updateLinkTag(vm);
+                    //updateLinkTag(vm);
                     return GetGroupLocations(obj.GroupId);
                 }
             }
@@ -1419,31 +1419,38 @@ namespace DA.DataBase.Repositories
         /// <param name="locationId"></param>
         /// <param name="limitDt"></param>
         /// <returns></returns>
-        public Chart GetTagHistories(int groupId, int locationId, int limitDt)
+        public Chart GetTagHistory(TagParam param)
         {
             Chart chart = new Chart();
 
             List<TagValueViewModel> tags = new List<TagValueViewModel>();
+            var sDt = getHistoryTime(param);
+            var eDt = DateTime.Now;
             using (var db = new CMSDBContext())
             {
                 var q = from a in db.GroupLocations
                         join b in db.TagHistory on a.LinkTagSeq equals b.LinkTagSeq
                         join c in db.LinkTag on b.LinkTagSeq equals c.LinkTagSeq
-                        where a.GroupId == groupId &
-                              a.LocationId == locationId &
-                              b.RecTime >= DateTime.Now.GetStartTime()
+                        where a.GroupId == param.GroupId &&
+                              a.LocationId == param.LocationId
+                        //b.RecTime >= new DateTime(2016, 03, 01)
                         orderby b.RecTime
                         select new { a, b, c };
+                if (param.Type > 0)
+                {
+                    q = q.Where(p => p.b.RecTime >= sDt & p.b.RecTime <= eDt);
+                }
+
                 if (q.Any())
                 {
                     int count = 0;
                     string label = q.FirstOrDefault().c.TagName;
 
-                    foreach (var obj in q.OrderByDescending(p => p.b.RecTime).Take(100))
+                    foreach (var obj in q.OrderByDescending(p => p.b.RecTime).Take(1000))
                     {
                         TagValueViewModel tag = new TagValueViewModel()
                         {
-                            Labels = obj.b.RecTime.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds,
+                            Labels = obj.b.RecTime.ToJavascriptTimestamp(),
                             Data = obj.b.fValue.ToString()
 
                         };
@@ -1468,11 +1475,70 @@ namespace DA.DataBase.Repositories
                     var uporlow = getUpAndLow(firstX, lastX, q.FirstOrDefault().a.LinkTagSeq);
                     if (uporlow != null)
                         chart.Data.AddRange(uporlow);
+                    chart.Xaxis = new Xaxis()
+                    {
+                        Mode = "time",
+                        TickSize = getTickSize(sDt, eDt)//new KeyValuePair<int, string>(5, "minute")
+                    };
                     return chart;
                 }
             }
 
             return null;
+        }
+        /// <summary>
+        /// 取得查詢時間
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        private DateTime getHistoryTime(TagParam param)
+        {
+            var nowDt = DateTime.Now;
+            //日
+            if (param.Type == 1)
+            {
+                return nowDt.AddDays(param.TypeValue * -1);
+            }
+            //時
+            if (param.Type == 2)
+            {
+                return nowDt.AddHours(param.TypeValue * -1);
+            }
+            if (param.Type == 3)
+            {
+                return nowDt.AddMinutes(param.TypeValue * -1);
+            }
+            //預設 30 分鐘前
+            return nowDt.AddMinutes(-30);
+        }
+        private KeyValuePair<int, string> getTickSize(DateTime sDt, DateTime eDt)
+        {
+
+            TimeSpan s = new TimeSpan(sDt.Ticks);
+            TimeSpan e = new TimeSpan(eDt.Ticks);
+            var diff = e - s;
+            double days = diff.TotalDays;
+            double hours = diff.TotalHours;
+            double minutes = diff.TotalMinutes;
+            if (days > 2)
+            {
+                //
+                return new KeyValuePair<int, string>(1, "day");
+            }
+            if (days >= 1 && days <= 2)
+            {
+                return new KeyValuePair<int, string>(6, "hour");
+            }
+            if (hours > 1)
+            {
+                //
+                return new KeyValuePair<int, string>(1, "hour");
+            }
+            if (minutes > 10)
+            {
+                return new KeyValuePair<int, string>(5, "minute");
+            }
+            return new KeyValuePair<int, string>(1, "minute");
         }
         private List<TagValuesViewModel> getUpAndLow(double firstX, double lastX, int linkTagSeq)
         {
@@ -2194,7 +2260,7 @@ namespace DA.DataBase.Repositories
                         where list.Contains(a.LinkSubSeq) &&
                               c.FieldName == "EventLevel" &&
                               b.RecTime >= sDt &&
-                              b.RecTime <= eDt 
+                              b.RecTime <= eDt
                         select new { a, b, c };
                 if (q.Any())
                 {

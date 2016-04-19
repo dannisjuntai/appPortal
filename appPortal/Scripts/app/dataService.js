@@ -155,9 +155,9 @@ var groupFactory = function ($http, $q, $resource) {
         });
     };
     //取得歷史資料
-    factory.getTagHistories = function (id, locationId, limitDt) {
-        url = serviceBase + 'getTagHistories/' + id + '?locationId=' + locationId; //+ '&limitDt =' + limitDt;
-        return $http.get(url).then(function (results) {
+    factory.getTagHistory = function (param) {
+        url = serviceBase + 'getTagHistory';
+        return $http.post(url, param).then(function (results) {
             return results.data;
         });
     };

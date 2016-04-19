@@ -23,27 +23,7 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
     };
     //取得歷史資訊
     $scope.getTagHistories = function () {
-        $scope.param.linkTagSeq = $scope.link.linkTagSeq;
-        $scope.param.linkTags = $scope.linkTags;
-
-        linkFactory.getHistoryTags($scope.param).then(processSuccess, processError);
-
-        function processSuccess(data) {
-            $scope.dataset = data.datasets;
-            $scope.options.yaxes = data.yaxes;
-            $scope.options.xaxis.tickSize = [data.xaxis.tickSize.key, data.xaxis.tickSize.value];
-            var i = 0;
-            data.datasets.forEach(function (d) {
-                var l = d.data;
-                d.data.forEach(function (entry) {
-                    $scope.dataset[i].data.push([entry.x, entry.y]);
-                });
-                i++;
-            });
-            var y = $scope.options.yaxes;
-        }
-        function processError(error) {
-        }
+        getHistoryTags();
     }
 
     $scope.setTime = function (type) {
@@ -56,7 +36,7 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
             var dt = $scope.param.endDate;
             $scope.param.endDate = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), dt.getHours(), dt.getMinutes() + 60, 00);
         }
-
+        getHistoryTags();
     }
     //設定 Breadcrumb
     $scope.setBreadcrumbs = function (b) {
@@ -68,17 +48,6 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
             }
         }
     };
-
-
-
-    // watch fruits for changes
-    //$scope.$watch('linkTags|filter:{selected:true}', function (nv) {
-    //    $scope.selection = nv.map(function (linkTag) {
-    //        //linkTag.linkTagSeq
-    //        var linkTags = $scope.linkTags;
-    //        return linkTag.tagName;
-    //    });
-    //}, true);
 
 
     init();
@@ -168,6 +137,29 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
                 getLinkTags($scope.link.linkSubSeq);
             }
 
+        }
+        function processError(error) {
+        }
+    };
+    function getHistoryTags() {
+        $scope.param.linkTagSeq = $scope.link.linkTagSeq;
+        $scope.param.linkTags = $scope.linkTags;
+
+        linkFactory.getHistoryTags($scope.param).then(processSuccess, processError);
+
+        function processSuccess(data) {
+            $scope.dataset = data.datasets;
+            $scope.options.yaxes = data.yaxes;
+            $scope.options.xaxis.tickSize = [data.xaxis.tickSize.key, data.xaxis.tickSize.value];
+            var i = 0;
+            data.datasets.forEach(function (d) {
+                var l = d.data;
+                d.data.forEach(function (entry) {
+                    $scope.dataset[i].data.push([entry.x, entry.y]);
+                });
+                i++;
+            });
+            var y = $scope.options.yaxes;
         }
         function processError(error) {
         }

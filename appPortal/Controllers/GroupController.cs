@@ -328,10 +328,10 @@ namespace appPortal.Controllers
         /// 取得歷史紀錄
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
-        public HttpResponseMessage GetTagHistories(int id, int locationId)
+        [HttpPost]
+        public HttpResponseMessage GetTagHistory([FromBody] TagParam param)
         {
-            var vms = repository.GetTagHistories(id, locationId, 0);
+            var vms = repository.GetTagHistory(param);
 
             if (vms != null)
             {

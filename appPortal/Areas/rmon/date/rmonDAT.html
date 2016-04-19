@@ -20,7 +20,7 @@
         <div class="box-header">
             <span class="break">Alram Message</span>
             <div class="box-icon">
-                
+
                 <a ng-click="showHistory(1)" style="cursor:pointer;"><i class="fa fa-line-chart"></i>歷史紀錄</a>
                 <a ng-click="showHistory(2)" style="cursor:pointer;"><i class="fa fa-history"></i>歷史資料</a>
             </div>
@@ -54,11 +54,36 @@
 
 
 <modal title="歷史訊息" visible="showModal">
-    <flot dataset="dataset" options="options" height="480px"></flot>
-    <div class="modal-footer">
-        <!--<button type="button" class="btn btn-default" ng-click="goChart()">詳細資料</button>-->
-        <button type="button" class="btn btn-default" data-dismiss="modal">離開</button>
-    </div>
+    <div class="modal-header">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{param.typeName}} <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a ng-click="setTime(1)">日</a></li>
+                        <li><a ng-click="setTime(2)">時</a></li>
+                        <li><a ng-click="setTime(3)">分</a></li>
+                    </ul>
+                </div><!-- /btn-group -->
+                <input type="text" class="form-control" ng-model="param.typeValue" style="width:100px">
+                <input type="button" class="btn btn-success" ng-click="getTagHistory(false)" value="查詢" />
+
+            </div>
+        </div>
+        </div>
+
+        <flot dataset="dataset" options="options" height="480px"></flot>
+
+        
+        <div class="modal-footer">
+
+            <button type="button" class="btn btn-primary" data-dismiss="modal">離開</button>
+        </div>
+
+
 </modal>
 
 <!--歷史資料-->
@@ -110,19 +135,25 @@
                     <tr>
                         <td colspan="4">
 
-                            <div data-role="group" data-group-type="one-state">
-                                <button class="button" ng-class="{disabled: param.currentPage == 0}" ng-click="prevPage()">
-                                    « Prev
-                                </button>
-
-                                <button class="button" ng-repeat="n in control.pagedItems" ng-class="{active: n == param.currentPage}" ng-click="setPage(n)">
-                                    {{n+1}}
-                                </button>
-                                <button class="button" ng-class="{disabled: (param.currentPage) == control.pagedItems.length-1}" ng-click="nextPage()">
-                                    Next »
-                                </button>
-                            </div>
-
+   
+                            <nav>
+                                <ul class="pagination">
+                                    <li>
+                                        <a aria-label="Previous" ng-class="{disabled: param.currentPage == 0}" ng-click="prevPage()">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    <li ng-repeat="n in control.pagedItems" ng-class="{active: n == param.currentPage}">
+                                        <a ng-click="setPage(n)">{{n+1}}</a>
+                              
+                                    </li>
+                                    <li>
+                                        <a aria-label="Next" ng-class="{disabled: (param.currentPage) == control.pagedItems.length-1}" ng-click="nextPage()">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
                         </td>
                     </tr>
                 </tfoot>
@@ -139,7 +170,7 @@
     </div>
 
     <div class="modal-footer">
-        <button type="button" class="btn btn-success" ng-click="setEvents()">確認資料</button>
+        <!--<button type="button" class="btn btn-success" ng-click="setEvents()">確認資料</button>-->
         <button type="button" class="btn btn-warning" ng-click="exitModal()">離開</button>
     </div>
 </modal>

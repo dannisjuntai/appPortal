@@ -873,8 +873,8 @@
       minuteStep: 5,
       secondStep: 5,
       roundDisplay: false,
-      iconUp: 'glyphicon glyphicon-chevron-up',
-      iconDown: 'glyphicon glyphicon-chevron-down',
+      iconUp: 'fa fa-chevron-up',//'glyphicon glyphicon-chevron-up',
+      iconDown: 'fa fa-chevron-down',//'glyphicon glyphicon-chevron-down',
       arrowBehavior: 'pager'
     };
     this.$get = [ '$window', '$document', '$rootScope', '$sce', '$dateFormatter', '$tooltip', '$timeout', function($window, $document, $rootScope, $sce, $dateFormatter, $tooltip, $timeout) {
@@ -1462,7 +1462,7 @@
       noneText: 'None',
       maxLength: 3,
       maxLengthHtml: 'selected',
-      iconCheckmark: 'glyphicon glyphicon-ok'
+      iconCheckmark: 'fa fa-check'//'glyphicon glyphicon-ok'
     };
     this.$get = [ '$window', '$document', '$rootScope', '$tooltip', '$timeout', function($window, $document, $rootScope, $tooltip, $timeout) {
       var isNative = /(ip[ao]d|iphone|android)/gi.test($window.navigator.userAgent);
@@ -3134,8 +3134,8 @@
       minView: 0,
       startWeek: 0,
       daysOfWeekDisabled: '',
-      iconLeft: 'glyphicon glyphicon-chevron-left',
-      iconRight: 'glyphicon glyphicon-chevron-right'
+      iconLeft: 'fa fa-chevron-left',//'glyphicon glyphicon-chevron-left',
+      iconRight: 'fa fa-chevron-right' //'glyphicon glyphicon-chevron-right'
     };
     this.$get = [ '$window', '$document', '$rootScope', '$sce', '$dateFormatter', 'datepickerViews', '$tooltip', '$timeout', function($window, $document, $rootScope, $sce, $dateFormatter, datepickerViews, $tooltip, $timeout) {
       var isNative = /(ip[ao]d|iphone|android)/gi.test($window.navigator.userAgent);
