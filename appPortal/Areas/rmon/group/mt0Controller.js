@@ -15,7 +15,8 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, lin
     //控制畫面
     $scope.control = {
         pagedItems: [],
-        selectedRow: -1
+        selectedRow: -1,
+        loading: false
     };
     //選擇條件
     $scope.eventLevels = [];
@@ -165,18 +166,19 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, lin
 
     //取得事件資料
     function getEvents(param) {
-
+        $scope.control.loading = true;
         groupFactory.getEvents(param).then(processSuccess, processError);
 
         function processSuccess(data) {
             $scope.events = data;
             if (param.currentPage > data.pagedItems) {
-                param.currentPage = 0
+                param.currentPage = 0;
             };
-            $scope.control.pagedItems = range(param.currentPage, data.pagedItems);
-
+            $scope.control.pagedItems = getPagedItems(param.currentPage, data.pagedItems);
+            $scope.control.loading = false;
         }
         function processError(error) {
+            $scope.control.loading = false;
         }
     };
 

@@ -38,5 +38,7 @@ namespace FABTool.Models.Links
         public string MaintainName { get; set; }
 
         public string TObjName { get; set; }
+
+        public string AlarmName { get; set; }
     }
 }

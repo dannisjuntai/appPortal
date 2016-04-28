@@ -9,7 +9,8 @@
     'angular-flot',
     'ngModal',
     'ng-timepicker',
-    'mgcrea.ngStrap']);
+    'mgcrea.ngStrap',
+    'ngMultiselect']);
 var canvas;
 
 app.config(['$routeProvider',
@@ -268,6 +269,27 @@ app.directive('datepicker', function () {
     }
 });
 
+angular.module('directive.loading', [])
+
+    .directive('loading', ['$http', function ($http) {
+        return {
+            restrict: 'A',
+            link: function (scope, elm, attrs) {
+                scope.isLoading = function () {
+                    return $http.pendingRequests.length > 0;
+                };
+
+                scope.$watch(scope.isLoading, function (v) {
+                    if (v) {
+                        elm.show();
+                    } else {
+                        elm.hide();
+                    }
+                });
+            }
+        };
+
+    }]);
 //共用函式
 function redirectToUrl($location, path) {
     //$location.replace();

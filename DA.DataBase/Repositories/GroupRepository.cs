@@ -692,8 +692,8 @@ namespace DA.DataBase.Repositories
             //alram
             if (tag.CurSubSta > 1)
             {
-                //red
-                return "#E25A59";
+                //yellow
+                return "#E3A21A";
             }
             if (tag.CurLinkSta != 1)
             {
@@ -1478,7 +1478,7 @@ namespace DA.DataBase.Repositories
                     chart.Xaxis = new Xaxis()
                     {
                         Mode = "time",
-                        TickSize = getTickSize(sDt, eDt)//new KeyValuePair<int, string>(5, "minute")
+                        TickSize = getTickSize(sDt, eDt)
                     };
                     return chart;
                 }
@@ -2265,7 +2265,14 @@ namespace DA.DataBase.Repositories
                         select new { a, b, c };
                 if (param.OptionNo > 0)
                 {
-                    q = q.Where(p => p.b.EventLevel == param.OptionNo);
+                    if (param.OptionNo == 4)
+                    {
+                        q = q.Where(p => p.b.EventLevel == param.OptionNo || p.b.EventLevel == 5);
+                    }
+                    else
+                    {
+                        q = q.Where(p => p.b.EventLevel == param.OptionNo);
+                    }
                 }
                 if (q.Any())
                 {
@@ -2304,7 +2311,15 @@ namespace DA.DataBase.Repositories
                         select new { a, b, c };
                 if (param.OptionNo > 0)
                 {
-                    q = q.Where(p => p.a.EventLevel == param.OptionNo);
+
+                    if (param.OptionNo == 4)
+                    {
+                        q = q.Where(p => p.a.EventLevel == param.OptionNo || p.a.EventLevel == 5);
+                    }
+                    else
+                    {
+                        q = q.Where(p => p.a.EventLevel == param.OptionNo);
+                    }
                 }
                 if (q.Any())
                 {

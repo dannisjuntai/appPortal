@@ -41,7 +41,8 @@
                         <td class="col-sm-2">{{t.tObjName}}</td>
                         <td class="col-sm-2">{{t.linkTag.curfValue}}</td>
                         <td class="col-sm-2">
-                            <span class="label red">{{t.curSubStaName}}</span>
+                            <span class="label red">{{t.alarmName}}</span>
+                            <span class="label orange">{{t.curSubStaName}}</span>
                             <span class="label grey">{{t.curLinkStaName}}</span>
                             <span class="label blue">{{t.maintainName}}</span>
                         </td>
@@ -86,7 +87,7 @@
     <div class="box">
         <div class="box-header">
         </div>
-
+        <div class="loader" ng-show="control.loading == true"></div>
         <div class="box-body table-responsive no-padding">
             <table class="table table-fixed table-bordered">
                 <thead>
