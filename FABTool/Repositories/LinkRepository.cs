@@ -306,11 +306,21 @@ namespace FABTool.Repositories
             {
                 return new KeyValuePair<int, string>(6, "hour");
             }
-            if (hours > 1)
+            if (hours > 6)
             {
                 //
                 return new KeyValuePair<int, string>(1, "hour");
             }
+            if (hours > 3)
+            {
+                //
+                return new KeyValuePair<int, string>(30, "minute");
+            }
+            if (hours > 1)
+            {
+                //
+                return new KeyValuePair<int, string>(10, "minute");
+            } 
             if (minutes > 10)
             {
                 return new KeyValuePair<int, string>(5, "minute");

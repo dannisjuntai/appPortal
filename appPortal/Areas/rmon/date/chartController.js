@@ -18,8 +18,11 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
         startTime: sDt,
         endDate: new Date(),
         endTime: eDt,
-        itemsPerPage: 5000,
+        itemsPerPage: 86400,
         currentPage: 0
+    };
+    $scope.control = {
+        autoSearch: 0
     };
     //取得歷史資訊
     $scope.getTagHistories = function () {
@@ -91,9 +94,9 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
     };
 
 
-    //
+    //選擇Link Device 
     $scope.changLink = function (link) {
-        getLinkTags(link.linkSubSeq);
+        getLinkTags(link.linkSubSeq, $scope.control.autoSearch);
     };
 
     //設定連結
@@ -122,6 +125,15 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
         function processSuccess(data) {
             $scope.linkTags = '';
             $scope.linkTags = data;
+            //自動勾選
+            $scope.linkTags.forEach(function (link) {
+                if ($scope.link.linkTagSeq == link.linkTagSeq) {
+                    link.selected = true;
+                };
+            });
+            //取得歷史紀錄
+            getHistoryTags();
+            $scope.control.autoSearch = 0;
         }
         function processError(error) {
         }
@@ -132,9 +144,9 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
 
         function processSuccess(data) {
             $scope.link.linkSubSeq = data.linkSubSeq;
-            //$scope.linkTags = data;
             if ($scope.link.linkSubSeq > 0) {
-                getLinkTags($scope.link.linkSubSeq);
+                $scope.control.autoSearch = 1;
+                getLinkTags($scope.link.linkSubSeq, $scope.control.autoSearch);
             }
 
         }

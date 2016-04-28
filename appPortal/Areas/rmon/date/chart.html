@@ -25,7 +25,8 @@
 
             <div class="form-group">
                 <label>設備名稱</label>
-                <select class="form-control" ng-model="link.linkSubSeq" ng-options="item.linkSubSeq as item.linkDevName for item in linkDevices"
+                <select class="form-control" ng-model="link.linkSubSeq" 
+                        ng-options="item.linkSubSeq as item.linkDevName for item in linkDevices"
                         ng-change="changLink(link)" style="width:200px"></select>
             </div>
 
