@@ -170,16 +170,17 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, lin
 
         function processSuccess(data) {
             $scope.events = data;
-            $scope.control.pagedItems = [];
-            //產生頁數
-            for (var i = 0; i < data.pagedItems; i++) {
-                $scope.control.pagedItems.push(i);
-            }
+            if (param.currentPage > data.pagedItems) {
+                param.currentPage = 0
+            };
+            $scope.control.pagedItems = range(param.currentPage, data.pagedItems);
+
         }
         function processError(error) {
         }
     };
-    
+
+
     function getMainToolLinkTags(id) {
         linkFactory.getMainToolLinkTags(id).then(processSuccess, processError);
         function processSuccess(data) {

@@ -446,10 +446,10 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
 
         function processSuccess(data) {
             $scope.events = data;
-            //產生頁數
-            for (var i = 0; i < data.pagedItems; i++) {
-                $scope.control.pagedItems.push(i);
-            }
+            if (param.currentPage > data.pagedItems) {
+                param.currentPage = 0
+            };
+            $scope.control.pagedItems = getPagedItems(param.currentPage, data.pagedItems);
         }
         function processError(error) {
         }
@@ -490,12 +490,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         }
     }
 
-    //$scope.myChart = {
-    //    "data": $scope.chartdata, "options": {
-    //        scaleShowGridLines: true,
-    //        scaleShowHorizontalLines: true
-    //    }
-    //};
+
 
     $scope.dataset = [{ data: [] }, { data: [] }, { data: [] }];
 

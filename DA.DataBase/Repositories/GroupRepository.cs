@@ -2225,6 +2225,7 @@ namespace DA.DataBase.Repositories
                 {
                     q = q.Where(p => p.c.GroupId == param.GroupId);
                 }
+
                 if (q.Any())
                 {
                     List<int> sub = new List<int>();
@@ -2262,6 +2263,10 @@ namespace DA.DataBase.Repositories
                               b.RecTime >= sDt &&
                               b.RecTime <= eDt
                         select new { a, b, c };
+                if (param.OptionNo > 0)
+                {
+                    q = q.Where(p => p.b.EventLevel == param.OptionNo);
+                }
                 if (q.Any())
                 {
                     foreach (var o in q.ToList())
@@ -2297,6 +2302,10 @@ namespace DA.DataBase.Repositories
                               b.FieldName == "EventLevel" &&
                               c.FieldName == "Maintain"
                         select new { a, b, c };
+                if (param.OptionNo > 0)
+                {
+                    q = q.Where(p => p.a.EventLevel == param.OptionNo);
+                }
                 if (q.Any())
                 {
                     foreach (var o in q.ToList())
