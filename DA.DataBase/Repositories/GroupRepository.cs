@@ -376,7 +376,7 @@ namespace DA.DataBase.Repositories
                         var ld = new LinkDeviceViewModel()
                         {
                             LinkID = o.LinkID,
-                            LinkDevName = string.Format("{0} - {1}", o.LinkDevName, o.LinkSubName),
+                            LinkDevName = o.LinkDevName, //string.Format("{0} - {1}", o.LinkDevName, o.LinkSubName),
                             LinkSubSeq = o.LinkSubSeq
                         };
                         vms.Add(ld);
