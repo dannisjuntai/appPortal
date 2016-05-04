@@ -28,7 +28,10 @@ namespace DA.DataBase.Models
         /// 目前分頁位置
         /// </summary>
         public int CurrentPage { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        public int[] Selection { get; set; }
 
     }
     public class TagParam

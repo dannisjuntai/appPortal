@@ -7,6 +7,8 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
     $scope.link = { linkSubSeq: 0, linkTagSeq: 0 };
 
     $scope.link.linkTagSeq = ($routeParams.linkTagSeq) ? parseInt($routeParams.linkTagSeq) : 1;
+
+    //$scope.selection =[];
     var dt = new Date();
 
     var sDt = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), dt.getHours(), dt.getMinutes() - 60, 00);
@@ -19,10 +21,12 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
         endDate: new Date(),
         endTime: eDt,
         itemsPerPage: 86400,
-        currentPage: 0
+        currentPage: 0,
+        selection: []
     };
     $scope.control = {
-        autoSearch: 0
+        autoSearch: 0,
+        loading: false
     };
     //取得歷史資訊
     $scope.getTagHistories = function () {
@@ -96,6 +100,9 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
 
     //選擇Link Device 
     $scope.changLink = function (link) {
+        //清除
+        $scope.param.selection = [];
+
         getLinkTags(link.linkSubSeq, $scope.control.autoSearch);
     };
 
@@ -119,25 +126,32 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
         }
     }
     //取得LinkTag 集合
-    function getLinkTags(linkSubSeq) {
+    function getLinkTags(linkSubSeq, autoSearch) {
         groupFactory.getLinkTags(linkSubSeq).then(processSuccess, processError);
 
         function processSuccess(data) {
             $scope.linkTags = '';
             $scope.linkTags = data;
+            
+
             //自動勾選
             $scope.linkTags.forEach(function (link) {
                 if ($scope.link.linkTagSeq == link.linkTagSeq) {
                     link.selected = true;
+                    $scope.param.selection.push(link.linkTagSeq);
                 };
             });
             //取得歷史紀錄
-            getHistoryTags();
+            if (autoSearch > 0) {
+                getHistoryTags();
+            }
             $scope.control.autoSearch = 0;
+
         }
         function processError(error) {
         }
     };
+
     //取得LinkTag
     function getLinkTag(linkTagSeq) {
         groupFactory.getLinkTag(linkTagSeq).then(processSuccess, processError);
@@ -154,6 +168,8 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
         }
     };
     function getHistoryTags() {
+    
+        $scope.control.loading = true;
         $scope.param.linkTagSeq = $scope.link.linkTagSeq;
         $scope.param.linkTags = $scope.linkTags;
 
@@ -172,8 +188,10 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
                 i++;
             });
             var y = $scope.options.yaxes;
+            $scope.control.loading = false;
         }
         function processError(error) {
+            $scope.control.loading = false;
         }
     };
 };

@@ -122,7 +122,7 @@ namespace FABTool.Repositories
                         {
                             if (l.f.CurfValue > 0)
                             {
-                                tag.CurSubStaName = "多態告警狀態";
+                                tag.AlarmName = "多態告警狀態";
                             }
                             else
                             {
@@ -238,35 +238,44 @@ namespace FABTool.Repositories
         public ChartViewModel GetHistoryTags(DA.DataBase.Models.TagParamViewModel param)
         {
             List<TagsViewModel> tags = new List<TagsViewModel>();
-
             //多選
-            List<int> selected = new List<int>();
             List<Yaxis> yaxes = new List<Yaxis>();
             int y = 0;
-            foreach (var linkTag in param.LinkTags)
+            foreach (var LinkTagSeq in param.Selection)
             {
-                if (linkTag.Selected == true)
+                y++;
+                var t = getTagHistory(param, LinkTagSeq);
+                var link = getLinkTag(LinkTagSeq);
+                TagsViewModel tag = new TagsViewModel()
                 {
-                    y++;
-                    var t = getTagHistory(param, linkTag.LinkTagSeq);
-                    TagsViewModel tag = new TagsViewModel()
-                    {
-                        Label = linkTag.TagName,
-                        Yaxis = y,
-                        Data = t,
-                    };
-                    tags.Add(tag);
-                    //
-                    var yaxis = new Yaxis();
-                    if (y > 1)
-                    {
-                        yaxis.Position = "right";
-                    }
-                    else
-                    {
-                        yaxis.Position = "left";
-                    }
-                    yaxes.Add(yaxis);
+                    Label = link.TagName,
+                    Yaxis = y,
+                    Data = t,
+                };
+                tags.Add(tag);
+                //
+                var yaxis = new Yaxis();
+                if (y > 1)
+                {
+                    yaxis.Position = "right";
+                }
+                else
+                {
+                    yaxis.Position = "left";
+                }
+                yaxes.Add(yaxis);
+
+            }
+            //加入上下限值
+            if (param.Selection.Length == 1)
+            {
+                double firstX = tags.FirstOrDefault().Data.FirstOrDefault().X;
+                double lastX = tags.LastOrDefault().Data.LastOrDefault().X;
+                //加入上下限值
+                var uporlow = getUpAndLow(firstX, lastX, param.Selection[0]);
+                if (uporlow != null)
+                {
+                    tags.AddRange(uporlow);
                 }
             }
             //
@@ -277,11 +286,83 @@ namespace FABTool.Repositories
                 Xaxis = new Xaxis()
                 {
                     Mode = "time",
-                    TickSize = getTickSize(param)//new KeyValuePair<int, string>(5, "minute")
+                    TickSize = getTickSize(param)
                 },
                 PagedItems = 0
             };
             return vm;
+        }
+        private List<TagsViewModel> getUpAndLow(double firstX, double lastX, int linkTagSeq)
+        {
+            List<TagsViewModel> vms = new List<TagsViewModel>();
+            using (var db = new CMSDBContext())
+            {
+                var q = from a in db.LinkTag
+                        where a.LinkTagSeq == linkTagSeq
+                        select a;
+                if (q.Any())
+                {
+                    var o = q.FirstOrDefault();
+                    if (o.AlarmFlag == 1)
+                    {
+                        TagsViewModel vm = new TagsViewModel()
+                        {
+                            Data = getUp(firstX, lastX, o.UpAlarm),
+                            Label = "超值",
+                            Yaxis = 1
+                        };
+                        vms.Add(vm);
+
+                    }
+                    else if (o.AlarmFlag == 2)
+                    {
+                        TagsViewModel vm = new TagsViewModel()
+                        {
+                            Data = getUp(firstX, lastX, o.LowAlarm),
+                            Label = "低值",
+                            Yaxis = 1
+                        };
+                        vms.Add(vm);
+                    }
+                    else if (o.AlarmFlag == 3)
+                    {
+                        TagsViewModel vm1 = new TagsViewModel()
+                        {
+                            Data = getUp(firstX, lastX, o.UpAlarm),
+                            Label = "超值",
+                            Yaxis = 2
+                        };
+                        vms.Add(vm1);
+                        TagsViewModel vm2 = new TagsViewModel()
+                        {
+                            Data = getUp(firstX, lastX, o.LowAlarm),
+                            Label = "低值",
+                            Yaxis = 3
+                        };
+                        vms.Add(vm2);
+                    }
+                    return vms;
+                }
+            }
+            return null;
+        }
+        private List<TagViewModel> getUp(double firstX, double lastX, double y)
+        {
+            List<TagViewModel> vms = new List<TagViewModel>();
+
+            TagViewModel tag1 = new TagViewModel()
+            {
+                X = firstX,
+                Y= y.ToString()
+            };
+            vms.Add(tag1);
+            TagViewModel tag2 = new TagViewModel()
+            {
+                X = lastX,
+                Y = y.ToString()
+            };
+            vms.Add(tag2);
+            return vms;
         }
         /// <summary>
         /// 取得動態時間
@@ -302,7 +383,7 @@ namespace FABTool.Repositories
                 //
                 return new KeyValuePair<int, string>(1, "day");
             }
-            if(days >= 1 && days <=2)
+            if (days >= 1 && days <= 2)
             {
                 return new KeyValuePair<int, string>(6, "hour");
             }
@@ -320,7 +401,7 @@ namespace FABTool.Repositories
             {
                 //
                 return new KeyValuePair<int, string>(10, "minute");
-            } 
+            }
             if (minutes > 10)
             {
                 return new KeyValuePair<int, string>(5, "minute");
@@ -353,7 +434,6 @@ namespace FABTool.Repositories
 
                     t = q.ToList().Skip(param.CurrentPage * param.ItemsPerPage).Take(param.ItemsPerPage).ToList();
 
-
                     foreach (var o in t)
                     {
                         TagViewModel tag = new TagViewModel()
@@ -368,7 +448,20 @@ namespace FABTool.Repositories
             }
             return tags;
         }
-
+        private LinkTag getLinkTag(int linkTagSeq)
+        {
+            using (var db = new CMSDBContext())
+            {
+                var q = from a in db.LinkTag
+                        where a.LinkTagSeq == linkTagSeq
+                        select a;
+                if (q.Any())
+                {
+                    return q.FirstOrDefault();
+                }
+                return null;
+            }
+        }
         /// <summary>
         /// 釋放資源
         /// </summary>

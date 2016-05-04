@@ -22,7 +22,6 @@ namespace FABTool.Models.Charts
     public class TagViewModel
     {
         public double X { get; set; }
-
         public string Y { get; set; }
     }
     /// <summary>

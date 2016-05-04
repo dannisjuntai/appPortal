@@ -20,7 +20,10 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
     };
     //導覽到 圖表資料
     $scope.goChart = function () {
-        redirectToUrl('/chart/' + 0);
+        if (o && angular.isObject(o)) {
+            //
+            redirectToUrl($location, '/chart/' + o.groupId);
+        }
     };
 
     canvas = new fabric.Canvas(document.getElementById("playCanvas"));
@@ -163,7 +166,6 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         });
         //新增繪圖元件
         $scope.links.forEach(function (link) {
-            //addDeviceLink(link);
             drawDevice(link);
         });
     };
@@ -195,72 +197,6 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             object.setCoords();
             canvas.renderAll();
         };
-    };
-    //加入圖控元件
-    function addDeviceLink(link) {
-
-        var obj = JSON.parse(link.locationValue);
-
-        var rect = new fabric.Rect({
-            type: 'element_' + link.locationId, //識別碼
-            fill: '#FFFF00',
-            width: 150,
-            height: 40,
-            opacity: 1,
-            stroke: '#909ab2',
-            strokeWidth: 2,
-            borderColor: 'red',
-            cornerColor: 'green',
-            hasRotatingPoint: false,
-            transparentCorners: false,
-            cornerSize: 6
-        });
-        var circle = new fabric.Circle({
-            //id: link.locationId,
-            type: 'element_' + link.locationId, //識別碼
-            //left: obj.x,
-            //top: obj.y,
-            fill: '#89deae',
-            radius: 12,
-            opacity: 1,
-            stroke: '#909ab2',
-            strokeWidth: 2,
-            borderColor: 'red',
-            cornerColor: 'green',
-            hasRotatingPoint: false,
-            transparentCorners: false,
-            cornerSize: 6
-        });
-
-
-        //新增圖文
-        var type = 'prompt_' + link.locationId;
-        var text = link.tagName + '\n' + link.curfValue;
-        var left = rect.left + 10;//circle.left + (circle.width * circle.scaleX) + 10;
-        var top = rect.top; //circle.top;
-
-        var text = new fabric.Text(text, {
-            type: type,
-            left: left,
-            top: top,
-            fontSize: 16,
-            fill: '#000000',
-            originX: 'left',
-            hasRotatingPoint: true,
-            centerTransform: true,
-            selectable: false
-        });
-
-        var group = new fabric.Group([rect, text], {
-            type: 'group_' + link.locationId,
-            left: obj.x,
-            top: obj.y,
-            //evented: false,
-            selectable: false,
-            hasControls: false,
-            hasBorders: false
-        });
-        canvas.add(group);
     };
     //繪製圖控
     function drawDevice(link) {
@@ -297,7 +233,6 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             top: top,
             fontSize: 16,
             fill: '#000000',
-
             originX: 'left',
             textBackgroundColor: '#ffc40d',
             hasRotatingPoint: true,
@@ -360,7 +295,8 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         eDateTime: new Date(),
         optionNo: 0,
         groupId: 0,
-        locationId :0,
+        groupType: 3,
+        locationId: 0,
         itemsPerPage: 20,
         currentPage: 0,
         //單點趨勢圖參數
@@ -388,7 +324,8 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
     //控制畫面
     $scope.control = {
         pagedItems: [],
-        selectedRow: -1
+        selectedRow: -1,
+        loading: false
     };
     $scope.toggleModal = function () {
         $scope.showModal = !$scope.showModal;
@@ -441,17 +378,19 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
     }
     //取得事件資料
     function getEvents(param) {
-
+        $scope.control.loading = true;
         groupFactory.getEvents(param).then(processSuccess, processError);
 
         function processSuccess(data) {
             $scope.events = data;
-            //產生頁數
-            for (var i = 0; i < data.pagedItems; i++) {
-                $scope.control.pagedItems.push(i);
-            }
+            if (param.currentPage > data.pagedItems) {
+                param.currentPage = 0;
+            };
+            $scope.control.pagedItems = getPagedItems(param.currentPage, data.pagedItems);
+            $scope.control.loading = false;
         }
         function processError(error) {
+            $scope.control.loading = false;
         }
     };
     //取得歷史資訊
@@ -490,12 +429,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         }
     }
 
-    //$scope.myChart = {
-    //    "data": $scope.chartdata, "options": {
-    //        scaleShowGridLines: true,
-    //        scaleShowHorizontalLines: true
-    //    }
-    //};
+
 
     $scope.dataset = [{ data: [] }, { data: [] }, { data: [] }];
 
@@ -537,8 +471,8 @@ function showChart($scope) {
         var token = device.type.split("_");
         var lid = token[1];
         //$scope.locationId = lid;
-        $scope.param.locationId = lid;
-        $scope.getTagHistory(true);
+        //$scope.param.locationId = lid;
+       // $scope.getTagHistory(true);
 
         //console.log('mouse over');
     };

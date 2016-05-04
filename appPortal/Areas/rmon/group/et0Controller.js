@@ -10,13 +10,15 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
         eDateTime: new Date(),
         optionNo: 0,
         groupId: 0,
+        groupType: 2,
         itemsPerPage: 20,
         currentPage: 0
     };
     //控制畫面
     $scope.control = {
         pagedItems: [],
-        selectedRow: -1
+        selectedRow: -1,
+        loading:false
     };
     //維護
     $scope.maintain = { modal: false, groupId: 0, items: [], optionNo: 0, message: "" };
@@ -212,18 +214,19 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
 
     //取得事件資料
     function getEvents(param) {
-
+        $scope.control.loading = true;
         groupFactory.getEvents(param).then(processSuccess, processError);
 
         function processSuccess(data) {
             $scope.events = data;
-            $scope.control.pagedItems = [];
-            //產生頁數
-            for (var i = 0; i < data.pagedItems; i++) {
-                $scope.control.pagedItems.push(i);
-            }
+            if (param.currentPage > data.pagedItems) {
+                param.currentPage = 0
+            };
+            $scope.control.pagedItems = getPagedItems(param.currentPage, data.pagedItems);
+            $scope.control.loading = false;
         }
         function processError(error) {
+            $scope.control.loading = false;
         }
     };
     function getEquipmentLinkTags(id) {

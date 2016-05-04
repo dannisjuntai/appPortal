@@ -327,6 +327,7 @@
     <Content Include="Scripts\angular\angular-resource.min.js" />
     <Content Include="Scripts\angular\angular-route.min.js" />
     <Content Include="Scripts\angular\angular-sanitize.min.js" />
+    <Content Include="Scripts\angular\angular-multiselect.js" />
     <Content Include="Scripts\angular\angular-strap.docs.tpl.js" />
     <Content Include="Scripts\angular\angular-strap.js" />
     <Content Include="Scripts\angular\angular-strap.tpl.js" />

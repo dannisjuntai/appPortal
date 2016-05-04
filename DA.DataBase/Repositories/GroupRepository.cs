@@ -692,8 +692,8 @@ namespace DA.DataBase.Repositories
             //alram
             if (tag.CurSubSta > 1)
             {
-                //red
-                return "#E25A59";
+                //yellow
+                return "#E3A21A";
             }
             if (tag.CurLinkSta != 1)
             {
@@ -1478,7 +1478,7 @@ namespace DA.DataBase.Repositories
                     chart.Xaxis = new Xaxis()
                     {
                         Mode = "time",
-                        TickSize = getTickSize(sDt, eDt)//new KeyValuePair<int, string>(5, "minute")
+                        TickSize = getTickSize(sDt, eDt)
                     };
                     return chart;
                 }
@@ -2225,6 +2225,7 @@ namespace DA.DataBase.Repositories
                 {
                     q = q.Where(p => p.c.GroupId == param.GroupId);
                 }
+
                 if (q.Any())
                 {
                     List<int> sub = new List<int>();
@@ -2262,6 +2263,17 @@ namespace DA.DataBase.Repositories
                               b.RecTime >= sDt &&
                               b.RecTime <= eDt
                         select new { a, b, c };
+                if (param.OptionNo > 0)
+                {
+                    if (param.OptionNo == 4)
+                    {
+                        q = q.Where(p => p.b.EventLevel == param.OptionNo || p.b.EventLevel == 5);
+                    }
+                    else
+                    {
+                        q = q.Where(p => p.b.EventLevel == param.OptionNo);
+                    }
+                }
                 if (q.Any())
                 {
                     foreach (var o in q.ToList())
@@ -2297,6 +2309,18 @@ namespace DA.DataBase.Repositories
                               b.FieldName == "EventLevel" &&
                               c.FieldName == "Maintain"
                         select new { a, b, c };
+                if (param.OptionNo > 0)
+                {
+
+                    if (param.OptionNo == 4)
+                    {
+                        q = q.Where(p => p.a.EventLevel == param.OptionNo || p.a.EventLevel == 5);
+                    }
+                    else
+                    {
+                        q = q.Where(p => p.a.EventLevel == param.OptionNo);
+                    }
+                }
                 if (q.Any())
                 {
                     foreach (var o in q.ToList())

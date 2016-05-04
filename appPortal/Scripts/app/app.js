@@ -9,7 +9,8 @@
     'angular-flot',
     'ngModal',
     'ng-timepicker',
-    'mgcrea.ngStrap']);
+    'mgcrea.ngStrap',
+    'ngMultiselect']);
 var canvas;
 
 app.config(['$routeProvider',
@@ -268,8 +269,62 @@ app.directive('datepicker', function () {
     }
 });
 
+angular.module('directive.loading', [])
+
+    .directive('loading', ['$http', function ($http) {
+        return {
+            restrict: 'A',
+            link: function (scope, elm, attrs) {
+                scope.isLoading = function () {
+                    return $http.pendingRequests.length > 0;
+                };
+
+                scope.$watch(scope.isLoading, function (v) {
+                    if (v) {
+                        elm.show();
+                    } else {
+                        elm.hide();
+                    }
+                });
+            }
+        };
+
+    }]);
 //共用函式
 function redirectToUrl($location, path) {
     //$location.replace();
     $location.path(path);
 }
+
+//產生頁數
+function getPagedItems(page, pages) {
+    var pagedItems = [];
+
+    start = 0;
+    if (page + 5 <= pages) {
+        end = page + 5;
+    }
+    else {
+        end = pages;
+    }
+    if (page - 6 > 0) {
+        start = page - 6;
+    }
+    for (var i = start; i < end; i++) {
+        if (i < end) {
+            pagedItems.push(i);
+        }
+
+    }
+    return pagedItems;
+};
+
+function range(start, end) {
+    if (this.n <= $scope.currentPage) {
+        $scope.left_gap = $scope.gap - 1;
+        $scope.right_gap = 1;
+    } else {
+        $scope.left_gap = 0;
+        $scope.right_gap = $scope.gap;
+    }
+};
