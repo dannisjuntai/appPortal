@@ -1611,48 +1611,6 @@ namespace DA.DataBase.Repositories
             vms.Add(tag2);
             return vms;
         }
-        /// <summary>
-        /// 取得歷史資料
-        /// </summary>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        public List<TagValueViewModel> GetTagHistories(TagParamViewModel param)
-        {
-            return null;
-            //List<TagValueViewModel> tags = new List<TagValueViewModel>();
-            //string[] time = param.StartTime.Split(':');
-            ////開始時間
-            //DateTime sdt = new DateTime(param.StartDate.Year, param.StartDate.Month, param.StartDate.Day,
-            //    int.Parse(time[0]), int.Parse(time[1]), 0);
-            ////結束時間
-            //time = param.EndTime.Split(':');
-            //var edt = new DateTime(param.EndDate.Year, param.EndDate.Month, param.EndDate.Day,
-            //    int.Parse(time[0]), int.Parse(time[1]), 0);
-
-            //using (var db = new CMSDBContext())
-            //{
-            //    var q = from a in db.TagHistory
-            //            where a.RecTime >= sdt &&
-            //                  a.RecTime <= edt &&
-            //                  a.LinkTagSeq == param.LinkTagSeq
-            //            select a;
-            //    if (q.Any())
-            //    {
-            //        foreach (var o in q.ToList().Take(1000))
-            //        {
-            //            TagValueViewModel tag = new TagValueViewModel()
-            //            {
-
-            //                Labels =  o.RecTime.ToJavascriptTimestamp(),
-            //                Data = o.fValue.ToString()
-            //            };
-            //            tags.Add(tag);
-            //        }
-            //    }
-            //}
-            //return tags;
-        }
-
         public List<TagValuesViewModel> GetHistoryTags(TagParamViewModel param)
         {
             List<TagValuesViewModel> tags = new List<TagValuesViewModel>();
@@ -1974,6 +1932,7 @@ namespace DA.DataBase.Repositories
             {
                 var q = from a in db.EventSet
                         where a.GroupId == groupId &&
+                              a.EventLevel == 1 &&
                               a.RestTime == null
                         select a;
                 if (q.Any())
@@ -1995,14 +1954,7 @@ namespace DA.DataBase.Repositories
             using (var db = new CMSDBContext())
             {
                 var g = getGroupMapLinkSubSeq(groupId);
-                //var g = getGroups(groupId);
-                ////
-                ////取得本階
-                //var lastGroup = getGroup(groupId);
-                //if (lastGroup != null)
-                //{
-                //    g.Add(lastGroup);
-                //}
+
                 foreach (var o in g.ToList())
                 {
                     var q = from a in db.LinkTag
@@ -2262,6 +2214,7 @@ namespace DA.DataBase.Repositories
                               c.FieldName == "EventLevel" &&
                               b.RecTime >= sDt &&
                               b.RecTime <= eDt
+                        orderby b.RecTime
                         select new { a, b, c };
                 if (param.OptionNo > 0)
                 {
@@ -2276,6 +2229,7 @@ namespace DA.DataBase.Repositories
                 }
                 if (q.Any())
                 {
+                    //Skip(param.CurrentPage * param.ItemsPerPage).Take(param.ItemsPerPage)
                     foreach (var o in q.ToList())
                     {
                         EventViewModel e = new EventViewModel()
@@ -2308,6 +2262,7 @@ namespace DA.DataBase.Repositories
                               a.EventLevel == 1 &&
                               b.FieldName == "EventLevel" &&
                               c.FieldName == "Maintain"
+                        orderby a.RecTime
                         select new { a, b, c };
                 if (param.OptionNo > 0)
                 {
@@ -2323,6 +2278,7 @@ namespace DA.DataBase.Repositories
                 }
                 if (q.Any())
                 {
+                    //Skip(param.CurrentPage * param.ItemsPerPage).Take(param.ItemsPerPage)
                     foreach (var o in q.ToList())
                     {
                         EventViewModel e = new EventViewModel()

@@ -19,11 +19,10 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         }
     };
     //導覽到 圖表資料
-    $scope.goChart = function () {
-        if (o && angular.isObject(o)) {
-            //
-            redirectToUrl($location, '/chart/' + o.groupId);
-        }
+    $scope.goChart = function (linkTagSeq) {
+
+            redirectToUrl('/chart/' + linkTagSeq);
+   
     };
 
     canvas = new fabric.Canvas(document.getElementById("playCanvas"));
@@ -339,7 +338,6 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
             if ($scope.groupId) {
                 $scope.param.groupId = $scope.groupId;
                 $scope.param.modal = !$scope.param.modal;
-
             };
         }
     };

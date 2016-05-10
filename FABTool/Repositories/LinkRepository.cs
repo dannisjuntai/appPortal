@@ -166,6 +166,7 @@ namespace FABTool.Repositories
             {
                 var q = from a in db.EventSet
                         where groups.Contains(a.GroupId) &&
+                              a.EventLevel == 1 &&
                               a.RestTime == null
                         select a;
 

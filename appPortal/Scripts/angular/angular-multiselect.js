@@ -13,8 +13,9 @@ mod.directive('dropdownMultiselect', function () {
                     "<button class='btn btn-small'>Select...</button>" +
                     "<button class='btn btn-small dropdown-toggle' data-ng-click='openDropdown()'><span class='caret'></span></button>" +
                     "<ul class='dropdown-menu pre-scrollable' aria-labelledby='dropdownMenu'>" +
-                        "<li><a data-ng-click='selectAll()'><span class='glyphicon glyphicon-ok green' aria-hidden='true'></span> Check All</a></li>" +
-                        "<li><a data-ng-click='deselectAll();'><span class='glyphicon glyphicon-remove red' aria-hidden='true'></span> Uncheck All</a></li>" +
+                       // "<li><a data-ng-click='selectAll()'><span class='glyphicon glyphicon-ok green' aria-hidden='true'></span> Check All</a></li>" +
+                        "<li><input type='checkbox' data-ng-click='selectAll($event)' style='margin-left:20px'/>Check All</li>" +
+                        //"<li><a data-ng-click='deselectAll();'><span class='glyphicon glyphicon-remove red' aria-hidden='true'></span> Uncheck All</a></li>" +
                         "<li class='divider'></li>" +
                         "<li data-ng-repeat='option in options'>" +
                         "<a data-ng-click='toggleSelectItem(option)'><span data-ng-class='getClassName(option)' aria-hidden='true'></span> {{option.tagName}}</a></li>" +
@@ -26,11 +27,18 @@ mod.directive('dropdownMultiselect', function () {
                 $scope.open = !$scope.open;
             };
 
-            $scope.selectAll = function () {
-                $scope.model = [];
-                angular.forEach($scope.options, function (item, index) {
-                    $scope.model.push(item.linkTagSeq);
-                });
+            $scope.selectAll = function (e) {
+                 if (e.target.checked == true) {
+                    $scope.model = [];
+                    angular.forEach($scope.options, function (item, index) {
+                        $scope.model.push(item.linkTagSeq);
+                    });
+                } else {
+                    $scope.model = [];
+      
+                }
+                    
+
             };
 
             $scope.deselectAll = function () {
