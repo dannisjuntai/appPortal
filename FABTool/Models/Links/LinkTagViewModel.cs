@@ -29,9 +29,10 @@ namespace FABTool.Models.Links
 
     public class LinkTagViewModel
     {
+        public string LinkSubName { get; set; }
         public LinkTag LinkTag { get; set; }
 
-        public string  CurLinkStaName { get; set; }
+        public string CurLinkStaName { get; set; }
 
         public string CurSubStaName { get; set; }
 

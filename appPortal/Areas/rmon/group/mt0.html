@@ -32,7 +32,8 @@
             <table class="table table-fixed">
                 <thead>
                     <tr>
-                        <th class="col-sm-6">Tag名稱</th>
+                        <th class="col-sm-1">設備名稱</th>
+                        <th class="col-sm-5">Tag名稱</th>
                         <th class="col-sm-2">告警類別</th>
                         <th class="col-sm-2">數值</th>
                         <th class="col-sm-2">告警狀態</th>
@@ -40,7 +41,8 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="t in linkTags">
-                        <td class="col-sm-6"><a ng-click="goChart(t.linkTag.linkTagSeq)">{{t.linkTag.tagName}}</a></td>
+                        <td class="col-sm-1">{{t.linkSubName}} </td>
+                        <td class="col-sm-5"><a ng-click="goChart(t.linkTag.linkTagSeq)">{{t.linkTag.tagName}}</a></td>
                         <td class="col-sm-2">{{t.tObjName}}</td>
                         <td class="col-sm-2">{{t.linkTag.curfValue}}</td>
                         <td class="col-sm-2">

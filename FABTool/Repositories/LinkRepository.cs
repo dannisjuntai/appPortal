@@ -86,7 +86,7 @@ namespace FABTool.Repositories
                     q = q.Where(p => p.e.GroupId == groupId);
                 }
                 //群組
-                var g = q.GroupBy(p => new { p.e.LinkSubSeq, p.f, p.i }).Select(r => new { r.Key.f, r.Key.i });
+                var g = q.GroupBy(p => new { p.e.LinkSubSeq, p.d, p.f, p.i }).Select(r => new { r.Key.d, r.Key.f, r.Key.i });
                 //維護
                 var maintains = q.GroupBy(p => new { p.d.GroupId }).Select(r => new { r.Key.GroupId });
                 List<int> mlist = new List<int>();
@@ -133,6 +133,7 @@ namespace FABTool.Repositories
                         {
                             continue;
                         }
+                        tag.LinkSubName = l.d.GroupName;
                         tag.LinkTag = l.f;
                         tag.TObjName = l.i.TObjName;
                         tags.Add(tag);
@@ -154,6 +155,7 @@ namespace FABTool.Repositories
             }
             return null;
         }
+
         /// <summary>
         /// 取得機台維修數量
         /// </summary>
