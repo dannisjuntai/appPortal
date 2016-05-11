@@ -138,7 +138,7 @@ namespace appPortal.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpPut]
+        [HttpPost]
         public HttpResponseMessage SetMaintain([FromBody]MaintainParam param)
         {
             var result = repository.SetMaintain(param);

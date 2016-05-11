@@ -27,6 +27,7 @@
                     ng-change="changLink(link)" style="width:200px"></select>
         </div>
         <label>偵測項目</label>
+        <input type="checkbox" style="margin-left:10px"/>
         <dropdown-multiselect model="param.selection" options="linkTags"></dropdown-multiselect>
         <div class="form-group">
             <button type="submit" class="btn btn-success" ng-click="getTagHistories()">查詢</button>

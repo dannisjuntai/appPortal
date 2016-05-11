@@ -168,6 +168,7 @@ namespace FABTool.Repositories
             {
                 var q = from a in db.EventSet
                         where groups.Contains(a.GroupId) &&
+                              a.EventLevel == 1 &&
                               a.RestTime == null
                         select a;
 
@@ -247,10 +248,10 @@ namespace FABTool.Repositories
             {
                 y++;
                 var t = getTagHistory(param, LinkTagSeq);
-                var link = getLinkTag(LinkTagSeq);
+                string link = getLinkTag(LinkTagSeq);
                 TagsViewModel tag = new TagsViewModel()
                 {
-                    Label = link.TagName,
+                    Label = link,
                     Yaxis = y,
                     Data = t,
                 };
@@ -355,7 +356,7 @@ namespace FABTool.Repositories
             TagViewModel tag1 = new TagViewModel()
             {
                 X = firstX,
-                Y= y.ToString()
+                Y = y.ToString()
             };
             vms.Add(tag1);
             TagViewModel tag2 = new TagViewModel()
@@ -450,18 +451,26 @@ namespace FABTool.Repositories
             }
             return tags;
         }
-        private LinkTag getLinkTag(int linkTagSeq)
+        /// <summary>
+        /// 取得 LinkTag
+        /// </summary>
+        /// <param name="linkTagSeq"></param>
+        /// <returns></returns>
+        private string getLinkTag(int linkTagSeq)
         {
             using (var db = new CMSDBContext())
             {
                 var q = from a in db.LinkTag
+                        join b in db.MemTag on a.MTagSeq equals b.MTagSeq
                         where a.LinkTagSeq == linkTagSeq
-                        select a;
+                        select new { a, b };
                 if (q.Any())
                 {
-                    return q.FirstOrDefault();
+                    var tagName = string.Format("{0}-{1}", q.FirstOrDefault().a.TagName,
+                                                 q.FirstOrDefault().b.UnitName);
+                    return tagName;
                 }
-                return null;
+                return string.Empty;
             }
         }
         /// <summary>

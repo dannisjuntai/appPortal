@@ -219,7 +219,7 @@ var groupFactory = function ($http, $q, $resource) {
     //設定維護狀態
     factory.setMaintain = function (param) {
         url = serviceBase + 'setMaintain/';
-        return $http.put(url, param).then(function (results) {
+        return $http.post(url, param).then(function (results) {
             return results.data;
         });
     }
