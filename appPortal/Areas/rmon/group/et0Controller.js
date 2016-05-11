@@ -18,7 +18,8 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
     $scope.control = {
         pagedItems: [],
         selectedRow: -1,
-        loading:false
+        loading: false,
+        showType: true
     };
     //維護
     $scope.maintain = { modal: false, groupId: 0, items: [], optionNo: 0, message: "" };
@@ -107,11 +108,17 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
     //搜尋資料
     $scope.searchEvents = function () {
         getEvents($scope.param);
+        //變更顯示欄位
+        if ($scope.param.optionNo == 0) {
+            $scope.control.showType = true;
+        } else {
+            $scope.control.showType = false;
+        }
     };
 
     //導覽到 圖表資料
     $scope.goChart = function (linkTagSeq) {
-        redirectToUrl('/chart/' + linkTagSeq);
+        redirectToUrl('/chart/' + linkTagSeq + '/' + $scope.groupId);
     };
     //上一頁
     $scope.prevPage = function () {

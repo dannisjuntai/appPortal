@@ -128,8 +128,8 @@
                     <tr>
                         <th class="col-md-3">Alarm Time</th>
                         <th class="col-md-3">Recover Time </th>
-                        <th class="col-md-2">Type</th>
                         <th class="col-md-4">Event Description</th>
+                        <th class="col-md-2" ng-show="control.showType == true">Type</th>
                     </tr>
                 </thead>
                 <tfoot>
@@ -160,8 +160,8 @@
                     <tr ng-repeat="e in events.eventSets">
                         <td class="col-md-3">{{ e.recTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                         <td class="col-md-3">{{ e.restTime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                        <td class="col-md-2">{{e.eventName}}</td>
                         <td class="col-md-4">{{ e.name }}</td>
+                        <td class="col-md-2" ng-show="control.showType == true">{{e.eventName}}</td>
                     </tr>
                 </tbody>
             </table>

@@ -333,14 +333,14 @@ namespace FABTool.Repositories
                         {
                             Data = getUp(firstX, lastX, o.UpAlarm),
                             Label = "超值",
-                            Yaxis = 2
+                            Yaxis = 1
                         };
                         vms.Add(vm1);
                         TagsViewModel vm2 = new TagsViewModel()
                         {
                             Data = getUp(firstX, lastX, o.LowAlarm),
                             Label = "低值",
-                            Yaxis = 3
+                            Yaxis = 1
                         };
                         vms.Add(vm2);
                     }
@@ -388,7 +388,7 @@ namespace FABTool.Repositories
             }
             if (days >= 1 && days <= 2)
             {
-                return new KeyValuePair<int, string>(6, "hour");
+                return new KeyValuePair<int, string>(3, "hour");
             }
             if (hours > 6)
             {

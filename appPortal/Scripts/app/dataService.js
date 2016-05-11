@@ -112,16 +112,17 @@ var groupFactory = function ($http, $q, $resource) {
         });
     }
     //LinkDevies
-    factory.getLinkDevices = function () {
-        return $http.get(serviceBase + 'GetLinkDevices').then(function (results) {
+    factory.getLinkDevices = function (parentId) {
+        url = serviceBase + 'getLinkDevices/' + parentId;
+        return $http.get(url).then(function (results) {
             return results.data;
         });
     };
-    factory.getLinkDevices = function (link) {
-        return $http.get(serviceBase + 'GetLinkDevices').then(function (results) {
-            return results.data;
-        });
-    };
+    //factory.getLinkDevices = function (link) {
+    //    return $http.get(serviceBase + 'GetLinkDevices').then(function (results) {
+    //        return results.data;
+    //    });
+    //};
     //GetLinkTags
     factory.getLinkTags = function (id) {
         return $http.get(serviceBase + 'GetLinkTags/' + id).then(function (results) {

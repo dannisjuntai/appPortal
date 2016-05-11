@@ -29,7 +29,8 @@
             <table class="table table-fixed">
                 <thead>
                     <tr>
-                        <th class="col-sm-6">Tag名稱</th>
+                        <th class="col-sm-1">設備名稱</th>
+                        <th class="col-sm-5">Tag名稱</th>
                         <th class="col-sm-2">告警類別</th>
                         <th class="col-sm-2">數值</th>
                         <th class="col-sm-2">告警狀態</th>
@@ -37,7 +38,8 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="t in linkTags">
-                        <td class="col-sm-6"><a ng-click="goChart(t.linkTag.linkTagSeq)">{{t.linkTag.tagName}}</a></td>
+                        <td class="col-sm-1">{{t.linkSubName}}</td>
+                        <td class="col-sm-5"><a ng-click="goChart(t.linkTag.linkTagSeq)">{{t.linkTag.tagName}}</a></td>
                         <td class="col-sm-2">{{t.tObjName}}</td>
                         <td class="col-sm-2">{{t.linkTag.curfValue}}</td>
                         <td class="col-sm-2">
@@ -94,8 +96,8 @@
                     <tr>
                         <th class="col-md-3">Alarm Time</th>
                         <th class="col-md-3">Recover Time </th>
-                        <th class="col-md-2">Type</th>
                         <th class="col-md-4">Event Description</th>
+                        <th class="col-md-2" ng-show="control.showType == true">Type</th>
                     </tr>
                 </thead>
                 <tfoot>
@@ -129,8 +131,8 @@
                     <tr ng-repeat="e in events.eventSets">
                         <td class="col-md-3">{{ e.recTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                         <td class="col-md-3">{{ e.restTime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                        <td class="col-md-2">{{e.eventName}}</td>
                         <td class="col-md-4">{{ e.name }}</td>
+                        <td class="col-md-2" ng-show="control.showType == true">{{e.eventName}}</td>
                     </tr>
                 </tbody>
             </table>

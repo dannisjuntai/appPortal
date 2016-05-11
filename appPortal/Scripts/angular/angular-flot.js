@@ -98,8 +98,9 @@ angular.module('angular-flot', []).directive('flot', ['$timeout', function ($tim
                     //scope.item = getKeyByValue(item.series.xaxis.categories, item.dataIndex);
                     scope.item = item.datapoint[1];
                     var dt = new Date(item.datapoint[0]);
-                    //scope.datetime = dt.getUTCFullYear() + '/' + dt.getMonth() + '/' + dt.getDay() + ' ' + dt.getUTCHours() + ':' + dt.getUTCMinutes() + ':' + dt.getUTCSeconds();
-                    scope.datetime = dt;
+                    //scope.datetime = dt.getMonth() + 1 + '/' + dt.getDate() + ' ' + dt.getHours() + ':' + dt.getMinutes() + ':' + dt.getSeconds();
+                    scope.datetime = dt.toUTCString();
+
                     scope.$apply();
                 }
             });

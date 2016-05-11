@@ -126,7 +126,7 @@ var rmonSETController = function ($scope, $routeParams,$location, groupFactory, 
 
     //取得LinkDevice 資料
     function getLinkDevices() {
-        groupFactory.getLinkDevices().then(processSuccess, processError);
+        groupFactory.getLinkDevices(0).then(processSuccess, processError);
 
         function processSuccess(data) {
             //binding select

@@ -359,7 +359,99 @@ namespace DA.DataBase.Repositories
         /// 取得圖控介面 select 1
         /// </summary>
         /// <returns></returns>
-        public List<LinkDeviceViewModel> GetLinkDevices()
+        public List<LinkDeviceViewModel> GetLinkDevices(int groupId)
+        {
+            List<LinkDeviceViewModel> vms = new List<LinkDeviceViewModel>();
+            using (var db = new CMSDBContext())
+            {
+                if (groupId == 0)
+                {
+                    return getLinkDevice(null, true);
+                }
+                //確認Group 階層
+                var q = from a in db.Groups
+                        where a.ParentId == groupId
+                        select a;
+                if (q.Any())
+                {
+                    var o = q.FirstOrDefault();
+                    //mainTool
+                    if (o.GroupTypeKey == "1")
+                    {
+                        return getLinkDevice1(groupId);
+                    }
+                    //Equipment
+                    else if (o.GroupTypeKey == "2")
+                    {
+                        return getLinkDevice2(groupId);
+                    }
+                }
+            }
+            return vms;
+        }
+        /// <summary>
+        /// MainTool 下拉選單
+        /// </summary>
+        /// <returns></returns>
+        private List<LinkDeviceViewModel> getLinkDevice1(int groupId)
+        {
+            List<LinkDeviceViewModel> vms = new List<LinkDeviceViewModel>();
+            using (var db = new CMSDBContext())
+            {
+                //確認Group 階層
+
+                var q = from a in db.Groups //Main Tool
+                        join b in db.Groups on a.GroupId equals b.ParentId //Equipment
+                        join c in db.GroupLocations on b.GroupId equals c.GroupId //Link
+                        where a.ParentId == groupId
+                        select new { a, b, c };
+
+                if (q.Any())
+                {
+                    var g = q.ToList().GroupBy(p=>p.c.LinkSubSeq);
+                    List<int> l = new List<int>();
+                    foreach(var o in g.ToList())
+                    {
+                        l.Add(o.Key);
+                    }
+                    return getLinkDevice(l, false);
+                }
+
+            }
+            return vms;
+        }
+        /// <summary>
+        /// equment
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        private List<LinkDeviceViewModel> getLinkDevice2(int groupId)
+        {
+            List<LinkDeviceViewModel> vms = new List<LinkDeviceViewModel>();
+            using (var db = new CMSDBContext())
+            {
+                //確認Group 階層
+
+                var q = from a in db.Groups //Main Tool
+                        join b in db.GroupLocations on a.GroupId equals b.GroupId //Link
+                        where a.ParentId == groupId
+                        select new { a, b };
+
+                if (q.Any())
+                {
+                    var g = q.ToList().GroupBy(p => p.b.LinkSubSeq);
+                    List<int> l = new List<int>();
+                    foreach (var o in g.ToList())
+                    {
+                        l.Add(o.Key);
+                    }
+                    return getLinkDevice(l, false);
+                }
+            }
+            return vms;
+        }
+
+        private List<LinkDeviceViewModel> getLinkDevice(List<int> linkSubSeqs, bool isAll)
         {
             List<LinkDeviceViewModel> vms = new List<LinkDeviceViewModel>();
             using (var db = new CMSDBContext())
@@ -367,8 +459,12 @@ namespace DA.DataBase.Repositories
                 var q = from a in db.LinkDevice
                         join b in db.LinkDevSub on a.LinkID equals b.LinkID
                         where a.ModifyFlag < (int)ModifyFlagEnum.Delete &&
-                              b.ModifyFlag < (int)ModifyFlagEnum.Delete
+                              b.ModifyFlag < (int)ModifyFlagEnum.Delete 
                         select new { a.LinkID, a.LinkDevName, b.LinkSubSeq, b.LinkSubName };
+                if (isAll == false)
+                {
+                    q =  q.Where(p=> linkSubSeqs.Contains(p.LinkSubSeq));
+                }
                 if (q.Any())
                 {
                     foreach (var o in q.ToList())
@@ -376,13 +472,14 @@ namespace DA.DataBase.Repositories
                         var ld = new LinkDeviceViewModel()
                         {
                             LinkID = o.LinkID,
-                            LinkDevName = o.LinkDevName, //string.Format("{0} - {1}", o.LinkDevName, o.LinkSubName),
+                            LinkDevName = string.Format("{0} - {1}", o.LinkDevName, o.LinkSubName),
                             LinkSubSeq = o.LinkSubSeq
                         };
                         vms.Add(ld);
                     }
                 }
             }
+
             return vms;
         }
         /// <summary>

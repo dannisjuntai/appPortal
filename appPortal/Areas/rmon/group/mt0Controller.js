@@ -16,7 +16,8 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, lin
     $scope.control = {
         pagedItems: [],
         selectedRow: -1,
-        loading: false
+        loading: false,
+        showType: true
     };
     //選擇條件
     $scope.eventLevels = [];
@@ -55,7 +56,7 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, lin
     };
     //導覽到 圖表資料
     $scope.goChart = function (linkTagSeq) {
-        redirectToUrl($location, '/chart/' + linkTagSeq);
+        redirectToUrl($location, '/chart/' + linkTagSeq + '/' + $scope.groupId);
     };
 
     //顯示歷史資料 Modal 
@@ -75,6 +76,12 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, lin
     //搜尋資料
     $scope.searchEvents = function () {
         getEvents($scope.param);
+        //變更顯示欄位
+        if ($scope.param.optionNo == 0) {
+            $scope.control.showType = true;
+        } else {
+            $scope.control.showType = false;
+        }
     };
 
     //上一頁
@@ -96,7 +103,9 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, lin
         $scope.param.currentPage = n;
         getEvents($scope.param);
     };
-
+    $scope.export = function () {
+        getEvents($scope.param);
+    };
     //初始化
     init();
     //初始化

@@ -20,9 +20,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
     };
     //導覽到 圖表資料
     $scope.goChart = function (linkTagSeq) {
-
-            redirectToUrl('/chart/' + linkTagSeq);
-   
+        redirectToUrl('/chart/' + linkTagSeq + '/' + $scope.groupId);
     };
 
     canvas = new fabric.Canvas(document.getElementById("playCanvas"));
@@ -324,7 +322,8 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
     $scope.control = {
         pagedItems: [],
         selectedRow: -1,
-        loading: false
+        loading: false,
+        showType: true
     };
     $scope.toggleModal = function () {
         $scope.showModal = !$scope.showModal;
@@ -348,6 +347,12 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
     //搜尋資料
     $scope.searchEvents = function () {
         getEvents($scope.param);
+        //變更顯示欄位
+        if ($scope.param.optionNo == 0) {
+            $scope.control.showType = true;
+        } else {
+            $scope.control.showType = false;
+        }
     };
 
     //上一頁

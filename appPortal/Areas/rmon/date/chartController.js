@@ -4,10 +4,10 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
     $scope.breadcrumbs;
 
     //圖控設定資料
-    $scope.link = { linkSubSeq: 0, linkTagSeq: 0 };
+    $scope.link = { linkSubSeq: 0, linkTagSeq: 0, parentId: 0 };
 
-    $scope.link.linkTagSeq = ($routeParams.linkTagSeq) ? parseInt($routeParams.linkTagSeq) : 1;
-
+    $scope.link.linkTagSeq = ($routeParams.linkTagSeq) ? parseInt($routeParams.linkTagSeq) : 0;
+    $scope.link.parentId = ($routeParams.parentId) ? parseInt($routeParams.parentId) : 0;
     //$scope.selection =[];
     var dt = new Date();
 
@@ -26,7 +26,8 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
     };
     $scope.control = {
         autoSearch: 0,
-        loading: false
+        loading: false,
+        deviceSelect: true
     };
     //取得歷史資訊
     $scope.getTagHistories = function () {
@@ -61,7 +62,7 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
     //初始化
     function init() {
         //找到 Device Id
-        getLinkDevices();
+        getLinkDevices($scope.link.parentId);
         //取得linkSub 資料 
         getLinkTag($scope.link.linkTagSeq);
         //設定 Banner
@@ -116,11 +117,18 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
         $scope.breadcrumbs = breadcrumbService.getBreadcrumbs();
     };
     //取得LinkDevice 資料
-    function getLinkDevices() {
-        groupFactory.getLinkDevices().then(processSuccess, processError);
+    function getLinkDevices(parentId) {
+        groupFactory.getLinkDevices(parentId).then(processSuccess, processError);
         function processSuccess(data) {
-            //binding select
-            $scope.linkDevices = data;
+            if (data.length <= 0) {
+                $scope.control.deviceSelect = false;
+            } else {
+                //binding select
+                $scope.linkDevices = data;
+                $scope.control.deviceSelect = true;
+            }
+            
+
         }
         function processError(error) {
         }

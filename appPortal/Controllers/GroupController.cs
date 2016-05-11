@@ -230,9 +230,9 @@ namespace appPortal.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public HttpResponseMessage GetLinkDevices()
+        public HttpResponseMessage GetLinkDevices(int id)
         {
-            var vms = repository.GetLinkDevices();
+            var vms = repository.GetLinkDevices(id);
             if (vms != null)
             {
                 return Request.CreateResponse(HttpStatusCode.OK, vms);
