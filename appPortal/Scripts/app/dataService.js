@@ -198,9 +198,9 @@ var groupFactory = function ($http, $q, $resource) {
         });
     };
     //取得事件
-    factory.getEvents = function (history) {
+    factory.getEvents = function (param) {
         url = serviceBase + 'getEvents';
-        return $http.post(url, history).then(function (results) {
+        return $http.post(url, param).then(function (results) {
             return results.data;
         });
     };

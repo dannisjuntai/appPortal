@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DA.DataBase.Models.Departments;
+using System.Web;
 
 
 namespace DA.DataBase.Repositories
@@ -2283,15 +2284,36 @@ namespace DA.DataBase.Repositories
                     {
                         sub.Add(o.Key);
                     }
-                    //取得 LinkSubSeq
-                    events.AddRange(getEventSetByLinkSubSeq(sub, param));
+                    if (param.OptionNo !=1)
+                    {
+                        //取得 LinkSubSeq
+                        events.AddRange(getEventSetByLinkSubSeq(sub, param));
+                    }
+                    else
+                    {
+                        //取得 保養狀態的
+                        events.AddRange(getEventSets(param));
+                    }
                 }
-                //取得 保養狀態的
-                events.AddRange(getEventSets(param));
             }
+           
+            WriteTest(events);
             return events;
         }
-
+        private void WriteTest(List<EventViewModel> events)
+        {
+           string path = HttpContext.Current.Server.MapPath("~/App_Data/");
+            // Write sample data to CSV file
+            using (ReadWriteCsv.CsvFileWriter writer = new ReadWriteCsv.CsvFileWriter(path + "test.csv"))
+            {
+                foreach (var e in events)
+                {
+                    ReadWriteCsv.CsvRow row = new ReadWriteCsv.CsvRow();
+                    row.Add(String.Format("{0},{1}, {2}, {3}", e.Name, e.RecTime, e.EventName, e.RestTime));
+                    writer.Write(row);
+                }
+            }
+        }
         /// <summary>
         /// 取得 LinkSubSeq 的EventSets
         /// </summary>
