@@ -46,7 +46,7 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         function processSuccess(data) {
             var d = data;
             var url = $location.protocol() + '://' + $location.host() + ':' + $location.port() + data.fileUrl;
-            saveToDisk(url, 'test.csv');
+            saveToDisk(url);
             $scope.control.loading = false;
         }
         function processError(error) {
