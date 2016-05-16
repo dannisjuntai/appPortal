@@ -2283,10 +2283,11 @@ namespace DA.DataBase.Repositories
                     }
                 }
             }
-            string url =  WriteCsv(events);
+            string fileName =  WriteCsv(events);
             return new EventExport()
             {
-                FileUrl = url
+                FileUrl = "/Export/",
+                FileName = fileName
             };
         }
         /// <summary>
@@ -2481,7 +2482,7 @@ namespace DA.DataBase.Repositories
                     sw.WriteLine(data);
                 }
                 sw.Close();
-                return string.Format("/Export/{0}", fileName);
+                return fileName;
             }
             catch
             {

@@ -146,8 +146,8 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
 
         function processSuccess(data) {
             var d = data;
-            var url = $location.protocol() + '://' + $location.host() + ':' + $location.port() + data.fileUrl;
-            saveToDisk(url);
+            var url = $location.protocol() + '://' + $location.host() + ':' + $location.port() + data.fullPath;
+            saveToDisk(url, data.fileName);
             $scope.control.loading = false;
         }
         function processError(error) {

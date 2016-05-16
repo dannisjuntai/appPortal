@@ -40,5 +40,9 @@ namespace DA.DataBase.Models
     public class EventExport
     {
         public string FileUrl { get; set; }
+
+        public string  FileName { get; set; }
+
+        public string FullPath { get { return this.FileUrl + this.FileName; } }
     }
 }

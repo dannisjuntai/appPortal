@@ -329,14 +329,15 @@ function range(start, end) {
     }
 };
 
-function saveToDisk(fileURL) {
+function saveToDisk(fileURL, fileName) {
     var save = document.createElement('a');
     save.href = fileURL;
     save.target = '_blank';
-    save.download = fileURL;
+    save.download = fileName;
     var evt = document.createEvent('MouseEvents');
     evt.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0,
         false, false, false, false, 0, null);
     save.dispatchEvent(evt);
     (window.URL || window.webkitURL).revokeObjectURL(save.href);
+
 }
