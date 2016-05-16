@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DA.DataBase.Models.Departments;
 using System.Web;
+using System.IO;
 
 
 namespace DA.DataBase.Repositories
@@ -2304,15 +2305,37 @@ namespace DA.DataBase.Repositories
         {
            string path = HttpContext.Current.Server.MapPath("~/App_Data/");
             // Write sample data to CSV file
-            using (ReadWriteCsv.CsvFileWriter writer = new ReadWriteCsv.CsvFileWriter(path + "test.csv"))
-            {
-                foreach (var e in events)
-                {
-                    ReadWriteCsv.CsvRow row = new ReadWriteCsv.CsvRow();
-                    row.Add(String.Format("{0},{1}, {2}, {3}", e.Name, e.RecTime, e.EventName, e.RestTime));
-                    writer.Write(row);
-                }
-            }
+            //using (ReadWriteCsv.CsvFileWriter writer = new ReadWriteCsv.CsvFileWriter(path + "test.csv"))
+            //{
+            //    foreach (var e in events)
+            //    {
+            //        ReadWriteCsv.CsvRow row = new ReadWriteCsv.CsvRow();
+            //        row.Add(String.Format("{0},{1}, {2}, {3}", e.Name, e.RecTime, e.EventName, e.RestTime));
+            //        writer.Write(row);
+            //    }
+            //}
+
+              //修改檔案為非唯讀屬性(Normal)
+           System.IO.FileInfo FileAttribute = new FileInfo(path + "test.csv");
+           FileAttribute.Attributes = FileAttributes.Normal;
+
+           //開啟CSV檔案
+           FileStream fs = new FileStream(path + "test.csv", FileMode.Open, FileAccess.Write);
+           StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
+
+           //加入資料，注意！如果原本有資料的csv，會被覆蓋。
+           //若是需要寫入其中幾個欄位，可先讀取csv存入string，
+           //在對其中幾個欄位修改，並Write全部已修改資料
+           sw.Write("1,加入訊息,3,4,5" + "\n" + "6,7,8,9,10" + "\n" + "11,12,13,14,15");
+
+           foreach (var e in events)
+           {
+               ReadWriteCsv.CsvRow row = new ReadWriteCsv.CsvRow();
+               var data = string.Format("{0}, {1}, {2}, {3}", e.Name, e.RecTime, e.EventName, e.RestTime);
+               sw.WriteLine(data); 
+           }
+
+           sw.Close();
         }
         /// <summary>
         /// 取得 LinkSubSeq 的EventSets
