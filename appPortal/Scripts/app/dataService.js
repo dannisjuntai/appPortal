@@ -204,6 +204,13 @@ var groupFactory = function ($http, $q, $resource) {
             return results.data;
         });
     };
+    //匯出事件
+    factory.exportEvents = function (param) {
+        url = serviceBase + 'exportEvents';
+        return $http.post(url, param).then(function (results) {
+            return results.data;
+        });
+    };
     //設定事件
     factory.setEvents = function (id) {
         url = serviceBase + 'setEvents/' + id;

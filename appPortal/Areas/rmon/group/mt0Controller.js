@@ -104,7 +104,29 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, lin
         getEvents($scope.param);
     };
     $scope.export = function () {
-        getEvents($scope.param);
+        $scope.control.loading = true;
+        groupFactory.exportEvents($scope.param).then(processSuccess, processError);
+
+        function processSuccess(data) {
+            var d = data;
+
+            window.open($location.protocol() + '://' + $location.host() + ':' + $location.port() + data.fileUrl, '_blank', '');
+
+            $scope.control.loading = false;
+
+            //File.save(csvInput, function (content) {
+            //    var hiddenElement = document.createElement('a');
+
+            //    hiddenElement.href = 'data:attachment/csv,' + encodeURI(content);
+            //    hiddenElement.target = '_blank';
+            //    hiddenElement.download = 'myFile.csv';
+            //    hiddenElement.click();
+            //});
+
+        }
+        function processError(error) {
+            $scope.control.loading = false;
+        }
     };
     //初始化
     init();

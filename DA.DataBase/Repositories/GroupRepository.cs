@@ -410,9 +410,9 @@ namespace DA.DataBase.Repositories
 
                 if (q.Any())
                 {
-                    var g = q.ToList().GroupBy(p=>p.c.LinkSubSeq);
+                    var g = q.ToList().GroupBy(p => p.c.LinkSubSeq);
                     List<int> l = new List<int>();
-                    foreach(var o in g.ToList())
+                    foreach (var o in g.ToList())
                     {
                         l.Add(o.Key);
                     }
@@ -461,11 +461,11 @@ namespace DA.DataBase.Repositories
                 var q = from a in db.LinkDevice
                         join b in db.LinkDevSub on a.LinkID equals b.LinkID
                         where a.ModifyFlag < (int)ModifyFlagEnum.Delete &&
-                              b.ModifyFlag < (int)ModifyFlagEnum.Delete 
+                              b.ModifyFlag < (int)ModifyFlagEnum.Delete
                         select new { a.LinkID, a.LinkDevName, b.LinkSubSeq, b.LinkSubName };
                 if (isAll == false)
                 {
-                    q =  q.Where(p=> linkSubSeqs.Contains(p.LinkSubSeq));
+                    q = q.Where(p => linkSubSeqs.Contains(p.LinkSubSeq));
                 }
                 if (q.Any())
                 {
@@ -2227,27 +2227,13 @@ namespace DA.DataBase.Repositories
             }
             return events;
         }
+        #region 匯出 excel
         /// <summary>
-        /// 查詢
+        /// 
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public EventsViewModel GetEvents(EventSetParam param)
-        {
-            var es = GetEvents1(param).OrderByDescending(p => p.RecTime).ToList();
-            int count = es.Count;
-
-            //
-            EventsViewModel events = new EventsViewModel()
-            {
-                EventSets = es.Skip(param.CurrentPage * param.ItemsPerPage).Take(param.ItemsPerPage),
-                //分頁數量
-                PagedItems = Math.Ceiling((decimal)count / (decimal)param.ItemsPerPage)
-            };
-            return events;
-        }
-
-        public List<EventViewModel> GetEvents1(EventSetParam param)
+        public EventExport ExportEvents(EventSetParam param)
         {
             List<EventViewModel> events = new List<EventViewModel>();
 
@@ -2285,65 +2271,33 @@ namespace DA.DataBase.Repositories
                     {
                         sub.Add(o.Key);
                     }
-                    if (param.OptionNo !=1)
+                    if (param.OptionNo != 1)
                     {
                         //取得 LinkSubSeq
-                        events.AddRange(getEventSetByLinkSubSeq(sub, param));
+                        events.AddRange(getEventSetByLinkSubSeq1(sub, param));
                     }
                     else
                     {
                         //取得 保養狀態的
-                        events.AddRange(getEventSets(param));
+                        events.AddRange(getEventSets1(param));
                     }
                 }
             }
-           
-            WriteTest(events);
-            return events;
-        }
-        private void WriteTest(List<EventViewModel> events)
-        {
-           string path = HttpContext.Current.Server.MapPath("~/App_Data/");
-            // Write sample data to CSV file
-            //using (ReadWriteCsv.CsvFileWriter writer = new ReadWriteCsv.CsvFileWriter(path + "test.csv"))
-            //{
-            //    foreach (var e in events)
-            //    {
-            //        ReadWriteCsv.CsvRow row = new ReadWriteCsv.CsvRow();
-            //        row.Add(String.Format("{0},{1}, {2}, {3}", e.Name, e.RecTime, e.EventName, e.RestTime));
-            //        writer.Write(row);
-            //    }
-            //}
-
-              //修改檔案為非唯讀屬性(Normal)
-           System.IO.FileInfo FileAttribute = new FileInfo(path + "test.csv");
-           FileAttribute.Attributes = FileAttributes.Normal;
-
-           //開啟CSV檔案
-           FileStream fs = new FileStream(path + "test.csv", FileMode.Open, FileAccess.Write);
-           StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
-
-           //加入資料，注意！如果原本有資料的csv，會被覆蓋。
-           //若是需要寫入其中幾個欄位，可先讀取csv存入string，
-           //在對其中幾個欄位修改，並Write全部已修改資料
-           sw.Write("1,加入訊息,3,4,5" + "\n" + "6,7,8,9,10" + "\n" + "11,12,13,14,15");
-
-           foreach (var e in events)
-           {
-               ReadWriteCsv.CsvRow row = new ReadWriteCsv.CsvRow();
-               var data = string.Format("{0}, {1}, {2}, {3}", e.Name, e.RecTime, e.EventName, e.RestTime);
-               sw.WriteLine(data); 
-           }
-
-           sw.Close();
+            string url =  WriteCsv(events);
+            return new EventExport()
+            {
+                FileUrl = url
+            };
         }
         /// <summary>
-        /// 取得 LinkSubSeq 的EventSets
+        /// 
         /// </summary>
         /// <param name="list"></param>
+        /// <param name="param"></param>
         /// <returns></returns>
-        private List<EventViewModel> getEventSetByLinkSubSeq(List<int> list, EventSetParam param)
+        private List<EventViewModel> getEventSetByLinkSubSeq1(List<int> list, EventSetParam param)
         {
+
             List<EventViewModel> events = new List<EventViewModel>();
             DateTime sDt = param.SDateTime.GetStartTime();
             DateTime eDt = param.EDateTime.GetEndTime();
@@ -2371,7 +2325,6 @@ namespace DA.DataBase.Repositories
                 }
                 if (q.Any())
                 {
-                    //Skip(param.CurrentPage * param.ItemsPerPage).Take(param.ItemsPerPage)
                     foreach (var o in q.ToList())
                     {
                         EventViewModel e = new EventViewModel()
@@ -2388,8 +2341,12 @@ namespace DA.DataBase.Repositories
             }
             return events;
         }
-
-        private List<EventViewModel> getEventSets(EventSetParam param)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        private List<EventViewModel> getEventSets1(EventSetParam param)
         {
             List<EventViewModel> events = new List<EventViewModel>();
             DateTime sDt = param.SDateTime.GetStartTime();
@@ -2420,8 +2377,7 @@ namespace DA.DataBase.Repositories
                 }
                 if (q.Any())
                 {
-                    //Skip(param.CurrentPage * param.ItemsPerPage).Take(param.ItemsPerPage)
-                    foreach (var o in q.ToList())
+                    foreach (var o in q.Skip(param.CurrentPage * param.ItemsPerPage).Take(param.ItemsPerPage))
                     {
                         EventViewModel e = new EventViewModel()
                         {
@@ -2434,8 +2390,220 @@ namespace DA.DataBase.Repositories
                         events.Add(e);
                     }
                 }
+
             }
             return events;
+        }
+        #endregion
+        /// <summary>
+        /// 查詢
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public EventsViewModel GetEvents(EventSetParam param)
+        {
+            List<EventViewModel> events = new List<EventViewModel>();
+
+            using (var db = new CMSDBContext())
+            {
+                var q = from a in db.Groups                                         // Department
+                        join b in db.Groups on a.GroupId equals b.ParentId          // MainTool
+                        join c in db.Groups on b.GroupId equals c.ParentId          // Equipment
+                        join d in db.GroupLocations on c.GroupId equals d.GroupId   // 位置
+                        join e in db.LinkTag on d.LinkTagSeq equals e.LinkTagSeq
+                        where d.ModifyFlag < (byte)ModifyFlagEnum.Delete &&
+                              a.ModifyFlag < (byte)ModifyFlagEnum.Delete &&
+                              b.ModifyFlag < (byte)ModifyFlagEnum.Delete &&
+                              c.ModifyFlag < (byte)ModifyFlagEnum.Delete &&
+                              e.ModifyFlag < (byte)ModifyFlagEnum.Delete
+                        select new { a, b, c, d, e };
+                if (param.GroupType == 1) //Department
+                {
+                    q = q.Where(p => p.a.GroupId == param.GroupId);
+                }
+                if (param.GroupType == 2) //MainTool
+                {
+                    q = q.Where(p => p.b.GroupId == param.GroupId);
+                }
+                if (param.GroupType == 3) //Equipment
+                {
+                    q = q.Where(p => p.c.GroupId == param.GroupId);
+                }
+
+                if (q.Any())
+                {
+                    List<int> sub = new List<int>();
+
+                    foreach (var o in q.ToList().GroupBy(p => p.e.LinkSubSeq))
+                    {
+                        sub.Add(o.Key);
+                    }
+                    if (param.OptionNo != 1)
+                    {
+                        //取得 LinkSubSeq
+                        return getEventSetByLinkSubSeq(sub, param);
+                    }
+                    else
+                    {
+                        //取得 保養狀態的
+                        return getEventSets(param);
+                    }
+                }
+            }
+
+            //WriteTest(events);
+
+            return null;
+        }
+        /// <summary>
+        /// 寫入檔案
+        /// </summary>
+        /// <param name="events"></param>
+        private string WriteCsv(List<EventViewModel> events)
+        {
+            try
+            {
+                DateTime dt = DateTime.Now;
+                string path = HttpContext.Current.Server.MapPath("~/Export/");
+
+                string fileName = string.Format("{0}{1:00}{2:00}{3:00}{4:00}.csv", dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute);
+                string fullPath = string.Format("{0}{1}", path, fileName);
+                //修改檔案為非唯讀屬性(Normal)
+                //System.IO.FileInfo FileAttribute = new FileInfo(path + fileName);
+                //FileAttribute.Attributes = FileAttributes.Normal;
+                //建立CSV檔案
+                FileStream fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write);
+                StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
+
+                foreach (var e in events)
+                {
+                    var data = string.Format("{0}, {1}, {2}, {3}", e.Name, e.RecTime, e.EventName, e.RestTime);
+                    sw.WriteLine(data);
+                }
+                sw.Close();
+                return string.Format("/Export/{0}", fileName);
+            }
+            catch
+            {
+                return null;
+            }
+
+        }
+        /// <summary>
+        /// 取得 LinkSubSeq 的EventSets
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        private EventsViewModel getEventSetByLinkSubSeq(List<int> list, EventSetParam param)
+        {
+            int count = 0;
+            List<EventViewModel> events = new List<EventViewModel>();
+            DateTime sDt = param.SDateTime.GetStartTime();
+            DateTime eDt = param.EDateTime.GetEndTime();
+            using (var db = new CMSDBContext())
+            {
+                var q = from a in db.LinkTag
+                        join b in db.EventSet on a.LinkTagSeq equals b.LinkTagSeq
+                        join c in db.OptionSets on b.EventLevel equals c.OptionNo
+                        where list.Contains(a.LinkSubSeq) &&
+                              c.FieldName == "EventLevel" &&
+                              b.RecTime >= sDt &&
+                              b.RecTime <= eDt
+                        orderby b.RecTime
+                        select new { a, b, c };
+                if (param.OptionNo > 0)
+                {
+                    if (param.OptionNo == 4)
+                    {
+                        q = q.Where(p => p.b.EventLevel == param.OptionNo || p.b.EventLevel == 5);
+                    }
+                    else
+                    {
+                        q = q.Where(p => p.b.EventLevel == param.OptionNo);
+                    }
+                }
+                if (q.Any())
+                {
+                    count = q.Count();
+                    foreach (var o in q.Skip(param.CurrentPage * param.ItemsPerPage).Take(param.ItemsPerPage))
+                    {
+                        EventViewModel e = new EventViewModel()
+                        {
+                            LinkTagSeq = o.a.LinkTagSeq,
+                            RecTime = o.b.RecTime,
+                            RestTime = o.b.RestTime,
+                            Name = o.b.Name,
+                            EventName = o.c.OptionName
+                        };
+                        events.Add(e);
+                    }
+                }
+            }
+
+            EventsViewModel vm = new EventsViewModel()
+            {
+                EventSets = events,
+                //分頁數量
+                PagedItems = Math.Ceiling((decimal)count / (decimal)param.ItemsPerPage)
+            };
+            return vm;
+        }
+
+        private EventsViewModel getEventSets(EventSetParam param)
+        {
+            int count = 0;
+            List<EventViewModel> events = new List<EventViewModel>();
+            DateTime sDt = param.SDateTime.GetStartTime();
+            DateTime eDt = param.EDateTime.GetEndTime();
+            using (var db = new CMSDBContext())
+            {
+                var q = from a in db.EventSet
+                        join b in db.OptionSets on a.EventLevel equals b.OptionNo
+                        join c in db.OptionSets on a.Maintain equals c.OptionNo
+                        where a.RecTime >= sDt &&
+                              a.RecTime <= eDt &&
+                              a.EventLevel == 1 &&
+                              b.FieldName == "EventLevel" &&
+                              c.FieldName == "Maintain"
+                        orderby a.RecTime
+                        select new { a, b, c };
+                if (param.OptionNo > 0)
+                {
+
+                    if (param.OptionNo == 4)
+                    {
+                        q = q.Where(p => p.a.EventLevel == param.OptionNo || p.a.EventLevel == 5);
+                    }
+                    else
+                    {
+                        q = q.Where(p => p.a.EventLevel == param.OptionNo);
+                    }
+                }
+                if (q.Any())
+                {
+                    count = q.Count();
+                    foreach (var o in q.Skip(param.CurrentPage * param.ItemsPerPage).Take(param.ItemsPerPage))
+                    {
+                        EventViewModel e = new EventViewModel()
+                        {
+                            LinkTagSeq = o.a.LinkTagSeq,
+                            RecTime = o.a.RecTime,
+                            RestTime = o.a.RestTime,
+                            Name = string.Format("{0}-{1}", o.a.Name, o.c.OptionName),
+                            EventName = o.b.OptionName
+                        };
+                        events.Add(e);
+                    }
+                }
+
+            }
+            EventsViewModel vm = new EventsViewModel()
+            {
+                EventSets = events,
+                //分頁數量
+                PagedItems = Math.Ceiling((decimal)count / (decimal)param.ItemsPerPage)
+            };
+            return vm;
         }
         /// <summary>
         /// 

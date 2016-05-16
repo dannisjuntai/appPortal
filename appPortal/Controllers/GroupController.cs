@@ -419,6 +419,23 @@ namespace appPortal.Controllers
             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "資料讀取錯誤");
         }
         /// <summary>
+        /// 事件匯出CSV
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public HttpResponseMessage ExportEvents([FromBody]EventSetParam param)
+        {
+            var result = repository.ExportEvents(param);
+
+            if (result != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+            }
+            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "匯出CSV錯誤");
+        }
+
+        /// <summary>
         /// 取得事件
         /// </summary>
         /// <param name="id"></param>
@@ -432,7 +449,7 @@ namespace appPortal.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.OK, vms);
             }
-            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "資料讀取錯誤");
+            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "取得事件錯誤");
         }
         /// <summary>
         /// 

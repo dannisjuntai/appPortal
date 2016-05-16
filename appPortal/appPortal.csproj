@@ -392,6 +392,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\rmon\modal\" />
+    <Folder Include="Export\" />
     <Folder Include="Scripts\services\" />
   </ItemGroup>
   <ItemGroup>

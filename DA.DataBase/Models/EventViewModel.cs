@@ -36,4 +36,9 @@ namespace DA.DataBase.Models
         }
 
     }
+
+    public class EventExport
+    {
+        public string FileUrl { get; set; }
+    }
 }
