@@ -139,6 +139,21 @@ var et0Controller = function ($scope, $location, $routeParams, groupFactory, lin
         $scope.param.currentPage = n;
         getEvents($scope.param);
     };
+    //匯出excel 
+    $scope.export = function () {
+        $scope.control.loading = true;
+        groupFactory.exportEvents($scope.param).then(processSuccess, processError);
+
+        function processSuccess(data) {
+            var d = data;
+            var url = $location.protocol() + '://' + $location.host() + ':' + $location.port() + data.fileUrl;
+            saveToDisk(url, 'test.csv');
+            $scope.control.loading = false;
+        }
+        function processError(error) {
+            $scope.control.loading = false;
+        }
+    };
     init();
     //初始化
     function init() {

@@ -109,25 +109,15 @@ var mt0Controller = function ($scope, $location, $routeParams, groupFactory, lin
 
         function processSuccess(data) {
             var d = data;
-
-            window.open($location.protocol() + '://' + $location.host() + ':' + $location.port() + data.fileUrl, '_blank', '');
-
+            var url = $location.protocol() + '://' + $location.host() + ':' + $location.port() + data.fileUrl;
+            saveToDisk(url, 'test.csv');
             $scope.control.loading = false;
-
-            //File.save(csvInput, function (content) {
-            //    var hiddenElement = document.createElement('a');
-
-            //    hiddenElement.href = 'data:attachment/csv,' + encodeURI(content);
-            //    hiddenElement.target = '_blank';
-            //    hiddenElement.download = 'myFile.csv';
-            //    hiddenElement.click();
-            //});
-
         }
         function processError(error) {
             $scope.control.loading = false;
         }
     };
+
     //初始化
     init();
     //初始化

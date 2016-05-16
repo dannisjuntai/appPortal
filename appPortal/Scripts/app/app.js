@@ -328,3 +328,15 @@ function range(start, end) {
         $scope.right_gap = $scope.gap;
     }
 };
+
+function saveToDisk(fileURL) {
+    var save = document.createElement('a');
+    save.href = fileURL;
+    save.target = '_blank';
+    save.download = fileURL;
+    var evt = document.createEvent('MouseEvents');
+    evt.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0,
+        false, false, false, false, 0, null);
+    save.dispatchEvent(evt);
+    (window.URL || window.webkitURL).revokeObjectURL(save.href);
+}

@@ -38,7 +38,21 @@ var rmonDATController = function ($scope, $location, $routeParams, $timeout, $ht
         //設定背景圖顏色
         canvas.setBackgroundImage(imgbase64, canvas.renderAll.bind(canvas));
     };
+    //匯出excel
+    $scope.export = function () {
+        $scope.control.loading = true;
+        groupFactory.exportEvents($scope.param).then(processSuccess, processError);
 
+        function processSuccess(data) {
+            var d = data;
+            var url = $location.protocol() + '://' + $location.host() + ':' + $location.port() + data.fileUrl;
+            saveToDisk(url, 'test.csv');
+            $scope.control.loading = false;
+        }
+        function processError(error) {
+            $scope.control.loading = false;
+        }
+    };
     //取得告警資料
     function getTagAlarm() {
         groupFactory.getTagAlarm($scope.groupId).then(processSuccess, processError);
