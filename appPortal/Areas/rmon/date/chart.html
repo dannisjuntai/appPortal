@@ -25,9 +25,18 @@
             <select class="form-control" ng-model="link.linkSubSeq"
                     ng-options="item.linkSubSeq as item.linkDevName for item in linkDevices"
                     ng-change="changLink(link)" style="width:200px"></select>
+
+
         </div>
+
         <label>偵測項目</label>
-        <dropdown-multiselect model="param.selection" options="linkTags"></dropdown-multiselect>
+        <!--<dropdown-multiselect model="param.selection" options="linkTags"></dropdown-multiselect>-->
+        <am-multiselect class="input-lg" multiple="true" ms-selected="已選擇了 {{param.selection.length}} 項"
+                        ng-model="param.selection" ms-header="請選擇"
+                        options="i.linkTagSeq as i.tagName for i in linkTags"
+                        template-url="Areas/rmon/modal/multiselect.tmpl.html"
+                        change="selected()"></am-multiselect>
+
         <div class="form-group">
             <button type="submit" class="btn btn-success" ng-click="getTagHistories()">查詢</button>
         </div>

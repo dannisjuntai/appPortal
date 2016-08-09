@@ -10,7 +10,8 @@
     'ngModal',
     'ng-timepicker',
     'mgcrea.ngStrap',
-    'ngMultiselect']);
+    'ngMultiselect',
+    'am.multiselect']);
 var canvas;
 
 app.config(['$routeProvider',
@@ -105,7 +106,7 @@ function mainController($scope, $rootScope, appStoreFatory) {
         return $rootScope.title;
     };
     $scope.menus = {};
-
+    $scope.user = null;
     function init() {
         getMenu();
     }

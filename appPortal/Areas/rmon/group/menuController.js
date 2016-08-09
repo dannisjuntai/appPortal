@@ -45,13 +45,13 @@ var menuController = function ($scope, $location, $routeParams, $window, groupFa
         ];
     }
     //設定連結
-    function setBreadcrumb(obj) {
-        breadcrumbService.setBreadcrumb('home', {
-            href: "/et0/" + $scope.group.currentGroup.groupId,
-            label: $scope.group.currentGroup.groupName
-        });
-        $scope.breadcrumbs = breadcrumbService.getBreadcrumbs();
-    };
+    //function setBreadcrumb(obj) {
+    //    breadcrumbService.setBreadcrumb('home', {
+    //        href: "/et0/" + $scope.group.currentGroup.groupId,
+    //        label: $scope.group.currentGroup.groupName
+    //    });
+    //    $scope.breadcrumbs = breadcrumbService.getBreadcrumbs();
+    //};
 
 };
 

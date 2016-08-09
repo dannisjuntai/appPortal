@@ -4,6 +4,13 @@ var loginController = function ($scope, $window, $location, appStoreFatory, link
 
     // $rootScope.title = "登入資料設定";
 
+
+    $scope.list = [];
+    for (var i = 0; i < 50; i++) {
+        $scope.list.push({ id: i, name: 'item ' + i });
+    }
+    $scope.selectedList = $scope.list[10];
+
     $scope.user;
 
     $scope.login = function () {

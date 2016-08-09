@@ -39,7 +39,7 @@
 <body class="hold-transition skin-blue" ng-controller="mainController as vm">
     <div class="wrapper">
         <!-- Main Header -->
-        <header class="main-header">
+        <div class="main-header">
             <!-- Logo -->
             <a href="#menu" class="logo">
                 <span class="logo-mini"><b>F</b>AB</span>
@@ -58,10 +58,10 @@
                                 <span>Admin</span>
                             </a>
                             <ul class="dropdown-menu">
-     
+
                                 <li class="menu">
                                     <div>
-                                        <i class="fa fa-sign-out"><a href="#">登出</a></i> 
+                                        <i class="fa fa-sign-out"><a href="#">登出</a></i>
                                     </div>
                                 </li>
 
@@ -71,7 +71,7 @@
                     </ul>
                 </div>
             </nav>
-        </header>
+        </div>
 
         <div id="content">
             <div ng-view></div>
@@ -98,6 +98,7 @@
     <script src="Scripts/angular/angular-strap.tpl.js"></script>
     <script src="Scripts/angular/angular-strap.docs.tpl.js"></script>
     <script src="Scripts/angular/angular-multiselect.js"></script>
+    <script src="Scripts/angular/angularjs-dropdown-multiselect.js"></script>
 
     <script src="Scripts/angular/ng-modal.js"></script>
     <script src="Scripts/angular/ngTimepicker.js"></script>
@@ -117,7 +118,7 @@
     <script src="Scripts/app/drawEDirective.js"></script>
     <script src="Scripts/app/utils.js"></script>
     <script src="Scripts/app/httpInterceptors.js"></script>
-
+    <script src="Areas/rmon/modal/header.js"></script>
 
     <script src="dist/chart/jquery.flot.js"></script>
     <script src="dist/chart/jquery.flot.resize.js"></script>

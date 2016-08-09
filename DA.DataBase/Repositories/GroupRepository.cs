@@ -98,7 +98,6 @@ namespace DA.DataBase.Repositories
                         {
                             node.Add(new TreeNode()
                             {
-
                                 Id = o.GroupId,
                                 Label = o.GroupName,
                                 Children = GetGroups(o.GroupId),
@@ -121,7 +120,6 @@ namespace DA.DataBase.Repositories
 
             return node;
         }
-
         /// <summary>
         /// 取得群組明細
         /// </summary>
@@ -204,56 +202,56 @@ namespace DA.DataBase.Repositories
         /// 取得連結設備資料
         /// </summary>
         /// <returns></returns>
-        public List<KeyValuePair<int, string>> GetLinkDevice()
-        {
-            List<KeyValuePair<int, string>> pairs = new List<KeyValuePair<int, string>>();
+        //public List<KeyValuePair<int, string>> GetLinkDevice()
+        //{
+        //    List<KeyValuePair<int, string>> pairs = new List<KeyValuePair<int, string>>();
 
-            using (var db = new CMSDBContext())
-            {
-                var q = from a in db.LinkDevice
-                        select a;
-                if (q.Any())
-                {
-                    foreach (var o in q.ToList())
-                    {
-                        KeyValuePair<int, string> item = new KeyValuePair<int, string>(o.LinkID, o.LinkDevName);
-                        pairs.Add(item);
-                    }
-                }
-                return pairs;
-            }
-        }
+        //    using (var db = new CMSDBContext())
+        //    {
+        //        var q = from a in db.LinkDevice
+        //                select a;
+        //        if (q.Any())
+        //        {
+        //            foreach (var o in q.ToList())
+        //            {
+        //                KeyValuePair<int, string> item = new KeyValuePair<int, string>(o.LinkID, o.LinkDevName);
+        //                pairs.Add(item);
+        //            }
+        //        }
+        //        return pairs;
+        //    }
+        //}
         /// <summary>
         /// 取得連結子設備資料
         /// </summary>
         /// <param name="linkId"></param>
         /// <returns></returns>
-        public List<KeyValuePair<int, string>> GetLinkTagsBySubSeq(int linkSubSeq)
-        {
-            List<KeyValuePair<int, string>> pairs = new List<KeyValuePair<int, string>>();
+        //public List<KeyValuePair<int, string>> GetLinkTagsBySubSeq(int linkSubSeq)
+        //{
+        //    List<KeyValuePair<int, string>> pairs = new List<KeyValuePair<int, string>>();
 
-            using (var db = new CMSDBContext())
-            {
-                var q = from a in db.LinkTag
-                        join b in db.MemTag on a.MTagSeq equals b.MTagSeq
-                        join c in db.TagObj on b.TObjSeq equals c.TObjSeq
-                        where a.LinkSubSeq == linkSubSeq &&
-                              a.ModifyFlag < (int)ModifyFlagEnum.Delete &&
-                              b.ModifyFlag < (int)ModifyFlagEnum.Delete
-                        select new { a, b, c };
+        //    using (var db = new CMSDBContext())
+        //    {
+        //        var q = from a in db.LinkTag
+        //                join b in db.MemTag on a.MTagSeq equals b.MTagSeq
+        //                join c in db.TagObj on b.TObjSeq equals c.TObjSeq
+        //                where a.LinkSubSeq == linkSubSeq &&
+        //                      a.ModifyFlag < (int)ModifyFlagEnum.Delete &&
+        //                      b.ModifyFlag < (int)ModifyFlagEnum.Delete
+        //                select new { a, b, c };
 
-                if (q.Any())
-                {
-                    foreach (var o in q.ToList())
-                    {
-                        KeyValuePair<int, string> item = new KeyValuePair<int, string>(o.a.LinkTagSeq, o.b.TagName);
-                        pairs.Add(item);
+        //        if (q.Any())
+        //        {
+        //            foreach (var o in q.ToList())
+        //            {
+        //                KeyValuePair<int, string> item = new KeyValuePair<int, string>(o.a.LinkTagSeq, o.b.TagName);
+        //                pairs.Add(item);
 
-                    }
-                }
-                return pairs;
-            }
-        }
+        //            }
+        //        }
+        //        return pairs;
+        //    }
+        //}
         /// <summary>
         /// 取得 LinkTag
         /// </summary>
@@ -2488,7 +2486,6 @@ namespace DA.DataBase.Repositories
             {
                 return null;
             }
-
         }
         /// <summary>
         /// 取得 LinkSubSeq 的EventSets

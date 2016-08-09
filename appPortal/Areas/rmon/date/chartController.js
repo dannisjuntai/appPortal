@@ -135,13 +135,10 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
     }
     //取得LinkTag 集合
     function getLinkTags(linkSubSeq, autoSearch) {
-        groupFactory.getLinkTags(linkSubSeq).then(processSuccess, processError);
-
-        function processSuccess(data) {
+        groupFactory.getLinkTags(linkSubSeq).then(onSuccess, onError);
+        function onSuccess(d) {
             $scope.linkTags = '';
-            $scope.linkTags = data;
-            
-
+            $scope.linkTags = d;
             //自動勾選
             $scope.linkTags.forEach(function (link) {
                 if ($scope.link.linkTagSeq == link.linkTagSeq) {
@@ -156,7 +153,7 @@ var chartController = function ($scope, $location, $routeParams, groupFactory, l
             $scope.control.autoSearch = 0;
 
         }
-        function processError(error) {
+        function onError(e) {
         }
     };
 
